@@ -1,6 +1,151 @@
+import { FilterFn, Row } from "@tanstack/react-table";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
+
+export const multiFilter: FilterFn<any> = (
+  row: Row<any>,
+  columnId: string,
+  filterValues: string[]
+) => {
+  if (!filterValues || filterValues.length === 0) {
+    return true;
+  }
+
+  const checkValue = (value: any) => {
+    const stringValue = Array.isArray(value) ? value.join(" ") : String(value);
+
+    return filterValues.some((filterValue) => {
+      // Handle range filtering (e.g., "10-20")
+      const rangeMatch = filterValue.match(/^(\d+)-(\d+)$/);
+      if (rangeMatch) {
+        const [_, start, end] = rangeMatch.map(Number);
+        const numericValue = parseFloat(stringValue);
+        return numericValue >= start && numericValue <= end;
+      }
+
+      // Fallback to substring matching
+      return stringValue.toLowerCase().includes(filterValue.toLowerCase());
+    });
+  };
+
+  // Check the parent row value
+  const parentRowValue = row.getValue(columnId);
+  if (checkValue(parentRowValue)) {
+    return true;
+  }
+
+  // Check subrows
+  const subRows = row.subRows || [];
+  for (const subRow of subRows) {
+    const subRowValue = subRow.getValue(columnId);
+    if (checkValue(subRowValue)) {
+      return true;
+    }
+  }
+
+  return false; // No matches found
+};
+
+export const getFileExtension = (mimeType: string): string => {
+  switch (mimeType.toLowerCase()) {
+    // PDF File
+    case "application/pdf":
+      return "pdf";
+
+    // Image Files
+    case "image/jpeg":
+      return "jpg";
+    case "image/png":
+      return "png";
+    case "image/gif":
+      return "gif";
+    case "image/bmp":
+      return "bmp";
+    case "image/tiff":
+      return "tiff";
+    case "image/webp":
+      return "webp";
+
+    // Video Files
+    case "video/mp4":
+      return "mp4";
+    case "video/avi":
+      return "avi";
+    case "video/mkv":
+      return "mkv";
+    case "video/mov":
+      return "mov";
+    case "video/webm":
+      return "webm";
+
+    // Audio Files
+    case "audio/mpeg":
+      return "mp3";
+    case "audio/ogg":
+      return "ogg";
+    case "audio/wav":
+      return "wav";
+    case "audio/mp3":
+      return "mp3";
+    case "audio/flac":
+      return "flac";
+
+    // Word Document Files
+    case "application/msword":
+      return "doc";
+    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+      return "docx";
+
+    // Excel Spreadsheet Files
+    case "application/vnd.ms-excel":
+      return "xls";
+    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+      return "xlsx";
+
+    // PowerPoint Files
+    case "application/vnd.ms-powerpoint":
+      return "ppt";
+    case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+      return "pptx";
+
+    // Plain Text Files
+    case "text/plain":
+      return "txt";
+
+    // HTML Files
+    case "text/html":
+      return "html";
+
+    // JSON Files
+    case "application/json":
+      return "json";
+
+    // JavaScript Files
+    case "application/javascript":
+      return "js";
+    case "text/javascript":
+      return "js";
+
+    // CSS Files
+    case "text/css":
+      return "css";
+
+    // Zip Files
+    case "application/zip":
+      return "zip";
+    case "application/x-zip-compressed":
+      return "zip";
+
+    // JSON-LD Files
+    case "application/ld+json":
+      return "json-ld";
+
+    // Default Fallback
+    default:
+      return "file";
+  }
+};
