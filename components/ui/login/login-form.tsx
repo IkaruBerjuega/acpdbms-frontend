@@ -16,6 +16,23 @@ export default function LoginForm({}) {
       password: '',
     },
   });
+  // This is a placeholder for Login Hook, remove pag meron na
+  const useLogin = () => {
+    return {
+      login: async ({
+        email,
+        password,
+      }: {
+        email: string;
+        password: string;
+      }) => {
+        console.log('Logging in with', email, password);
+        return { success: true };
+      },
+      loading: false,
+      error: null,
+    };
+  };
 
   const { handleSubmit, register } = methods;
 
