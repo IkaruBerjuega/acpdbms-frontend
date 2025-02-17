@@ -1,11 +1,18 @@
-import { Combobox } from "@/components/ui/combobox";
-import Image from "next/image";
+import { Combobox } from '@/components/ui/combobox';
+import Image from 'next/image';
 
 export default function Home() {
-  const items = [{ label: "meow", value: "meow" }];
+  const items = [{ label: 'meow', value: 'meow' }];
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <Combobox items={items} />
+    <div className='grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]'>
+      <Combobox
+        items={[
+          { label: 'Option 1', value: '1' },
+          { label: 'Option 2', value: '2' },
+        ]}
+        placeholder='Select an option'
+        emptyMessage='No items found'
+      />
     </div>
   );
 }
