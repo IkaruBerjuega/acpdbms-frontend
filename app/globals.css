@@ -81,6 +81,7 @@ body {
 @layer base {
   * {
     @apply border-border;
+    scroll-behavior: smooth;
   }
   body {
     @apply bg-background text-foreground;
@@ -89,7 +90,10 @@ body {
     @apply p-10 box-border;
   }
   .homepage-padding {
-    @apply px-10 py-32 lg:px-32 lg:py-10;
+    @apply px-10 py-20 xl:px-32 xl:py-10;
+  }
+  .homepage-nav-bar-padding {
+    @apply py-4 px-10 xl:px-32;
   }
   .primary-bg-color {
     @apply bg-[#111111];
@@ -101,8 +105,12 @@ body {
     @apply flex justify-between items-center;
   }
   .bg-image-hero {
-    @apply bg-right bg-[url('/homepage/bg-hero.png')] bg-no-repeat bg-contain;
+    @apply bg-right-bottom bg-[url('/homepage/bg-hero.png')] bg-no-repeat bg-contain;
   }
+  .bg-image-contact-form {
+    @apply relative bg-right bg-[url('/homepage/bg-contact-form.webp')] bg-no-repeat bg-cover bg-opacity-10;
+  }
+
   .flex-row-start-end {
     @apply flex justify-start items-end;
   }
@@ -140,5 +148,37 @@ body {
 
   .flex-col-between-center {
     @apply flex flex-col justify-between items-center;
+  }
+
+  .flex-row-start-end {
+    @apply flex flex-row justify-start items-end;
+  }
+
+  .flex-row-start-center {
+    @apply flex flex-row justify-start items-center;
+  }
+
+  .flex-col-start-center {
+    @apply flex flex-col justify-start items-center;
+  }
+
+  .flex-col-center-start {
+    @apply flex flex-col justify-center items-start;
+  }
+
+  .flex-row-between-start {
+    @apply flex flex-row justify-between items-center;
+  }
+
+  .flex-col-between-start {
+    @apply flex flex-col justify-between items-start;
+  }
+
+  .flex-row-end-start {
+    @apply flex flex-row justify-end items-start;
+  }
+
+  .card-appearance {
+    @apply p-5 xl:p-10 rounded-lg shadow-md bg-white-primary;
   }
 }

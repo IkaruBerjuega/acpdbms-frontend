@@ -10,17 +10,6 @@ export default {
   theme: {
     extend: {
       colors: {
-        eerieblack: "#1e1e1e",
-        gray: {
-          200: "#e5e7eb",
-          300: "#d1d5db",
-          400: "#9ca3af",
-          500: "#6b7280",
-          550: "#8C8C8C",
-          600: "#4b5563",
-          700: "#374151",
-          800: "#1f2937",
-        },
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -32,8 +21,7 @@ export default {
           foreground: "hsl(var(--popover-foreground))",
         },
         primary: {
-          // DEFAULT: "hsl(var(--primary))",
-          DEFAULT: "#080808",
+          DEFAULT: "#080808", // Overriding primary with solid black
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -72,10 +60,24 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        bg: {
-          black_primary: "#080808",
-          white_primary: "#FFFFFF",
-          white_secondary: "#F6F6F6",
+        eerieblack: "#1e1e1e",
+        gray: {
+          200: "#e5e7eb",
+          300: "#d1d5db",
+          400: "#9ca3af",
+          500: "#6b7280",
+          550: "#8C8C8C",
+          600: "#4b5563",
+          700: "#374151",
+          800: "#1f2937",
+        },
+        black: {
+          primary: "#080808",
+          secondary: "#333333",
+        },
+        white: {
+          primary: "#FFFFFF",
+          secondary: "#F6F6F6",
         },
       },
       borderRadius: {

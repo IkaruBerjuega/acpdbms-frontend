@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Open_Sans } from "next/font/google";
 import "./globals.css";
+import { QueryProvider } from "@/components/ui/general/query-provider";
+import { Toaster } from "@/components/ui/toaster";
 
 const openSans = Open_Sans({
   variable: "--font-open-sans",
@@ -19,7 +21,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${openSans.variable} antialiased`}>{children}</body>
+      <body className={`${openSans.variable} antialiased`}>
+        <QueryProvider>{children}</QueryProvider>
+        <Toaster />
+      </body>
     </html>
   );
 }
