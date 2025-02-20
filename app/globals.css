@@ -85,4 +85,60 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  .gen-padding {
+    @apply p-10 box-border;
+  }
+  .homepage-padding {
+    @apply px-10 py-32 lg:px-32 lg:py-10;
+  }
+  .primary-bg-color {
+    @apply bg-[#111111];
+  }
+  .primary-text-color {
+    @apply bg-[#111111];
+  }
+  .flex-between-center-row {
+    @apply flex justify-between items-center;
+  }
+  .bg-image-hero {
+    @apply bg-right bg-[url('/homepage/bg-hero.png')] bg-no-repeat bg-contain;
+  }
+  .flex-row-start-end {
+    @apply flex justify-start items-end;
+  }
+  .flex-col-start-end {
+    @apply flex flex-col justify-end items-start;
+  }
+  .flex-row-start {
+    @apply flex flex-row;
+  }
+  .flex-col-start {
+    @apply flex flex-col;
+  }
+  .flex-row-center {
+    @apply flex flex-row justify-center items-center;
+  }
+  .flex-col-center {
+    @apply flex flex-col justify-center items-center;
+  }
+
+  .flex-col-start-center {
+    @apply flex flex-col justify-center items-start;
+  }
+
+  .flex-row-around-center {
+    @apply flex flex-row justify-around items-center;
+  }
+
+  .flex-col-around-center {
+    @apply flex flex-col justify-around items-center;
+  }
+
+  .flex-row-between-center {
+    @apply flex flex-row justify-between items-center;
+  }
+
+  .flex-col-between-center {
+    @apply flex flex-col justify-between items-center;
+  }
 }
