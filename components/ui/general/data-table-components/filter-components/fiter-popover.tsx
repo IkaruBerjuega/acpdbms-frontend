@@ -13,7 +13,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { ReactNode } from "react";
-import { FilterType } from "@/lib/types";
+import { FilterType } from "@/lib/filter-types";
 
 interface FilterPopOverProps {
   width: string;

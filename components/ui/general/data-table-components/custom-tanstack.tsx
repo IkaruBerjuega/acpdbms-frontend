@@ -16,7 +16,7 @@ import {
   ExpandedState,
 } from "@tanstack/react-table";
 import FilterUi from "./filter-components/filter-cards";
-import { FilterType } from "@/lib/types";
+import { FilterType } from "@/lib/filter-types";
 
 export const useCustomTable = (
   query: any,

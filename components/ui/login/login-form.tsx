@@ -1,106 +1,131 @@
-'use client';
-import { useForm, FormProvider, SubmitHandler } from 'react-hook-form';
-import FormInput from '@/components/ui/general/form-components/input';
-import { Checkbox } from '@/components/ui/checkbox';
-import LoginButton from './login-button';
-import {
-  LoginSchemaType,
-  loginSchema,
-} from '../../../lib/form-constants/login-constants';
+"use client";
+import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
+import FormInput from "@/components/ui/general/form-components/form-input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { LoginSchemaType } from "@/lib/form-constants/form-constants";
+import { Button } from "../button";
+import { useToken } from "@/hooks/external-api/use-token";
+import { useLogin } from "@/hooks/external-api/use-login";
+import { LoadingCircle } from "../general/loading-circle";
+import { useRouter } from "next/navigation";
+import { emailPattern } from "@/lib/utils";
 
-export default function LoginForm({}) {
+export default function LoginForm() {
   const methods = useForm<LoginSchemaType>({
-    mode: 'onSubmit',
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
-  // This is a placeholder for Login Hook, remove pag meron na
-  const useLogin = () => {
-    return {
-      login: async ({
-        email,
-        password,
-      }: {
-        email: string;
-        password: string;
-      }) => {
-        console.log('Logging in with', email, password);
-        return { success: true };
-      },
-      loading: false,
-      error: null,
-    };
-  };
+
+  //use Router
+  const router = useRouter();
 
   const { handleSubmit, register } = methods;
 
-  const { login, loading, error } = useLogin();
+  const { mutate, isLoading, error } = useLogin();
 
-  const processForm: SubmitHandler<LoginSchemaType> = async (data) => {
-    const response = await login(data);
+  //destructure to get store token function from useToken. This stores http only cookie
+  //it will store the logged in user's information and the token
+  const { storeTokenWithUserData } = useToken();
+
+  //this function will be triggered when the login is successful, will set cookies here
+  const onRedirect = async (responseData: LoginResponseInterface) => {
+    const isStored = await storeTokenWithUserData(responseData);
+
+    if (isStored) {
+      const role = responseData.user.role;
+      if (role === "admin") {
+        router.push("/admin/dashboard");
+      } else if (role === "employee") {
+        router.push("/employee/tasks");
+      } else {
+        router.push("/client/tasks");
+      }
+    }
+  };
+
+  const processForm: SubmitHandler<LoginSchemaType> = (data) => {
+    // const response = await login(data);
+    mutate(data, {
+      onSuccess: async (responseData) => {
+        await onRedirect(responseData);
+      },
+      onError: (error) => console.log(error),
+    });
   };
 
   const emailValidation = {
-    required: 'Email is required',
+    required: "Email is required",
+    pattern: {
+      value: emailPattern,
+      message: "Invalid email format",
+    },
   };
 
   const passwordValidation = {
-    required: 'Password is required',
+    required: "Password is required",
   };
+
   return (
-    <FormProvider {...methods}>
-      <form onSubmit={handleSubmit(processForm)}>
-        <div className='text-red-500 justify-center text-center h-6 text-sm mt-2'>
-          {error && <p>{error}</p>}
-        </div>
+    <form onSubmit={handleSubmit(processForm)}>
+      <div className="text-red-500 justify-center text-center h-6 text-sm mt-2">
+        {error && <p>{error.message}</p>}
+      </div>
 
-        <div className='mt-8'>
-          <FormInput
-            name={'email'}
-            dataType='email'
-            inputType='default'
-            validationRules={emailValidation}
-            label={''}
-            placeholder={'Enter Email'}
-            register={register}
-            required={false}
+      <div className="mt-8">
+        <FormInput
+          name={"email"}
+          dataType="email"
+          inputType="default"
+          validationRules={emailValidation}
+          label={""}
+          placeholder={"Enter Email"}
+          register={register}
+          required={false}
+        />
+      </div>
+      <div className="mt-4">
+        <FormInput
+          name={"password"}
+          dataType="password"
+          inputType="default"
+          validationRules={passwordValidation}
+          label={""}
+          placeholder={"Enter Password"}
+          register={register}
+          required={false}
+        />
+      </div>
+
+      <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center">
+          <Checkbox
+            id="remember-me"
+            className="border-black rounded data-[state=checked]:bg-eerieblack"
           />
+          <label
+            htmlFor="remember-me"
+            className="text-xs ml-2 text-gray-800 hover:underline leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+          >
+            Remember Me
+          </label>
         </div>
-        <div className='mt-4'>
-          <FormInput
-            name={'password'}
-            dataType='password'
-            inputType='default'
-            validationRules={passwordValidation}
-            label={''}
-            placeholder={'Enter Password'}
-            register={register}
-            required={false}
-          />
-        </div>
+      </div>
 
-        <div className='flex items-center justify-between mt-4'>
-          <div className='flex items-center'>
-            <Checkbox
-              id='remember-me'
-              {...register('rememberMe')}
-              className='border-black rounded data-[state=checked]:bg-eerieblack'
-            />
-            <label
-              htmlFor='remember-me'
-              className='text-xs ml-2 text-gray-800 hover:underline leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
-            >
-              Remember Me
-            </label>
-          </div>
-        </div>
-
-        <div className='mt-6'>
-          <LoginButton loading={loading} />
-        </div>
-      </form>
-    </FormProvider>
+      <Button
+        type="submit"
+        className="w-full px-6 py-2.5 text-sm font-medium tracking-wide text-white-secondary mt-10"
+        disabled={isLoading}
+      >
+        {isLoading ? (
+          <>
+            Logging in <LoadingCircle size={15} />
+          </>
+        ) : (
+          "LOG IN"
+        )}
+      </Button>
+    </form>
   );
 }
