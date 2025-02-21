@@ -1,6 +1,6 @@
 'use client';
 
-import { projectColumns } from '@/components/ui/admin/projects/project-column-def';
+import { projectColumns } from './project-column-def';
 import { projects as data } from '@/lib/placeholder-data';
 import DataTable from '@/components/ui/general/data-table-components/data-table';
 
