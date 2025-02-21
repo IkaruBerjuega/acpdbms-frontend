@@ -18,7 +18,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ItemInterface } from "@/lib/types";
+import { ItemInterface } from "@/lib/filter-types";
 
 interface ComboboxInterface {
   items?: ItemInterface[];

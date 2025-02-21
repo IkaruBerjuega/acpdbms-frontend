@@ -149,3 +149,8 @@ export const getFileExtension = (mimeType: string): string => {
       return "file";
   }
 };
+
+//REGEX PATTERNS
+
+// Reusable email validation regex
+export const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
