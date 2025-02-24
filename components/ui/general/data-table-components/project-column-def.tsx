@@ -12,32 +12,78 @@ import {
 } from './table-buttons';
 import Status from './status';
 import { Project } from '@/lib/definitions';
+import { useProjectContext } from '@/lib/context/project-context';
 
 export const projectColumns: ColumnDef<Project>[] = [
   {
     id: 'select',
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() || table.getIsSomePageRowsSelected()
-        }
-        onCheckedChange={(value) => {
-          table.toggleAllPageRowsSelected(!!value);
-        }}
-        aria-label='Select all'
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label='Select row'
-      />
-    ),
+    header: ({ table }) => {
+      const { itemSelectedRows, setItemSelectedRows } = useProjectContext();
+      return (
+        <Checkbox
+          checked={
+            itemSelectedRows.length > 0 &&
+            (table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate'))
+          }
+          onCheckedChange={(value) => {
+            table.toggleAllPageRowsSelected(!!value);
+            if (value) {
+              const allRowData = table
+                .getRowModel()
+                .rows.map((row) => row.getValue('id') as string);
+              setItemSelectedRows(allRowData);
+              console.log('All selected rows:', allRowData);
+            } else {
+              // If unchecked, clear the empSelectedRows
+              setItemSelectedRows([]);
+              console.log('No selected rows');
+            }
+          }}
+          aria-label='Select all'
+        />
+      );
+    },
+    cell: ({ row }) => {
+      const { itemSelectedRows, setItemSelectedRows } = useProjectContext();
+      React.useEffect(() => {
+        console.log('Real-time updated selected rows:', itemSelectedRows);
+      }, [itemSelectedRows]);
+      return (
+        <Checkbox
+          checked={itemSelectedRows.includes(row.getValue('id') as string)}
+          onCheckedChange={(value) => {
+            row.toggleSelected(!!value);
+            // Update empSelectedRows based on selection state
+            setItemSelectedRows((prev) => {
+              const id = row.getValue('id') as string;
+              const updatedEmpSelectedRows = value
+                ? [...prev, id]
+                : prev.filter(
+                    (data) => data !== id // Compare by id
+                  );
+              return updatedEmpSelectedRows;
+            });
+          }}
+          aria-label='Select row'
+        />
+      );
+    },
     size: 15,
   },
   {
-    accessorKey: 'client_name', // Changed from 'client_id' to match backend
+    accessorKey: 'id',
+    header: ({ column }) => {
+      return <p>Project Title</p>;
+    },
+    cell: ({ row }) => (
+      <div className='text-xs md:text-sm'>{row.getValue('project_title')}</div>
+    ),
+    filterFn: multiFilter,
+    enableHiding: true,
+  },
+  {
+    accessorKey: 'client_name',
     meta: {
       filter_name: 'Client Name',
       filter_type: 'text',
@@ -63,7 +109,7 @@ export const projectColumns: ColumnDef<Project>[] = [
     filterFn: multiFilter,
   },
   {
-    accessorKey: 'location', // Replacing address fields with location
+    accessorKey: 'location',
     meta: {
       filter_name: 'Location',
       filter_type: 'text',
@@ -167,7 +213,7 @@ export const projectColumns: ColumnDef<Project>[] = [
     header: () => 'Actions',
     cell: ({ row }) => {
       const project = row.original;
-      const client_name = project.client_name; // Updated to match new backend response
+      const client_name = project.client_name;
 
       return (
         <div className='w-full justify-center items-center flex gap-2'>

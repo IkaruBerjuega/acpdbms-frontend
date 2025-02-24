@@ -16,7 +16,8 @@ export default async function Page({
 }: {
   searchParams?: { query?: string; page?: string };
 }) {
-  const query = searchParams?.query || '';
+  const params = await searchParams;
+  const query = params?.query || '';
   return (
     <>
       <Tabs
