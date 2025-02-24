@@ -1,5 +1,6 @@
 'use client';
-import * as React from 'react';
+
+import { useEffect, useMemo } from 'react';
 import FilterPopOver from '../../general/data-table-components/filter-components/filter-popover';
 import { LuFilter } from 'react-icons/lu';
 import Card from '../../project-card';
@@ -12,9 +13,11 @@ import {
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
 } from 'react-icons/md';
+import { useProjectContext } from '@/lib/context/project-context';
 
 export default function ProjectCards({ query }: { query: string }) {
   const { projects, isLoading, isError, error } = useProject();
+  const { setProjects } = useProjectContext();
 
   console.log('Project List:', projects);
   console.log('Is Loading:', isLoading);
@@ -23,17 +26,26 @@ export default function ProjectCards({ query }: { query: string }) {
   if (isLoading) return <p>Loading projects...</p>;
   if (isError) return <p>Error: {error?.message}</p>;
 
+  useEffect(() => {
+    if (projects?.length) {
+      setProjects(projects);
+    }
+  }, [projects, setProjects]);
+
+  const memoizedColumns = useMemo(() => columns, []);
+  const memoizedProjects = useMemo(() => projects || [], [projects]);
+
   const { table, filterComponents, filters, pagination } = useCustomTable(
     query,
-    projects,
-    columns,
+    memoizedProjects,
+    memoizedColumns,
     12
   );
 
   const router = useRouter();
 
   return (
-    <div className='flex w-full flex-col gap-2'>
+    <div className='flex flex-grow w-full flex-col gap-2'>
       <div className='flex flex-wrap flex-col w-full h-auto gap-2'>
         <div>
           <FilterPopOver
