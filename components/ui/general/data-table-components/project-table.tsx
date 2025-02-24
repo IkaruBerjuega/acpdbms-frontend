@@ -5,11 +5,9 @@ import DataTable from '@/components/ui/general/data-table-components/data-table'
 import { useProject } from '@/hooks/general/use-project';
 
 export default function ProjectTable() {
-  const { projectList } = useProject();
-  const { data, isLoading, error } = projectList;
+  const { projects, isLoading, isError, error } = useProject();
 
-  console.log('Project List:', projectList);
-  console.log('Data:', data);
+  console.log('Project List:', projects);
   console.log('Is Loading:', isLoading);
   console.log('Error:', error);
 
@@ -18,11 +16,8 @@ export default function ProjectTable() {
 
   return (
     <div className='w-full flex-grow flex justify-center items-center'>
-      {data && data.length > 0 ? (
-        <DataTable
-          columns={projectColumns}
-          data={data}
-        />
+      {projects && projects.length > 0 ? (
+        <DataTable columns={projectColumns} data={projects} />
       ) : (
         <p>No projects</p>
       )}

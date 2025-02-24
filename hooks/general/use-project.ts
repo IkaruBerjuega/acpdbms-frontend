@@ -1,4 +1,5 @@
 import { useApiQuery } from '@/hooks/tanstack-query-hook';
+import { Project } from '@/lib/definitions';
 
 export const useProject = () => {
   const projectList = useApiQuery<Project[]>({
@@ -7,6 +8,9 @@ export const useProject = () => {
   });
 
   return {
-    projectList,
+    projects: projectList.data ?? [], // Ensure projects is always an array
+    isLoading: projectList.isLoading,
+    isError: !!projectList.error,
+    error: projectList.error,
   };
 };

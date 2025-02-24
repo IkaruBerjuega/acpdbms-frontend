@@ -3,6 +3,7 @@ import PageTitle from '@/components/ui/general/project-title';
 import { PiCardsThreeLight } from 'react-icons/pi';
 import { VscListSelection } from 'react-icons/vsc';
 import ProjectTable from '@/components/ui/general/data-table-components/project-table';
+import ProjectCards from '@/components/ui/admin/projects/project-cards';
 
 import {
   BtnAdd,
@@ -19,10 +20,7 @@ export default async function Page({
   const query = searchParams?.query || '';
   return (
     <>
-      <Tabs
-        defaultValue='list'
-        className='flex flex-col w-full h-auto gap-4'
-      >
+      <Tabs defaultValue='list' className='flex flex-col w-full h-auto gap-4'>
         <PageTitle pageTitle='Projects' />
         <div className='flex flex-col w-full h-full gap-4'>
           <div className='flex flex-col lg:flex-row w-full justify-between h-auto p-4 gap-4 rounded-md shadow-md'>
@@ -57,7 +55,9 @@ export default async function Page({
             </div>
           </div>
           <div className='flex-1 rounded-md'>
-            <TabsContent value='card'></TabsContent>
+            <TabsContent value='card'>
+              <ProjectCards query='' />
+            </TabsContent>
             <TabsContent value='list'>
               <ProjectTable />
             </TabsContent>

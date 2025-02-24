@@ -13,7 +13,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useSearchParams } from 'next/navigation';
-import FilterPopOver from './filter-components/fiter-popover';
+import FilterPopOver from './filter-components/filter-popover';
 import { LuFilter } from 'react-icons/lu';
 
 import {
@@ -73,16 +73,10 @@ export default function DataTable({
         </div>
       </div>
       <div className='rounded-lg border '>
-        <TableRoot
-          id={id}
-          className={`w-full table-auto ${tableClassName} `}
-        >
+        <TableRoot id={id} className={`w-full table-auto ${tableClassName} `}>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                key={headerGroup.id}
-                className='text-sm'
-              >
+              <TableRow key={headerGroup.id} className='text-sm'>
                 {headerGroup.headers.map((header) => {
                   const { column } = header;
                   return (
@@ -121,10 +115,7 @@ export default function DataTable({
                           header.id != 'select' && (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant='ghost'
-                                  className='p-0'
-                                >
+                                <Button variant='ghost' className='p-0'>
                                   <PiDotsThreeVerticalBold className='h-4 w-4' />
                                 </Button>
                               </DropdownMenuTrigger>
@@ -260,10 +251,7 @@ export default function DataTable({
           </TableBody>
         </TableRoot>
       </div>
-      <Pagination
-        table={table}
-        pagination={pagination}
-      />
+      <Pagination table={table} pagination={pagination} />
     </div>
   );
 }

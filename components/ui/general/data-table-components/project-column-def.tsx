@@ -37,6 +37,19 @@ export const projectColumns: ColumnDef<Project>[] = [
     size: 15,
   },
   {
+    accessorKey: 'id',
+    meta: {
+      filter_name: 'Project ID',
+      filter_type: 'number',
+      column_name: 'project_id',
+    },
+    header: () => <p>Project ID</p>,
+    cell: ({ row }) => (
+      <div className='text-xs md:text-sm'>{row.getValue('id')}</div>
+    ),
+    filterFn: multiFilter,
+  },
+  {
     accessorKey: 'client_name', // Changed from 'client_id' to match backend
     meta: {
       filter_name: 'Client Name',
@@ -131,7 +144,7 @@ export const projectColumns: ColumnDef<Project>[] = [
         <div className='flex justify-center w-full'>
           <Status
             statuses={[
-              ['finished', 'bg-green'],
+              ['finished', 'bg-green-500'],
               ['ongoing', 'bg-yellow-500'],
               ['on-hold', 'bg-gray-500'],
               ['cancelled', 'bg-red-500'],
