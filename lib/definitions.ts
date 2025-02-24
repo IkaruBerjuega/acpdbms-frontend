@@ -1,4 +1,4 @@
-interface UserInterface {
+export interface UserInterface {
   id: number;
   email: string;
   is_admin: boolean;
@@ -9,12 +9,12 @@ interface UserInterface {
   name: string;
 }
 
-interface LoginResponseInterface {
+export interface LoginResponseInterface {
   token: string;
   user: UserInterface;
 }
 
-interface EmployeeInterface {
+export interface EmployeeInterface {
   id: number;
   user_id: number;
   full_name: string;
@@ -26,7 +26,7 @@ interface EmployeeInterface {
   status: string;
 }
 
-interface ClientInterface {
+export interface ClientInterface {
   id: number;
   user_id: number;
   full_name: string;
@@ -37,7 +37,7 @@ interface ClientInterface {
   status: string;
 }
 
-interface Project {
+export interface Project {
   client_id: number;
   project_title: string;
   start_date: string;
