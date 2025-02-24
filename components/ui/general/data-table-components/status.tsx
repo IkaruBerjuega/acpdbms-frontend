@@ -13,7 +13,7 @@ export default function Status({ statuses, value }: StatusProps) {
   return (
     <div
       className={cx(
-        'text-xs px-2 py-1 w-auto rounded-lg drop-shadow-sm tracking-wider flex justify-center items-center text-white font-semibold',
+        'text-xs px-2 py-1 w-auto rounded-lg drop-shadow-sm tracking-wider flex justify-center items-center text-stone-50 font-semibold',
         statusColorClass // dynamically apply the color class
       )}
     >

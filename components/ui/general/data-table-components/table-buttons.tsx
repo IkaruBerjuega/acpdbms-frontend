@@ -35,7 +35,7 @@ export function BtnAdd({
 }) {
   return (
     <ButtonLink
-      className={`bg-maroon-600 hover:bg-maroon-700 space-x-1 h-8 sm:h-11 sm:p-2 ${classname}`}
+      className={`bg-red-800 hover:bg-red-900 space-x-1 h-8 sm:h-11 sm:p-2 ${classname}`}
       size={'sm'}
       href={href || ''}
       onClick={onClick}
@@ -58,7 +58,7 @@ export function BtnArchivedItems({ label }: { label: string }) {
       tooltipContent={label}
       variant='outline'
       className='h-9 rounded-md px-2 sm:h-11 sm:rounded-md sm:px-4 flex-1 md:flex-none'
-      icon={<SlDrawer className='text-base md:text-xl text-gray-500' />}
+      icon={<SlDrawer className='text-base md:text-xl text-black-primary' />}
     />
   );
 }
@@ -70,7 +70,7 @@ export function BtnGenerateReport({ label }: { label: string }) {
       variant='outline'
       className='h-9 rounded-md px-2 lg:h-11 sm:h-11 sm:rounded-md sm:px-4 flex-1 md:flex-none'
       icon={
-        <IoDocumentTextOutline className='text-base md:text-xl text-gray-500' />
+        <IoDocumentTextOutline className='text-base md:text-xl text-black-primary' />
       }
     />
   );
@@ -78,19 +78,21 @@ export function BtnGenerateReport({ label }: { label: string }) {
 
 export function BtnArchive({
   label,
-  onClick,
-}: {
+}: // onClick,
+{
   label: string;
-  onClick: MouseEventHandler<HTMLButtonElement> | undefined;
+  // onClick: MouseEventHandler<HTMLButtonElement> | undefined;
 }) {
   return (
     <TooltipBtnIcon
       tooltipContent={label}
       variant='outline'
-      onClick={onClick}
-      className='bg-red-100 hover:bg-red-700 h-9 rounded-md px-2 sm:h-11 sm:rounded-md sm:px-4 '
-      icon={<IoArchiveOutline className='text-base md:text-xl text-white' />}
-      textColor='text-white'
+      // onClick={onClick}
+      className='bg-red-500 hover:bg-red-700 h-9 rounded-md px-2 sm:h-11 sm:rounded-md sm:px-4 '
+      icon={
+        <IoArchiveOutline className='text-base md:text-xl text-white-primary' />
+      }
+      textColor='text-white-primary'
     />
   );
 }
@@ -100,9 +102,9 @@ export function BtnWithinArchive({ label }: { label: string }) {
     <TooltipBtnIcon
       tooltipContent={label}
       variant='outline'
-      className='bg-red-100 hover:bg-red-700 p-2 flex-1 md:flex-none'
+      className='bg-red-500 hover:bg-red-700 p-2 flex-1 md:flex-none'
       textColor='text-white'
-      icon={<IoArchiveOutline className='text-base text-white-100 ' />}
+      icon={<IoArchiveOutline className='text-base text-white-primary' />}
     />
   );
 }

@@ -4,23 +4,14 @@ import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { multiFilter } from '@/lib/utils';
+
 import {
   BtnWithinArchive,
   BtnWithinEdit,
   BtnWithinView,
 } from './table-buttons';
 import Status from './status';
-
-export interface Project {
-  id: number;
-  project_title: string;
-  client_name: string;
-  location: string;
-  start_date: string;
-  end_date: string;
-  project_status: 'finished' | 'on-hold' | 'ongoing' | 'cancelled' | 'archived';
-  image_url?: string;
-}
+import { Project } from '@/lib/definitions';
 
 export const projectColumns: ColumnDef<Project>[] = [
   {
@@ -51,13 +42,17 @@ export const projectColumns: ColumnDef<Project>[] = [
     size: 15,
   },
   {
-    accessorKey: 'id',
-    header: () => <p>Project ID</p>,
+    accessorKey: 'client_id',
+    meta: {
+      filter_name: 'Client ID',
+      filter_type: 'number',
+      column_name: 'client_id',
+    },
+    header: () => <p>Client ID</p>,
     cell: ({ row }) => (
-      <div className='text-xs md:text-sm'>{row.getValue('id')}</div>
+      <div className='text-xs md:text-sm'>{row.getValue('client_id')}</div>
     ),
     filterFn: multiFilter,
-    enableHiding: true,
   },
   {
     accessorKey: 'project_title',
@@ -73,28 +68,54 @@ export const projectColumns: ColumnDef<Project>[] = [
     filterFn: multiFilter,
   },
   {
-    accessorKey: 'location',
+    accessorKey: 'street',
     meta: {
-      filter_name: 'Location',
+      filter_name: 'Street',
       filter_type: 'text',
-      column_name: 'location',
+      column_name: 'street',
     },
-    header: () => <p>Location</p>,
+    header: () => <p>Street</p>,
     cell: ({ row }) => (
-      <div className='text-xs md:text-sm'>{row.getValue('location')}</div>
+      <div className='text-xs md:text-sm'>{row.getValue('street')}</div>
     ),
     filterFn: multiFilter,
   },
   {
-    accessorKey: 'client_name',
+    accessorKey: 'city_town',
     meta: {
-      filter_name: 'Client Name',
+      filter_name: 'City/Town',
       filter_type: 'text',
-      column_name: 'client_name',
+      column_name: 'city_town',
     },
-    header: () => <p>Client Name</p>,
+    header: () => <p>City/Town</p>,
     cell: ({ row }) => (
-      <div className='text-xs md:text-sm'>{row.getValue('client_name')}</div>
+      <div className='text-xs md:text-sm'>{row.getValue('city_town')}</div>
+    ),
+    filterFn: multiFilter,
+  },
+  {
+    accessorKey: 'state',
+    meta: {
+      filter_name: 'State',
+      filter_type: 'text',
+      column_name: 'state',
+    },
+    header: () => <p>State</p>,
+    cell: ({ row }) => (
+      <div className='text-xs md:text-sm'>{row.getValue('state')}</div>
+    ),
+    filterFn: multiFilter,
+  },
+  {
+    accessorKey: 'zip_code',
+    meta: {
+      filter_name: 'Zip Code',
+      filter_type: 'text',
+      column_name: 'zip_code',
+    },
+    header: () => <p>Zip Code</p>,
+    cell: ({ row }) => (
+      <div className='text-xs md:text-sm'>{row.getValue('zip_code')}</div>
     ),
     filterFn: multiFilter,
   },
@@ -105,7 +126,7 @@ export const projectColumns: ColumnDef<Project>[] = [
       filter_type: 'date',
       column_name: 'start_date',
     },
-    header: () => <p>Date Start</p>,
+    header: () => <p>Start Date</p>,
     cell: ({ row }) => (
       <div className='text-xs md:text-sm'>{row.getValue('start_date')}</div>
     ),
@@ -125,21 +146,36 @@ export const projectColumns: ColumnDef<Project>[] = [
     filterFn: multiFilter,
   },
   {
-    accessorKey: 'project_status',
+    accessorKey: 'finish_date',
+    meta: {
+      filter_name: 'Finish Date',
+      filter_type: 'date',
+      column_name: 'finish_date',
+    },
+    header: () => <p>Finish Date</p>,
+    cell: ({ row }) => (
+      <div className='text-xs md:text-sm'>
+        {row.getValue('finish_date') || 'N/A'}
+      </div>
+    ),
+    filterFn: multiFilter,
+  },
+  {
+    accessorKey: 'status',
     meta: {
       filter_name: 'Project Status',
       filter_type: 'select',
       options: ['ongoing', 'on-hold', 'finished', 'cancelled', 'archived'],
-      column_name: 'project_status',
+      column_name: 'status',
     },
     header: () => <p>Project Status</p>,
     cell: ({ row }) => {
-      const status = row.getValue('project_status');
+      const status = row.getValue('status');
       return (
         <div className='flex justify-center w-full'>
           <Status
             statuses={[
-              ['finished', 'bg-green-500'],
+              ['finished', 'bg-green'],
               ['ongoing', 'bg-yellow-500'],
               ['on-hold', 'bg-gray-500'],
               ['cancelled', 'bg-red-500'],
@@ -155,7 +191,18 @@ export const projectColumns: ColumnDef<Project>[] = [
   {
     accessorKey: 'image_url',
     header: () => <div className='text-xs md:text-sm'>Project Image</div>,
-    cell: () => null,
+    cell: ({ row }) => {
+      const imageUrl = row.getValue('image_url') as string | null;
+      return imageUrl ? (
+        <img
+          src={imageUrl}
+          alt='Project'
+          className='h-10 w-10 object-cover rounded'
+        />
+      ) : (
+        <p className='text-xs text-gray-500'>No Image</p>
+      );
+    },
     enableHiding: true,
   },
   {
@@ -164,17 +211,17 @@ export const projectColumns: ColumnDef<Project>[] = [
     header: () => 'Actions',
     cell: ({ row }) => {
       const project = row.original;
-      const id = project.id;
+      const client_id = project.client_id;
 
       return (
         <div className='w-full justify-center items-center flex gap-2'>
           <BtnWithinView
             label={'View Project'}
-            href={`/admin/projects/${id}/view?edit=false`}
+            href={`/admin/projects/${client_id}/view?edit=false`}
           />
           <BtnWithinEdit
             label={'Edit Project'}
-            href={`/admin/projects/${id}/view?edit=true`}
+            href={`/admin/projects/${client_id}/view?edit=true`}
           />
           <BtnWithinArchive label={'Archive Project'} />
         </div>

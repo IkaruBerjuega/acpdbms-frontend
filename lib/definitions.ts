@@ -2,7 +2,7 @@ interface UserInterface {
   id: number;
   email: string;
   is_admin: boolean;
-  role: "admin" | "employee" | "client";
+  role: 'admin' | 'employee' | 'client';
   profile_complete: boolean;
   must_change_password: boolean;
   profile_picture: string;
@@ -35,4 +35,18 @@ interface ClientInterface {
   last_name: string;
   email: string;
   status: string;
+}
+
+interface Project {
+  client_id: number;
+  project_title: string;
+  start_date: string;
+  end_date: string;
+  finish_date?: string | null;
+  status: 'finished' | 'on-hold' | 'ongoing' | 'cancelled' | 'archived';
+  street: string;
+  city_town: string;
+  state: string;
+  zip_code: string;
+  image_url?: string | null;
 }
