@@ -17,7 +17,8 @@ export default async function Page({
 }: {
   searchParams?: { query?: string; page?: string };
 }) {
-  const query = searchParams?.query || '';
+  const params = await searchParams;
+  const query = params?.query || '';
   return (
     <>
       <Tabs defaultValue='list' className='flex flex-col w-full h-auto gap-4'>

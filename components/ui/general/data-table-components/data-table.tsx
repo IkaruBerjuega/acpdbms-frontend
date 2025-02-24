@@ -98,7 +98,7 @@ export default function DataTable({
                           header.column.getCanPin() ? 'px-2' : 'px-0'
                         } w-full ${
                           header.id === 'select'
-                            ? 'justify-center'
+                            ? 'justify-center items-center mr-4'
                             : 'justify-between'
                         }`}
                       >

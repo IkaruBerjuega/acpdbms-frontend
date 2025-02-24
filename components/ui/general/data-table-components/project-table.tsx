@@ -1,23 +1,33 @@
 'use client';
 
+import { useEffect, useMemo } from 'react';
 import { projectColumns } from './project-column-def';
 import DataTable from '@/components/ui/general/data-table-components/data-table';
 import { useProject } from '@/hooks/general/use-project';
+import { useProjectContext } from '@/lib/context/project-context';
 
-export default function ProjectTable() {
+export default function ProjectTable({ query }: { query: string }) {
   const { projects, isLoading, isError, error } = useProject();
+  const { setProjects } = useProjectContext();
 
-  console.log('Project List:', projects);
-  console.log('Is Loading:', isLoading);
-  console.log('Error:', error);
+  // Update context when data is available
+  useEffect(() => {
+    if (projects?.length) {
+      setProjects(projects);
+    }
+  }, [projects, setProjects]);
+
+  // Memoize columns and data to prevent unnecessary re-renders
+  const memoizedColumns = useMemo(() => projectColumns, []);
+  const memoizedData = useMemo(() => projects || [], [projects]);
 
   if (isLoading) return <p>Loading projects...</p>;
-  if (error) return <p>Failed to load projects.</p>;
+  if (isError) return <p>Error: {error?.message}</p>;
 
   return (
-    <div className='w-full flex-grow flex justify-center items-center'>
-      {projects && projects.length > 0 ? (
-        <DataTable columns={projectColumns} data={projects} />
+    <div className='w-full flex flex-grow justify-center items-center'>
+      {memoizedData.length > 0 ? (
+        <DataTable columns={memoizedColumns} data={memoizedData} />
       ) : (
         <p>No projects</p>
       )}
