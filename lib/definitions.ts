@@ -38,15 +38,14 @@ export interface ClientInterface {
 }
 
 export interface Project {
-  client_id: number;
+  id: number;
+  client_name: string;
   project_title: string;
   start_date: string;
   end_date: string;
   finish_date?: string | null;
   status: 'finished' | 'on-hold' | 'ongoing' | 'cancelled' | 'archived';
-  street: string;
-  city_town: string;
-  state: string;
-  zip_code: string;
+  location: string;
   image_url?: string | null;
+  project_manager: string;
 }

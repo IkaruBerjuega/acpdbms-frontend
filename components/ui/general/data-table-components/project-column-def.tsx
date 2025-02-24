@@ -16,41 +16,36 @@ import { Project } from '@/lib/definitions';
 export const projectColumns: ColumnDef<Project>[] = [
   {
     id: 'select',
-    header: ({ table }) => {
-      return (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            table.getIsSomePageRowsSelected()
-          }
-          onCheckedChange={(value) => {
-            table.toggleAllPageRowsSelected(!!value);
-          }}
-          aria-label='Select all'
-        />
-      );
-    },
-    cell: ({ row }) => {
-      return (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label='Select row'
-        />
-      );
-    },
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() || table.getIsSomePageRowsSelected()
+        }
+        onCheckedChange={(value) => {
+          table.toggleAllPageRowsSelected(!!value);
+        }}
+        aria-label='Select all'
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label='Select row'
+      />
+    ),
     size: 15,
   },
   {
-    accessorKey: 'client_id',
+    accessorKey: 'client_name', // Changed from 'client_id' to match backend
     meta: {
-      filter_name: 'Client ID',
-      filter_type: 'number',
-      column_name: 'client_id',
+      filter_name: 'Client Name',
+      filter_type: 'text',
+      column_name: 'client_name',
     },
-    header: () => <p>Client ID</p>,
+    header: () => <p>Client Name</p>,
     cell: ({ row }) => (
-      <div className='text-xs md:text-sm'>{row.getValue('client_id')}</div>
+      <div className='text-xs md:text-sm'>{row.getValue('client_name')}</div>
     ),
     filterFn: multiFilter,
   },
@@ -68,54 +63,15 @@ export const projectColumns: ColumnDef<Project>[] = [
     filterFn: multiFilter,
   },
   {
-    accessorKey: 'street',
+    accessorKey: 'location', // Replacing address fields with location
     meta: {
-      filter_name: 'Street',
+      filter_name: 'Location',
       filter_type: 'text',
-      column_name: 'street',
+      column_name: 'location',
     },
-    header: () => <p>Street</p>,
+    header: () => <p>Location</p>,
     cell: ({ row }) => (
-      <div className='text-xs md:text-sm'>{row.getValue('street')}</div>
-    ),
-    filterFn: multiFilter,
-  },
-  {
-    accessorKey: 'city_town',
-    meta: {
-      filter_name: 'City/Town',
-      filter_type: 'text',
-      column_name: 'city_town',
-    },
-    header: () => <p>City/Town</p>,
-    cell: ({ row }) => (
-      <div className='text-xs md:text-sm'>{row.getValue('city_town')}</div>
-    ),
-    filterFn: multiFilter,
-  },
-  {
-    accessorKey: 'state',
-    meta: {
-      filter_name: 'State',
-      filter_type: 'text',
-      column_name: 'state',
-    },
-    header: () => <p>State</p>,
-    cell: ({ row }) => (
-      <div className='text-xs md:text-sm'>{row.getValue('state')}</div>
-    ),
-    filterFn: multiFilter,
-  },
-  {
-    accessorKey: 'zip_code',
-    meta: {
-      filter_name: 'Zip Code',
-      filter_type: 'text',
-      column_name: 'zip_code',
-    },
-    header: () => <p>Zip Code</p>,
-    cell: ({ row }) => (
-      <div className='text-xs md:text-sm'>{row.getValue('zip_code')}</div>
+      <div className='text-xs md:text-sm'>{row.getValue('location')}</div>
     ),
     filterFn: multiFilter,
   },
@@ -211,17 +167,17 @@ export const projectColumns: ColumnDef<Project>[] = [
     header: () => 'Actions',
     cell: ({ row }) => {
       const project = row.original;
-      const client_id = project.client_id;
+      const client_name = project.client_name; // Updated to match new backend response
 
       return (
         <div className='w-full justify-center items-center flex gap-2'>
           <BtnWithinView
             label={'View Project'}
-            href={`/admin/projects/${client_id}/view?edit=false`}
+            href={`/admin/projects/${client_name}/view?edit=false`}
           />
           <BtnWithinEdit
             label={'Edit Project'}
-            href={`/admin/projects/${client_id}/view?edit=true`}
+            href={`/admin/projects/${client_name}/view?edit=true`}
           />
           <BtnWithinArchive label={'Archive Project'} />
         </div>

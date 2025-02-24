@@ -27,7 +27,6 @@ export default async function Page({
         <div className='flex flex-col w-full h-full gap-4'>
           <div className='flex flex-col lg:flex-row w-full justify-between h-auto p-4 gap-4 rounded-md shadow-md'>
             <div className='flex flex-row rounded-l-md gap-2 items-center w-full lg:w-1/2'></div>
-
             <div className='flex flex-col md:flex-row gap-4  md:justify-between'>
               <div className='flex flex-row gap-2 overflow-x-auto'>
                 <BtnArchive label={'Archived Items'} />
