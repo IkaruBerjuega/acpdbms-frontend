@@ -25,9 +25,12 @@ export default function ProjectTable({ query }: { query: string }) {
   if (isError) return <p>Error: {error?.message}</p>;
 
   return (
-    <div className='w-full flex flex-grow justify-center items-center'>
+    <div className='w-full flex-grow flex justify-center items-center'>
       {memoizedData.length > 0 ? (
-        <DataTable columns={memoizedColumns} data={memoizedData} />
+        <DataTable
+          columns={memoizedColumns}
+          data={memoizedData}
+        />
       ) : (
         <p>No projects</p>
       )}

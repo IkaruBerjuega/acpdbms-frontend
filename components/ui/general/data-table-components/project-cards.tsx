@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useMemo } from 'react';
-import FilterPopOver from '../../general/data-table-components/filter-components/filter-popover';
+import FilterPopOver from './filter-components/filter-popover';
 import { LuFilter } from 'react-icons/lu';
 import Card from '../../project-card';
-import { projectColumns as columns } from '../../general/data-table-components/project-column-def';
-import { useCustomTable } from '../../general/data-table-components/custom-tanstack';
+import { projectColumns as columns } from './project-column-def';
+import { useCustomTable } from './custom-tanstack';
 import { useProject } from '@/hooks/general/use-project';
 import { useRouter } from 'next/navigation';
 import { ButtonLink } from '@/components/ui/button';
