@@ -1,3 +1,4 @@
+import { LoginResponseInterface } from "@/lib/definitions";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST<T extends LoginResponseInterface>(req: NextRequest) {
@@ -37,7 +38,7 @@ export async function GET(req: NextRequest) {
   try {
     const tokenData = JSON.parse(token); // Parse token (if stored as JSON)
     return NextResponse.json(tokenData); // Return user info (not raw token)
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Invalid token" }, { status: 403 });
   }
 }
@@ -62,7 +63,7 @@ export async function PUT<T extends LoginResponseInterface>(req: NextRequest) {
   return response;
 }
 
-export async function DELETE(req: NextRequest) {
+export async function DELETE() {
   const response = NextResponse.json({ message: "Token deleted successfully" });
 
   response.cookies.set("user-info-with-token", "", {

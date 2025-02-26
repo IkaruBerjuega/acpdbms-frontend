@@ -181,7 +181,7 @@ export const SelectFilter = ({
   options,
   columnName,
 }: {
-  options: string[];
+  options: string[] | undefined;
   columnName: string;
 }) => {
   const [selectedOption, setSelectedOption] = useState("");
@@ -221,7 +221,7 @@ export const SelectFilter = ({
   return (
     <div className="space-y-6">
       <SelectInput
-        items={options}
+        items={options || []}
         onSelect={(value) => setSelectedOption(value)}
         value={selectedOption}
       />

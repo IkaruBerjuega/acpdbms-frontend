@@ -1,3 +1,5 @@
+import { LoginResponseInterface } from "@/lib/definitions";
+
 export const useToken = () => {
   //store token function, stores the user data with token
   const storeTokenWithUserData = async (body: LoginResponseInterface) => {
@@ -10,7 +12,7 @@ export const useToken = () => {
       if (!response.ok) return false;
       return true; //set isStored to true when the token is stored in http only cookie
     } catch (error) {
-      console.error("Error storing token:", error);
+      return error;
     }
   };
 
@@ -26,10 +28,10 @@ export const useToken = () => {
       if (!response.ok) return null;
 
       const data: LoginResponseInterface = await response.json();
-      return data ?? null; // ✅ Return only the token
+      return data ?? null;
     } catch (error) {
       console.error("Error fetching token:", error);
-      return null; // ✅ Return null on error
+      return null;
     }
   };
 

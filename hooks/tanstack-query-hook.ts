@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { useToken } from "./external-api/use-token";
+import { useToken } from "./api-calls/use-token";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -34,8 +34,16 @@ const apiMutation = async ({
     body: body ? JSON.stringify(body) : undefined,
   });
 
-  if (!res.ok) throw new Error(`Failed to ${method} data`);
-  return res.json();
+  let responseData;
+  try {
+    responseData = await res.json();
+  } catch (error) {
+    throw new Error("Failed to parse server response");
+  }
+
+  if (!res.ok)
+    throw new Error(responseData?.message || `Failed to ${method} data`);
+  return responseData;
 };
 
 // Mutation Hook
@@ -70,7 +78,7 @@ export function useApiMutation<T>({
     mutate: mutation.mutate,
     isLoading: mutation.isPending,
     data: mutation.data,
-    error: mutation.error,
+    error: mutation.error?.message,
   };
 }
 

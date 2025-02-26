@@ -45,7 +45,7 @@ export default function Navbar() {
             </Link>
           ))}
         </div>
-        <div className="hidden lg:flex space-x-4 text-md font-semibold">
+        <div className="hidden lg:flex space-x-4 font-semibold">
           {buttonItems.map((item, index) => (
             <ButtonLink
               key={index}
@@ -64,8 +64,8 @@ export default function Navbar() {
         onClick={() => setisMobileNavOpen(!isMobileNavOpen)}
       >
         <Image
-          src={"/homepage/nav-hamburger.svg"}
-          alt={""}
+          src={"/photos/nav-hamburger.svg"}
+          alt={"menu button"}
           width={30}
           height={30}
         />
@@ -79,7 +79,7 @@ export default function Navbar() {
           <Link
             key={index}
             href={item.link}
-            className="text-2xl"
+            className="text-lg"
             onClick={() => setisMobileNavOpen(false)}
           >
             {item.name}

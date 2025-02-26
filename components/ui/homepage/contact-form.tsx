@@ -6,7 +6,7 @@ import { ContactFormSchemaType } from "@/lib/form-constants/form-constants";
 import FormInput from "../general/form-components/form-input";
 import { Button } from "../button";
 import { emailPattern } from "@/lib/utils";
-import { useSendContactForm } from "@/hooks/external-api/use-contact-form";
+import { useSendContactForm } from "@/hooks/api-calls/use-contact-form";
 import { toast } from "@/hooks/use-toast";
 import { Fragment } from "react";
 import { LoadingCircle } from "../general/loading-circle";
@@ -29,17 +29,17 @@ export default function ContactForm() {
   const { mutate, isLoading } = useSendContactForm();
 
   //function to be triggered if form submission is a sucess
-  const onSuccess = (response: any) => {
+  const onSuccess = (response: { message?: string }) => {
     toast({
       variant: "default",
       title: "Contact Form",
       description: response.message || "Form successfully submitted",
     });
-    reset(); //reset form fields
+    reset(); // Reset form fields
   };
 
   //function to be triggered if form submission failed
-  const onError = (error: any) => {
+  const onError = (error: { message?: string }) => {
     toast({
       variant: "destructive",
       title: "Contact Form",
@@ -112,7 +112,7 @@ export default function ContactForm() {
           <FormInput
             name={"message"}
             register={register}
-            className="h-[200px]"
+            className="min-h-[180px]"
             errorMessage={errors.message?.message}
             validationRules={{ required: "Message is Required" }}
             label={"Message"}
@@ -124,7 +124,7 @@ export default function ContactForm() {
           <Button className="font-semibold" type="submit" disabled={isLoading}>
             {isLoading ? (
               <>
-                Submitting{" "}
+                Submitting
                 <LoadingCircle color="border-white-secondary" size={15} />
               </>
             ) : (

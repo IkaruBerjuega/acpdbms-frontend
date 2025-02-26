@@ -1,5 +1,9 @@
+"use client";
+
+import { useProject } from "@/hooks/api-calls/general/use-project";
+
 export default function Page() {
-  return (
-    <h2 className='mb-2 text-lg font-semibold'>Welcome to the Projects</h2>
-  );
+  const { projectsList } = useProject();
+
+  return <div></div>;
 }
