@@ -11,7 +11,7 @@ export default function Footer() {
           height={20}
         />
         <h1 className="text-2xl italic font-bold text-white-secondary">
-          LARRY'S HOME DESIGNS
+          LARRY&apos;S HOME DESIGNS
         </h1>
       </div>
       <div className="mt-10 flex-row-start gap-6 flex-row-start">

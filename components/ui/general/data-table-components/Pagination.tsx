@@ -1,16 +1,17 @@
 "use client";
 import { ButtonLink } from "@/components/ui/button";
+import { PaginationState, Table } from "@tanstack/react-table";
 import {
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
 } from "react-icons/md";
 
-export function Pagination({
+export function Pagination<T>({
   table,
   pagination,
 }: {
-  table: any;
-  pagination: any;
+  table: Table<T>;
+  pagination: PaginationState;
 }) {
   return (
     <div className="flex items-center flex-col md:flex-row h-auto gap-3 mt-2">

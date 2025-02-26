@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState, useMemo, useLayoutEffect } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -14,16 +14,17 @@ import {
   VisibilityState,
   PaginationState,
   ExpandedState,
+  ColumnDef,
 } from "@tanstack/react-table";
 import FilterUi from "./filter-components/filter-cards";
 import { FilterType } from "@/lib/filter-types";
 
-export const useCustomTable = (
-  query: any,
-  data: any[],
-  columns: any[],
-  pageSize?: number,
-  searchParams?: URLSearchParams // new parameter
+export const useCustomTable = <T,>(
+  query: string,
+  data: T[],
+  columns: ColumnDef<T>[],
+  pageSize: number = 10,
+  searchParams?: URLSearchParams
 ) => {
   const columnsToExclude = {
     image_url: false,
@@ -33,6 +34,9 @@ export const useCustomTable = (
     id: false,
     supplier_id: false,
     user_id: false,
+    first_name: false,
+    middle_name: false,
+    last_name: false,
   };
 
   const [sorting, setSorting] = useState<SortingState>([]);
@@ -57,11 +61,12 @@ export const useCustomTable = (
       rowSelection,
       pagination,
       globalFilter: query,
+
       expanded,
     },
     onSortingChange: setSorting,
     onExpandedChange: setExpanded,
-    getSubRows: (row) => row.items || [],
+    getSubRows: (row: T) => (row as { items?: T[] }).items || [],
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
@@ -72,12 +77,8 @@ export const useCustomTable = (
     getPaginationRowModel: getPaginationRowModel(),
     getExpandedRowModel: getExpandedRowModel(),
     getGroupedRowModel: getGroupedRowModel(),
+    autoResetPageIndex: false,
   });
-
-  // Debug to confirm rows are populated initially
-  useEffect(() => {
-    console.log("Initial row data in table:", table.getRowModel().rows);
-  }, [table]);
 
   const columnsWithFilters = table
     .getAllColumns()
@@ -89,40 +90,35 @@ export const useCustomTable = (
   const filters: FilterType[] = columnsWithFilters
     .filter((column) => column.columnDef.meta)
     .map((column) => {
-      const meta = column.columnDef.meta as {
-        filter_name: string;
-        filter_type?: string;
-        options?: string[];
-        column_name?: string;
-      };
+      const meta = column.columnDef.meta as FilterType;
       return {
-        name: meta.filter_name,
-        type: meta.filter_type || "text",
-        options: meta.options || [],
-        columnAccessor: meta.column_name || "",
+        filter_name: meta.filter_name,
+        filter_type: meta.filter_type || "text",
+        filter_options: meta.filter_options || [],
+        filter_columnAccessor: meta.filter_columnAccessor || "",
       };
     });
 
   // Memoized filter components
-  const newFilterComponents = useMemo(() => {
+  const newFilters = useMemo(() => {
+    const filters: ColumnFiltersState = [];
     const components: JSX.Element[] = [];
-    const newFilters: ColumnFiltersState = [];
 
     searchParams?.forEach((paramValue, paramName) => {
       const column = columns.find(
-        (col: { accessorKey: string; id: string }) =>
+        (col) =>
           ("accessorKey" in col && col.accessorKey === paramName) ||
-          col.id === paramName
+          ("id" in col && col.id === paramName)
       );
 
       if (column) {
-        const existingFilter = newFilters.find((f) => f.id === paramName);
+        const existingFilter = filters.find((f) => f.id === paramName);
         if (existingFilter) {
           existingFilter.value = Array.isArray(existingFilter.value)
             ? [...existingFilter.value, paramValue]
             : [existingFilter.value, paramValue];
         } else {
-          newFilters.push({ id: paramName, value: [paramValue] });
+          filters.push({ id: paramName, value: [paramValue] });
         }
 
         if (paramName !== "tab") {
@@ -137,13 +133,14 @@ export const useCustomTable = (
       }
     });
 
-    setColumnFilters(newFilters);
-    return components;
+    return { filters, components };
   }, [searchParams, columns]);
 
+  // Update state inside `useEffect()` instead of `useMemo()`
   useEffect(() => {
-    setFilterComponents(newFilterComponents);
-  }, [newFilterComponents]);
+    setColumnFilters(newFilters.filters);
+    setFilterComponents(newFilters.components);
+  }, [newFilters]);
 
   return {
     table,

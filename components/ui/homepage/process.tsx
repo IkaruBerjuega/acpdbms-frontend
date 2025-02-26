@@ -1,5 +1,4 @@
 import Image from "next/image";
-import Triangle from "../triangle";
 import { Fragment } from "react";
 
 interface ProcessCardInterface {
@@ -51,7 +50,7 @@ export default function Process() {
     },
   ];
 
-  let isLastIteration = processItems.length - 1;
+  const isLastIteration = processItems.length - 1;
 
   return (
     <section

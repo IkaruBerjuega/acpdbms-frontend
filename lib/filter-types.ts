@@ -7,8 +7,8 @@ export interface ItemInterface {
 }
 
 export interface FilterType {
-  name: string;
-  type: string;
-  options: string[];
-  columnAccessor: string;
+  filter_name: string;
+  filter_type: "text" | "date" | "number" | "select";
+  filter_options?: string[];
+  filter_columnAccessor: string;
 }

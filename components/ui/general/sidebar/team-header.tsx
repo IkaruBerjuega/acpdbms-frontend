@@ -24,7 +24,7 @@ export function TeamHeader({
           size="lg"
           className="bg-sidebar-accent text-sidebar-accent-foreground pointer-events-none"
         >
-          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+          <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white-secondary text-sidebar-primary-foreground">
             <Image
               src={info.logo}
               alt={`${info.name} Logo`}

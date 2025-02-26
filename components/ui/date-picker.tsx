@@ -18,7 +18,6 @@ interface DatePickerProps {
   selectedDate?: Date;
   placeholder?: string;
   onBlur?: () => void;
-  value?: Date;
   side?: "top" | "right" | "bottom" | "left" | undefined;
 }
 
@@ -28,7 +27,6 @@ export function DatePicker({
   selectedDate,
   placeholder,
   onBlur,
-  value,
 }: DatePickerProps) {
   const triggerRef = React.useRef<HTMLButtonElement | null>(null);
 

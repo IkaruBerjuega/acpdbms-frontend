@@ -1,4 +1,4 @@
-import { FilterFn, Row } from "@tanstack/react-table";
+import { Row } from "@tanstack/react-table";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
@@ -6,23 +6,23 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const multiFilter: FilterFn<any> = (
-  row: Row<any>,
-  columnId: string,
+export const multiFilter = <T>(
+  row: Row<T>,
+  columnId: string, // Ensure columnId matches a valid key in T
   filterValues: string[]
 ) => {
   if (!filterValues || filterValues.length === 0) {
     return true;
   }
 
-  const checkValue = (value: any) => {
+  const checkValue = (value: unknown) => {
     const stringValue = Array.isArray(value) ? value.join(" ") : String(value);
 
     return filterValues.some((filterValue) => {
       // Handle range filtering (e.g., "10-20")
       const rangeMatch = filterValue.match(/^(\d+)-(\d+)$/);
       if (rangeMatch) {
-        const [_, start, end] = rangeMatch.map(Number);
+        const [start, end] = rangeMatch.map(Number);
         const numericValue = parseFloat(stringValue);
         return numericValue >= start && numericValue <= end;
       }
@@ -149,6 +149,16 @@ export const getFileExtension = (mimeType: string): string => {
       return "file";
   }
 };
+
+export function titleCase(str: string) {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map(function (word) {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
 
 //REGEX PATTERNS
 
