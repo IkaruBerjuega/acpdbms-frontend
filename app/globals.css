@@ -95,6 +95,10 @@ body {
   .homepage-nav-bar-padding {
     @apply py-4 px-10 xl:px-32;
   }
+
+  .system-padding {
+    @apply p-4;
+  }
   .primary-bg-color {
     @apply bg-[#111111];
   }

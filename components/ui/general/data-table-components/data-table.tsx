@@ -1,7 +1,6 @@
-'use client';
+"use client";
+import { type ColumnDef, flexRender } from "@tanstack/react-table";
 
-import * as React from 'react';
-import { ColumnDef, flexRender } from '@tanstack/react-table';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -22,22 +21,24 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { PiDotsThreeVerticalBold } from 'react-icons/pi';
-import { TiPin } from 'react-icons/ti';
-import { IoArrowUpOutline } from 'react-icons/io5';
-import { useCustomTable } from './custom-tanstack';
-import { Pagination } from './Pagination';
 
-export default function DataTable({
+} from "@/components/ui/dropdown-menu";
+import { PiDotsThreeVerticalBold } from "react-icons/pi";
+import { TiPin } from "react-icons/ti";
+import { IoArrowUpOutline } from "react-icons/io5";
+import { useCustomTable } from "./custom-tanstack";
+import { Pagination } from "./pagination";
+
+
+export default function DataTable<T>({
   columns,
   data,
   tableClassName,
   hidden,
   id = 'data-table',
 }: {
-  columns: ColumnDef<any, any>[];
-  data: any[];
+  columns: ColumnDef<T>[];
+  data: T[];
   tableClassName?: string;
   hidden?: boolean;
   id?: string;
@@ -45,7 +46,10 @@ export default function DataTable({
   const searchParams = useSearchParams();
 
   // Extract the query from searchParams
-  const query = searchParams.get('query') || ''; // Replace 'query' with your actual query parameter name
+
+  const query = searchParams.get("query") || "";
+
+
 
   const { table, filterComponents, filters, pagination } = useCustomTable(
     query,
@@ -68,8 +72,9 @@ export default function DataTable({
           />
         </div>
 
-        <div className='flex flex-wrap flex-row gap-2 w-full h-auto'>
-          {filterComponents} {/* Render FilterUi components */}
+
+        <div className="flex flex-wrap flex-row gap-2 w-full h-auto">
+          {filterComponents}
         </div>
       </div>
       <div className='rounded-lg border '>
@@ -78,34 +83,34 @@ export default function DataTable({
           className={`w-full table-auto ${tableClassName} `}
         >
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                key={headerGroup.id}
-                className='text-sm'
-              >
-                {headerGroup.headers.map((header) => {
+            {table?.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup?.id} className="text-sm">
+                {headerGroup?.headers.map((header) => {
+
                   const { column } = header;
                   return (
                     <TableHead
-                      key={header.id}
-                      id={header.id}
+                      key={header?.id}
+                      id={header?.id}
                       style={{
-                        width: `${header.getSize()}px`,
                         height: 15,
                         // ...getCommonPinningStyles(column),
+                        padding: header.column.getCanPin() ? 8 : 0,
                       }}
                       className={`py-1  ${
-                        column.getIsPinned() === 'right' &&
-                        'border-l-[1px] border-r-0 '
+
+                        column.getIsPinned() === "right" &&
+                        "border-l-[1px] border-r-0 "
+                      } ${
+                        header.column.id === "select" && "w-[15px] px-2"
                       } border-r-[1px] relative`}
                     >
                       <div
-                        className={`flex flex-row  border-darkgray-300  gap-1 items-center ${
-                          header.column.getCanPin() ? 'px-2' : 'px-0'
-                        } w-full ${
-                          header.id === 'select'
-                            ? 'justify-center'
-                            : 'justify-between'
+                        className={`flex  items-center h-full px-4  ${
+                          header.column.id === "select"
+                            ? "justify-start"
+                            : " w-full"
+
                         }`}
                       >
                         <div className='text-xs md:text-sm font-semibold w-full'>
@@ -115,7 +120,10 @@ export default function DataTable({
                                 header.column.columnDef.header,
                                 header.getContext()
                               )}
-                        </div>{' '}
+
+                        </div>
+
+
                         {!header.isPlaceholder &&
                           header.column.getCanPin() &&
                           header.id != 'select' && (
@@ -226,17 +234,20 @@ export default function DataTable({
                       key={cell.id}
                       id={cell.id}
                       style={{
-                        width: `${cell.column.getSize()}px`,
+                        // width: `${cell.column.getSize()}px`,
                         height: 50,
                         padding: cell.column.getCanPin() ? 8 : 0,
                       }}
                     >
                       <div
-                        className={`flex w-full items-center h-full ${
-                          cell.column.id === 'select'
-                            ? 'justify-center'
-                            : 'justify-start'
-                        }`}
+
+                        className={`flex  items-center h-full px-4  ${
+                          cell.column.id === "select"
+                            ? "justify-start"
+                            : " w-full"
+                        }   header.column.id === "select" && "w-[15px] px-2"`}
+
+
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

@@ -1,8 +1,14 @@
 "use client";
 
 import { useApiQuery } from "@/hooks/tanstack-query-hook";
+import {
+  ClientListResponseInterface,
+  EmployeeInterface,
+} from "@/lib/definitions";
 
 export const useAccount = () => {
+  /*API Calls*/
+
   // Fetch all employee accounts
   const employeeAccounts = useApiQuery<EmployeeInterface[]>({
     key: "employees",
@@ -16,13 +22,13 @@ export const useAccount = () => {
   });
 
   // Fetch client accounts
-  const clientAccounts = useApiQuery<ClientInterface[]>({
+  const clientAccounts = useApiQuery<ClientListResponseInterface[]>({
     key: "clients",
     url: "/clients-list",
   });
 
   // Fetch archived client accounts
-  const archivedClientAccounts = useApiQuery<ClientInterface[]>({
+  const archivedClientAccounts = useApiQuery<ClientListResponseInterface[]>({
     key: "clients-archived",
     url: "/clients-archived",
   });

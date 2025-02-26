@@ -24,18 +24,18 @@ interface FilterPopOverProps {
 }
 
 function Filter({ filterType }: { filterType: FilterType }) {
-  switch (filterType.type) {
+  switch (filterType.filter_type) {
     case "text":
-      return <TextFilter columnName={filterType.columnAccessor} />;
+      return <TextFilter columnName={filterType.filter_columnAccessor} />;
     case "date":
-      return <DateFilter columnName={filterType.columnAccessor} />;
+      return <DateFilter columnName={filterType.filter_columnAccessor} />;
     case "number":
-      return <NumberFilter columnName={filterType.columnAccessor} />;
+      return <NumberFilter columnName={filterType.filter_columnAccessor} />;
     case "select":
       return (
         <SelectFilter
-          options={filterType.options}
-          columnName={filterType.columnAccessor}
+          options={filterType.filter_options}
+          columnName={filterType.filter_columnAccessor}
         />
       );
     default:
@@ -67,7 +67,7 @@ export default function FilterPopOver({
                     variant="ghost"
                     className="flex gap-2 p-2 w-full justify-start rounded-md"
                   >
-                    {option.name}
+                    {option.filter_name}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
@@ -76,7 +76,7 @@ export default function FilterPopOver({
                 >
                   <div className="grid gap-4 w-full">
                     <div className="space-y-8">
-                      <p className="text-sm">{option.name}</p>
+                      <p className="text-sm">{option.filter_name}</p>
                       <div className="w-full space-y-2">
                         <Filter filterType={option} />
                       </div>

@@ -4,6 +4,8 @@ import {
   Control,
   Controller,
   FieldError,
+  FieldValues,
+  Path,
   UseFormRegister,
 } from "react-hook-form";
 import { Combobox } from "@/components/ui/combobox";
@@ -11,15 +13,14 @@ import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/ui/date-picker";
 import { CiWarning } from "react-icons/ci";
 import { Textarea } from "@/components/ui/textarea";
-import { File } from "buffer";
 import { ItemInterface } from "@/lib/filter-types";
 
-interface FormInputType {
+interface FormInputType<T extends FieldValues> {
   items?: ItemInterface[];
-  control?: Control<any>;
-  register: UseFormRegister<any>;
+  control?: Control<T>;
+  register: UseFormRegister<T>;
   validationRules?: object;
-  name: string;
+  name: Path<T>;
   label: string;
   errorMessage?: string | FieldError;
   dataType?: string;
@@ -30,7 +31,7 @@ interface FormInputType {
   value?: string | number;
   fileValue?: File;
   onChangeCapture?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSelect?: (item: ItemInterface) => void; // Just keep onSelect to set values
+  onSelect?: (item: ItemInterface) => void;
   allowedNewValue?: boolean;
   disabled?: boolean;
   placeholder?: string;
@@ -41,7 +42,7 @@ interface FormInputType {
   clearFn?: () => void;
 }
 
-export default function FormInput({
+export default function FormInput<T extends FieldValues>({
   control,
   name,
   label,
@@ -65,15 +66,14 @@ export default function FormInput({
   borderNone,
   clearFn,
   inputType = "default",
-}: FormInputType) {
+}: FormInputType<T>) {
   const isSearch = inputType === "search";
   const isDate = inputType === "date";
   const isDefault = inputType === "default";
-  const isFile = inputType === "file";
   const isTextArea = inputType === "textArea";
 
   return (
-    <div className={`flex flex-col  ${className}`}>
+    <div className={`flex flex-col ${className}`}>
       <Label
         htmlFor={name}
         className={`font-semibold text-xs text-darkgray-500 ${labelColor}`}
@@ -81,6 +81,7 @@ export default function FormInput({
         {label}
         {required !== false && <span className="text-red-500 ml-1">*</span>}
       </Label>
+
       {isSearch ? (
         <Controller
           rules={validationRules}
@@ -90,16 +91,12 @@ export default function FormInput({
             <div className="w-full">
               <Combobox
                 items={items}
-                onSelect={(item) => {
-                  if (onSelect) {
-                    onSelect(item);
-                  } else {
-                    onChange(String(item.value));
-                  }
-                }}
+                onSelect={(item) =>
+                  onSelect ? onSelect(item) : onChange(String(item.value))
+                }
                 placeholder={placeholder || ""}
                 emptyMessage={placeholder || ""}
-                value={value || ""} // Ensure the input uses the controlled value
+                value={value || ""}
                 onBlur={onBlur}
                 allowNewValue={allowedNewValue}
                 disabled={disabled}
@@ -118,9 +115,9 @@ export default function FormInput({
           onChangeCapture={onChangeCapture}
           readOnly={readOnly}
           className={`text-xs sm:text-sm mt-1 ${fieldBg} ${
-            borderNone && "border-none"
+            borderNone ? "border-none" : ""
           }`}
-          {...register(name, validationRules)} // This won't be used with Controller, consider removing it
+          {...register(name, validationRules)}
         />
       ) : isDate ? (
         <Controller
@@ -139,29 +136,21 @@ export default function FormInput({
             </div>
           )}
         />
-      ) : isFile ? (
-        <Input
-          id={name}
-          type={dataType}
-          value={value}
-          placeholder={placeholder || ""}
-          className="text-xs sm:text-sm"
-          {...register(name, validationRules)} // This won't be used with Controller, consider removing it
-        />
       ) : isTextArea ? (
         <Textarea
           id={name}
           value={value}
           placeholder={placeholder || ""}
           className={`text-xs sm:text-sm flex-grow ${fieldBg} ${
-            borderNone && "border-none"
+            borderNone ? "border-none" : ""
           }`}
-          {...register(name, validationRules)} // This won't be used with Controller, consider removing it
+          {...register(name, validationRules)}
         />
       ) : null}
+
       {errorMessage && (
         <div className="flex items-center h-auto">
-          <CiWarning className="text-red-400 text-xs mr-1" />{" "}
+          <CiWarning className="text-red-400 text-xs mr-1" />
           <span className="text-red-500 text-xs">{errorMessage as string}</span>
         </div>
       )}

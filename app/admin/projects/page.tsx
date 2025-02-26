@@ -1,20 +1,11 @@
-'use client';
 
-import { projectColumns } from '@/components/ui/admin/projects/project-column-def';
-import { projects as data } from '@/lib/placeholder-data';
-import DataTable from '@/components/ui/general/data-table-components/data-table';
+"use client";
 
-export default function ProjectTable() {
-  return (
-    <div className='w-full flex-grow flex justify-center items-center'>
-      {data.length > 0 ? (
-        <DataTable
-          columns={projectColumns}
-          data={data}
-        />
-      ) : (
-        <p>No projects</p>
-      )}
-    </div>
-  );
+import { useProject } from "@/hooks/api-calls/general/use-project";
+
+export default function Page() {
+  const { projectsList } = useProject();
+
+  return <div></div>;
+
 }

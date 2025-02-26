@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
-
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -96,4 +96,45 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
 );
 ButtonLink.displayName = "ButtonLink";
 
-export { Button, ButtonLink, buttonVariants };
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+interface ButtonTooltipInterface {
+  tooltip: string;
+  iconSrc?: string;
+  className?: string;
+}
+
+const ButtonTooltip = ({
+  tooltip,
+  iconSrc,
+  className,
+}: ButtonTooltipInterface) => {
+  return (
+    <TooltipProvider>
+      <Tooltip delayDuration={1}>
+        <TooltipTrigger className={`p-2 border-[1px] rounded-md ${className}`}>
+          {iconSrc ? (
+            <Image
+              src={iconSrc}
+              alt={`${tooltip} button`}
+              width={18}
+              height={18}
+            />
+          ) : (
+            <>{tooltip}</>
+          )}
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>{tooltip}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  );
+};
+
+export { Button, ButtonLink, ButtonTooltip, buttonVariants };

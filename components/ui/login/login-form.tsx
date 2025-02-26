@@ -1,14 +1,15 @@
 "use client";
-import { useForm, FormProvider, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import FormInput from "@/components/ui/general/form-components/form-input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { LoginSchemaType } from "@/lib/form-constants/form-constants";
 import { Button } from "../button";
-import { useToken } from "@/hooks/external-api/use-token";
-import { useLogin } from "@/hooks/external-api/use-login";
+import { useToken } from "@/hooks/api-calls/use-token";
+import { useLogin } from "@/hooks/api-calls/use-login";
 import { LoadingCircle } from "../general/loading-circle";
 import { useRouter } from "next/navigation";
 import { emailPattern } from "@/lib/utils";
+import { LoginResponseInterface } from "@/lib/definitions";
 
 export default function LoginForm() {
   const methods = useForm<LoginSchemaType>({
@@ -23,7 +24,7 @@ export default function LoginForm() {
 
   const { handleSubmit, register } = methods;
 
-  const { mutate, isLoading, error } = useLogin();
+  const { mutate, isLoading, error, data } = useLogin();
 
   //destructure to get store token function from useToken. This stores http only cookie
   //it will store the logged in user's information and the token
@@ -70,7 +71,7 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleSubmit(processForm)}>
       <div className="text-red-500 justify-center text-center h-6 text-sm mt-2">
-        {error && <p>{error.message}</p>}
+        {error && <p>{error}</p>}
       </div>
 
       <div className="mt-8">

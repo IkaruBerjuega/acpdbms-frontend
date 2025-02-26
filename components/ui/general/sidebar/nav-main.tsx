@@ -37,7 +37,7 @@ const adminNavs: NavigationInterface[] = [
   },
   {
     title: "Accounts",
-    url: "/admin/accounts",
+    url: "/admin/accounts?role=employee",
     icon: RiAccountCircleLine,
   },
   {
@@ -107,7 +107,7 @@ export function NavMain({ role }: { role: string }) {
                   <div
                     className={`flex rounded-md ${
                       isActive
-                        ? "bg-red-900 text-primary-foreground  hover:bg-red-900"
+                        ? "bg-black-primary text-primary-foreground  hover:bg-black-primary"
                         : "text-primary-foreground"
                     }`}
                   >
