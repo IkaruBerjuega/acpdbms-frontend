@@ -40,8 +40,8 @@ export interface ClientInterface {
   status: string;
 }
 
-export interface Project {
-  id: number;
+export interface ProjectListResponseInterface {
+  id: string;
   client_name: string;
   project_title: string;
   start_date: string;

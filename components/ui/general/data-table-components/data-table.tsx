@@ -25,7 +25,7 @@ import { PiDotsThreeVerticalBold } from 'react-icons/pi';
 import { TiPin } from 'react-icons/ti';
 import { IoArrowUpOutline } from 'react-icons/io5';
 import { useCustomTable } from './custom-tanstack';
-import { Pagination } from './pagination';
+import { Pagination } from './Pagination';
 
 export default function DataTable<T>({
   columns,

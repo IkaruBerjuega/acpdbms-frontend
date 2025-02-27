@@ -11,10 +11,10 @@ import {
   BtnWithinView,
 } from './table-buttons';
 import Status from './status';
-import { Project } from '@/lib/definitions';
+import { ProjectListResponseInterface } from '@/lib/definitions';
 import { useProjectContext } from '@/lib/context/project-context';
 
-export const projectColumns: ColumnDef<Project>[] = [
+export const projectColumns: ColumnDef<ProjectListResponseInterface>[] = [
   {
     id: 'select',
     header: ({ table }) => {

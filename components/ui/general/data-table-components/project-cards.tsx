@@ -16,24 +16,20 @@ import {
 import { useProjectContext } from '@/lib/context/project-context';
 
 export default function ProjectCards({ query }: { query: string }) {
-  const { projects, isLoading, isError, error } = useProject();
+  const { projects = [], isLoading, isError, error } = useProject();
   const { setProjects } = useProjectContext();
 
-  console.log('Project List:', projects);
-  console.log('Is Loading:', isLoading);
-  console.log('Error:', error);
-
-  if (isLoading) return <p>Loading projects...</p>;
-  if (isError) return <p>Error: {error?.message}</p>;
-
   useEffect(() => {
-    if (projects?.length) {
+    if (projects.length) {
       setProjects(projects);
     }
   }, [projects, setProjects]);
 
   const memoizedColumns = useMemo(() => columns, []);
-  const memoizedProjects = useMemo(() => projects || [], [projects]);
+  const memoizedProjects = useMemo(() => projects, [projects]);
+
+  if (isLoading) return <p>Loading projects...</p>;
+  if (isError) return <p>Error: {error?.message}</p>;
 
   const { table, filterComponents, filters, pagination } = useCustomTable(
     query,

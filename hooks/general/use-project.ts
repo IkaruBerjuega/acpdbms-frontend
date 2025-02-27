@@ -1,8 +1,8 @@
 import { useApiQuery } from '@/hooks/tanstack-query-hook';
-import { Project } from '@/lib/definitions';
+import { ProjectListResponseInterface } from '@/lib/definitions';
 
 export const useProject = () => {
-  const projectList = useApiQuery<Project[]>({
+  const projectList = useApiQuery<ProjectListResponseInterface[]>({
     key: 'projects',
     url: '/project-list',
   });

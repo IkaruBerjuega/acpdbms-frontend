@@ -2,12 +2,14 @@
 
 // context/ProjectContext.tsx
 import React, { createContext, useState, useContext, ReactNode } from 'react';
-import { Project } from './../definitions';
+import { ProjectListResponseInterface } from './../definitions';
 
 // Define the shape of the context
 interface ProjectContextType {
-  projects: Project[];
-  setProjects: React.Dispatch<React.SetStateAction<Project[]>>;
+  projects: ProjectListResponseInterface[];
+  setProjects: React.Dispatch<
+    React.SetStateAction<ProjectListResponseInterface[]>
+  >;
   itemSelectedRows: string[];
   setItemSelectedRows: React.Dispatch<React.SetStateAction<string[]>>;
   loading: boolean;
@@ -33,7 +35,7 @@ export const useProjectContext = () => {
 export const ProjectProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<ProjectListResponseInterface[]>([]);
   const [itemSelectedRows, setItemSelectedRows] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
