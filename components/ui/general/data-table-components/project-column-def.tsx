@@ -4,46 +4,67 @@ import * as React from 'react';
 import { ColumnDef } from '@tanstack/react-table';
 import { Checkbox } from '@/components/ui/checkbox';
 import { multiFilter } from '@/lib/utils';
+
 import {
   BtnWithinArchive,
   BtnWithinEdit,
   BtnWithinView,
 } from './table-buttons';
 import Status from './status';
+import { ProjectListResponseInterface } from '@/lib/definitions';
+import { useProjectContext } from '@/lib/context/project-context';
 
-export interface Project {
-  id: number;
-  project_title: string;
-  client_name: string;
-  location: string;
-  start_date: string;
-  end_date: string;
-  project_status: 'finished' | 'on-hold' | 'ongoing' | 'cancelled' | 'archived';
-  image_url?: string;
-}
-
-export const projectColumns: ColumnDef<Project>[] = [
+export const projectColumns: ColumnDef<ProjectListResponseInterface>[] = [
   {
     id: 'select',
     header: ({ table }) => {
+      const { itemSelectedRows, setItemSelectedRows } = useProjectContext();
       return (
         <Checkbox
           checked={
-            table.getIsAllPageRowsSelected() ||
-            table.getIsSomePageRowsSelected()
+            itemSelectedRows.length > 0 &&
+            (table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate'))
           }
           onCheckedChange={(value) => {
             table.toggleAllPageRowsSelected(!!value);
+            if (value) {
+              const allRowData = table
+                .getRowModel()
+                .rows.map((row) => row.getValue('id') as string);
+              setItemSelectedRows(allRowData);
+              console.log('All selected rows:', allRowData);
+            } else {
+              // If unchecked, clear the empSelectedRows
+              setItemSelectedRows([]);
+              console.log('No selected rows');
+            }
           }}
           aria-label='Select all'
         />
       );
     },
     cell: ({ row }) => {
+      const { itemSelectedRows, setItemSelectedRows } = useProjectContext();
+      React.useEffect(() => {
+        console.log('Real-time updated selected rows:', itemSelectedRows);
+      }, [itemSelectedRows]);
       return (
         <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          checked={itemSelectedRows.includes(row.getValue('id') as string)}
+          onCheckedChange={(value) => {
+            row.toggleSelected(!!value);
+            // Update empSelectedRows based on selection state
+            setItemSelectedRows((prev) => {
+              const id = row.getValue('id') as string;
+              const updatedEmpSelectedRows = value
+                ? [...prev, id]
+                : prev.filter(
+                    (data) => data !== id // Compare by id
+                  );
+              return updatedEmpSelectedRows;
+            });
+          }}
           aria-label='Select row'
         />
       );
@@ -52,12 +73,40 @@ export const projectColumns: ColumnDef<Project>[] = [
   },
   {
     accessorKey: 'id',
+    meta: {
+      filter_name: 'Project ID',
+      filter_type: 'number',
+      column_name: 'project_id',
+    },
     header: () => <p>Project ID</p>,
     cell: ({ row }) => (
       <div className='text-xs md:text-sm'>{row.getValue('id')}</div>
     ),
     filterFn: multiFilter,
+  },
+  {
+    accessorKey: 'id',
+    header: ({ column }) => {
+      return <p>Project Title</p>;
+    },
+    cell: ({ row }) => (
+      <div className='text-xs md:text-sm'>{row.getValue('project_title')}</div>
+    ),
+    filterFn: multiFilter,
     enableHiding: true,
+  },
+  {
+    accessorKey: 'client_name',
+    meta: {
+      filter_name: 'Client Name',
+      filter_type: 'text',
+      column_name: 'client_name',
+    },
+    header: () => <p>Client Name</p>,
+    cell: ({ row }) => (
+      <div className='text-xs md:text-sm'>{row.getValue('client_name')}</div>
+    ),
+    filterFn: multiFilter,
   },
   {
     accessorKey: 'project_title',
@@ -86,26 +135,13 @@ export const projectColumns: ColumnDef<Project>[] = [
     filterFn: multiFilter,
   },
   {
-    accessorKey: 'client_name',
-    meta: {
-      filter_name: 'Client Name',
-      filter_type: 'text',
-      column_name: 'client_name',
-    },
-    header: () => <p>Client Name</p>,
-    cell: ({ row }) => (
-      <div className='text-xs md:text-sm'>{row.getValue('client_name')}</div>
-    ),
-    filterFn: multiFilter,
-  },
-  {
     accessorKey: 'start_date',
     meta: {
       filter_name: 'Start Date',
       filter_type: 'date',
       column_name: 'start_date',
     },
-    header: () => <p>Date Start</p>,
+    header: () => <p>Start Date</p>,
     cell: ({ row }) => (
       <div className='text-xs md:text-sm'>{row.getValue('start_date')}</div>
     ),
@@ -125,16 +161,31 @@ export const projectColumns: ColumnDef<Project>[] = [
     filterFn: multiFilter,
   },
   {
-    accessorKey: 'project_status',
+    accessorKey: 'finish_date',
+    meta: {
+      filter_name: 'Finish Date',
+      filter_type: 'date',
+      column_name: 'finish_date',
+    },
+    header: () => <p>Finish Date</p>,
+    cell: ({ row }) => (
+      <div className='text-xs md:text-sm'>
+        {row.getValue('finish_date') || 'N/A'}
+      </div>
+    ),
+    filterFn: multiFilter,
+  },
+  {
+    accessorKey: 'status',
     meta: {
       filter_name: 'Project Status',
       filter_type: 'select',
       options: ['ongoing', 'on-hold', 'finished', 'cancelled', 'archived'],
-      column_name: 'project_status',
+      column_name: 'status',
     },
     header: () => <p>Project Status</p>,
     cell: ({ row }) => {
-      const status = row.getValue('project_status');
+      const status = row.getValue('status');
       return (
         <div className='flex justify-center w-full'>
           <Status
@@ -155,7 +206,18 @@ export const projectColumns: ColumnDef<Project>[] = [
   {
     accessorKey: 'image_url',
     header: () => <div className='text-xs md:text-sm'>Project Image</div>,
-    cell: () => null,
+    cell: ({ row }) => {
+      const imageUrl = row.getValue('image_url') as string | null;
+      return imageUrl ? (
+        <img
+          src={imageUrl}
+          alt='Project'
+          className='h-10 w-10 object-cover rounded'
+        />
+      ) : (
+        <p className='text-xs text-gray-500'>No Image</p>
+      );
+    },
     enableHiding: true,
   },
   {
@@ -164,17 +226,17 @@ export const projectColumns: ColumnDef<Project>[] = [
     header: () => 'Actions',
     cell: ({ row }) => {
       const project = row.original;
-      const id = project.id;
+      const client_name = project.client_name;
 
       return (
         <div className='w-full justify-center items-center flex gap-2'>
           <BtnWithinView
             label={'View Project'}
-            href={`/admin/projects/${id}/view?edit=false`}
+            href={`/admin/projects/${client_name}/view?edit=false`}
           />
           <BtnWithinEdit
             label={'Edit Project'}
-            href={`/admin/projects/${id}/view?edit=true`}
+            href={`/admin/projects/${client_name}/view?edit=true`}
           />
           <BtnWithinArchive label={'Archive Project'} />
         </div>

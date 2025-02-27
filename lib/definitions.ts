@@ -1,11 +1,11 @@
-import { CellContext, HeaderContext, Row } from "@tanstack/react-table";
-import { FilterType } from "./filter-types";
+import { CellContext, HeaderContext, Row } from '@tanstack/react-table';
+import { FilterType } from './filter-types';
 
 export interface UserInterface {
   id: number;
   email: string;
   is_admin: boolean;
-  role: "admin" | "employee" | "client";
+  role: 'admin' | 'employee' | 'client';
   profile_complete: boolean;
   must_change_password: boolean;
   profile_picture: string;
@@ -38,6 +38,19 @@ export interface ClientInterface {
   last_name: string;
   email: string;
   status: string;
+}
+
+export interface ProjectListResponseInterface {
+  id: string;
+  client_name: string;
+  project_title: string;
+  start_date: string;
+  end_date: string;
+  finish_date?: string | null;
+  status: 'finished' | 'on-hold' | 'ongoing' | 'cancelled' | 'archived';
+  location: string;
+  image_url?: string | null;
+  project_manager: string;
 }
 
 export interface ColumnInterface<T> {

@@ -186,3 +186,14 @@ body {
     @apply p-5 xl:p-10 rounded-lg shadow-md bg-white-primary;
   }
 }
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

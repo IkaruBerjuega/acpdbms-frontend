@@ -1,5 +1,9 @@
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/ui/general/sidebar/app-sidebar";
+'use client';
+
+import React from 'react';
+import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/ui/general/sidebar/app-sidebar';
+import { ProjectProvider } from '@/lib/context/project-context'; // Import ProjectProvider
 
 export default function AdminLayout({
   children,
@@ -8,13 +12,15 @@ export default function AdminLayout({
 }) {
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-white-secondary">
-        <AppSidebar />
-        <main className="flex-grow flex-col-start m-4 gap-2">
-          <SidebarTrigger />
-          <div className="flex-1">{children}</div>
-        </main>
-      </div>
+      <ProjectProvider>
+        <div className='flex min-h-screen'>
+          <AppSidebar />
+          <main className='flex-1 m-4'>
+            <SidebarTrigger />
+            <div className='m-10'>{children}</div>
+          </main>
+        </div>
+      </ProjectProvider>
     </SidebarProvider>
   );
 }

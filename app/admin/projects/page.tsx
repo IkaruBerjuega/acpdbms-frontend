@@ -1,11 +1,9 @@
-
-"use client";
-
-import { useProject } from "@/hooks/api-calls/general/use-project";
+import ProjectList from '@/components/ui/projects/project-list';
 
 export default function Page() {
-  const { projectsList } = useProject();
-
-  return <div></div>;
-
+  return (
+    <main className='w-full h-full flex-col-start gap-2'>
+      <ProjectList />
+    </main>
+  );
 }
