@@ -181,9 +181,9 @@ export default function HookMultiStepForm() {
             {currentStep === steps.length - 1 ? (
               <Dialog
                 label={'Submit'}
-                dialogTitle={'Are you sure you want to add this project'}
+                dialogTitle={'Are you sure you want to add this project?'}
                 dialogDescription={
-                  'Make sure to confirm everything before submitting'
+                  'Make sure to confirm everything before submitting.'
                 }
                 className='w-[100px]  bg-gray-800 hover:bg-primary text-white-primary hover:text-white-primary'
                 dialogCancel={'Cancel'}

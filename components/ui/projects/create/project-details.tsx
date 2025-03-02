@@ -30,7 +30,7 @@ export default function ProjectDetails() {
 
   const { clientAccounts } = useAccount();
 
-  // Map clientAccounts to the items expected by FormInput
+  // map clientAccounts to the items expected by FormInput
   const clientItems: ClientItem[] =
     clientAccounts?.data?.map((client: ClientListResponseInterface) => ({
       value: client.id, // id is a string
