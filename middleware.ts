@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { LoginResponseInterface } from "./lib/definitions";
 
 const LARAVEL_AUTH_CHECK_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth/check`;
 
@@ -28,11 +29,13 @@ export async function middleware(req: NextRequest) {
     const parsedData = JSON.parse(decodedToken) as LoginResponseInterface;
     token = parsedData.token;
     user = parsedData.user;
+
+    console.log(token);
   } catch (error) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  if (!user || !token) {
+  if (!token) {
     return isLoginPage
       ? NextResponse.next()
       : NextResponse.redirect(new URL("/login", req.url));
@@ -42,17 +45,17 @@ export async function middleware(req: NextRequest) {
 
   try {
     // Validate the token with the Laravel backend
-    const laravelResponse = await fetch(LARAVEL_AUTH_CHECK_URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    // const laravelResponse = await fetch(LARAVEL_AUTH_CHECK_URL, {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // });
 
-    if (!laravelResponse.ok) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
+    // if (!laravelResponse.ok) {
+    //   return NextResponse.redirect(new URL("/login", req.url));
+    // }
 
     // Allow users to stay on the login page if they are NOT logged in
     if (isLoginPage) {

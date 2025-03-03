@@ -6,7 +6,7 @@ import { useToken } from "./api-calls/use-token";
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // General function for API mutations
-const apiMutation = async ({
+export const requestAPI = async ({
   url,
   method = "POST",
   body,
@@ -31,7 +31,7 @@ const apiMutation = async ({
       ...(auth ? { Authorization: `Bearer ${userData?.token}` } : {}),
       ...(additionalHeaders && additionalHeaders),
     },
-    body: body ? JSON.stringify(body) : undefined,
+    body: body ? JSON.stringify(body) : body,
   });
 
   let responseData;
@@ -62,7 +62,7 @@ export function useApiMutation<T>({
 }) {
   const mutation = useMutation({
     mutationFn: (body?: T) =>
-      apiMutation({
+      requestAPI({
         url,
         method,
         body,
@@ -86,10 +86,12 @@ export function useApiQuery<T>({
   key,
   url,
   additionalHeaders,
+  initialData,
 }: {
   key: string;
   url: string;
   additionalHeaders?: Record<string, string>;
+  initialData?: T;
 }) {
   const { getToken } = useToken(); // Call useToken() at the top level
 
@@ -117,6 +119,7 @@ export function useApiQuery<T>({
   const { data, isLoading, isPending, error } = useQuery({
     queryKey: [key],
     queryFn: () => fetchApiData(), // Pass function reference, NOT a function call
+    initialData: initialData,
   });
 
   return {

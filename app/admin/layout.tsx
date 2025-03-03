@@ -11,7 +11,6 @@ export default function AdminLayout({
       <div className="flex min-h-screen w-full bg-white-secondary">
         <AppSidebar />
         <main className="flex-grow flex-col-start m-4 gap-2">
-          <SidebarTrigger />
           <div className="flex-1">{children}</div>
         </main>
       </div>

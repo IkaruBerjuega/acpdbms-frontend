@@ -18,7 +18,6 @@ import { FilterType } from "@/lib/filter-types";
 interface FilterPopOverProps {
   width: string;
   content: FilterType[]; // Adjusted to match the structure of filterType
-  tableName: string;
   popoverName: string;
   icon: ReactNode;
 }
@@ -57,7 +56,7 @@ export default function FilterPopOver({
           <p className="text-xs md:text-sm">{popoverName}</p>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={`${width} h-auto p-2 shadow-xl`}>
+      <PopoverContent className={`${width} h-auto p-2 shadow-xl`} align="start">
         <div className="flex flex-col ">
           <div>
             {content.map((option, index) => (
@@ -72,7 +71,9 @@ export default function FilterPopOver({
                 </PopoverTrigger>
                 <PopoverContent
                   className={`${width} h-auto p-4 shadow-xl`}
-                  sideOffset={10}
+                  sideOffset={12}
+                  align="start"
+                  side="right"
                 >
                   <div className="grid gap-4 w-full">
                     <div className="space-y-8">

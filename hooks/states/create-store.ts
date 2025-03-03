@@ -1,4 +1,4 @@
-import { CheckboxData, ClientListResponseInterface } from "@/lib/definitions";
+import { Breadcrumbs, SupportedTableTypes } from "@/lib/definitions";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 
@@ -45,4 +45,5 @@ export const createStore = <T>(initialData?: T[]) =>
   );
 
 // Create Zustand store
-export const useCheckboxStore = createStore<CheckboxData>([]);
+export const useCheckboxStore = createStore<SupportedTableTypes>([]);
+export const useBreadCrumbsStore = createStore<Breadcrumbs>([]);

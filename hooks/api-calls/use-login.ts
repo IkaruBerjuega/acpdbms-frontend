@@ -1,7 +1,7 @@
 "use client";
 
 import { LoginSchemaType } from "@/lib/form-constants/form-constants";
-import { useApiMutation } from "../tanstack-query-hook";
+import { useApiMutation } from "../tanstack-query";
 
 // Custom hook for login
 export function useLogin() {

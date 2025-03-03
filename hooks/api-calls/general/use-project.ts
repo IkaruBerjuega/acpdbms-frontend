@@ -1,4 +1,4 @@
-import { useApiQuery } from "@/hooks/tanstack-query-hook";
+import { useApiQuery } from "@/hooks/tanstack-query";
 import { ClientInterface } from "@/lib/definitions";
 
 export const useProject = () => {

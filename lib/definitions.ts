@@ -56,24 +56,30 @@ export interface ColumnInterface<T> {
 }
 
 export interface ColumnInterfaceProp {
-  id_string?: string;
-  accessorKey_string?: string;
-  header_string?: string;
+  id?: string;
+  accessorKey?: string;
+  header?: string;
   meta?: FilterType;
-  cell_string?: boolean;
+  cell?: boolean | React.JSX.Element;
   filterFn?: boolean; // boolean because the system only uses one filter function
   enableHiding?: boolean;
 }
 
-export interface ClientListResponseInterface {
-  id: string;
-  user_id: string;
-  full_name: string;
-  first_name: string;
-  middle_name: string;
-  last_name: string;
-  email: string;
-  status: string;
+export type AccountActions =
+  | "sendReset"
+  | "deactivate"
+  | "archive"
+  | "activate"
+  | "unarchive"
+  | undefined;
+
+export interface Breadcrumbs {
+  href: string;
+  pageName: string;
+  active: boolean;
 }
 
-export type CheckboxData = ClientListResponseInterface;
+//types
+export type SupportedTableTypes = ClientInterface | EmployeeInterface;
+export type SupportedTableName = "Accounts" | "Projects";
+export type AccountsTableType = ClientInterface | EmployeeInterface;

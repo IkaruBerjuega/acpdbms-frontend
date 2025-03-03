@@ -1,6 +1,5 @@
 "use client";
 import { type ColumnDef, flexRender } from "@tanstack/react-table";
-
 import { Button } from "@/components/ui/button";
 import {
   Table as TableRoot,
@@ -45,7 +44,7 @@ export default function DataTable<T>({
   // Extract the query from searchParams
   const query = searchParams.get("query") || "";
 
-  const { table, filterComponents, filters, pagination } = useCustomTable(
+  const { table, filterComponents, filters, pagination } = useCustomTable<T>(
     query,
     data,
     columns,
@@ -60,8 +59,7 @@ export default function DataTable<T>({
           <FilterPopOver
             width="w-auto"
             content={filters}
-            tableName="Projects"
-            popoverName="Add Filter"
+            popoverName="+"
             icon={<LuFilter className="text-xs md:text-lg" />}
           />
         </div>
@@ -100,7 +98,7 @@ export default function DataTable<T>({
                             : " w-full"
                         }`}
                       >
-                        <div className="text-xs md:text-sm font-semibold w-full">
+                        <div className=" font-semibold w-full text-xs ">
                           {header.isPlaceholder
                             ? null
                             : flexRender(

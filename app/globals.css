@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Seb Neue", sans-serif;
 }
 
 @layer base {
@@ -171,7 +171,7 @@ body {
   }
 
   .flex-row-between-start {
-    @apply flex flex-row justify-between items-center;
+    @apply flex flex-row justify-between items-start;
   }
 
   .flex-col-between-start {
@@ -182,7 +182,20 @@ body {
     @apply flex flex-row justify-end items-start;
   }
 
+  .flex-row-end-center {
+    @apply flex flex-row justify-end items-center;
+  }
+
   .card-appearance {
     @apply p-5 xl:p-10 rounded-lg shadow-md bg-white-primary;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }

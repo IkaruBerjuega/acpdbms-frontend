@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useMemo, useLayoutEffect } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   useReactTable,
   getCoreRowModel,
