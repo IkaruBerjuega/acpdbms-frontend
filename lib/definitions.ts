@@ -89,4 +89,21 @@ export interface ClientListResponseInterface {
   status: string;
 }
 
+export interface ProjectDetailsInterface {
+  id: string;
+  client_id: number;
+  client_name: string;
+  project_title: string;
+  start_date: string;
+  end_date: string;
+  finish_date?: string | undefined | null;
+  status: 'finished' | 'on-hold' | 'ongoing' | 'cancelled' | 'archived';
+  street: string;
+  city_town: string;
+  state: string;
+  zip_code: number;
+  image_url?: string | undefined | null;
+  project_manager: string;
+}
+
 export type CheckboxData = ClientListResponseInterface;

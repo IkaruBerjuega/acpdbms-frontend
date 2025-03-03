@@ -21,6 +21,9 @@ export default function Card({
   isClient: boolean;
   fn: (projectId?: string, projectName?: string) => void;
 }) {
+  const customLoader = ({ src }: { src: string }) => {
+    return src;
+  };
   return (
     <div
       key={row.id}
@@ -36,7 +39,10 @@ export default function Card({
         <div className='relative w-full h-[70%] flex justify-center items-center'>
           {row.getValue('image_url') ? (
             <Image
-              src={row.getValue('image_url')}
+              loader={customLoader}
+              src={
+                'https://media.istockphoto.com/id/1217618992/photo/3d-house.jpg?s=612x612&w=0&k=20&c=brVxRkoQX9q-2TwiyjgjYyNJrBCs-j41J34fLVp3pdA='
+              }
               alt='Project'
               className='object-cover' // Ensures the image covers the parent div
               layout='fill' // Use layout='fill' to fill the parent div
@@ -66,13 +72,14 @@ export default function Card({
               </DropdownMenuTrigger>
               <DropdownMenuContent side='bottom' align='end' sideOffset={8}>
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={(e) => {
                     e.stopPropagation(); // Prevents card click
                     navigator.clipboard.writeText(row.getValue('project_id'));
                   }}
                 >
-                  <Link href={`/admin/accounts/${row.getValue('id')}/view`}>
+                  <Link href={`/admin/projects/${row.getValue('id')}/view`}>
                     View Details
                   </Link>
                 </DropdownMenuItem>
@@ -87,7 +94,7 @@ export default function Card({
           </div>
         </div>
       </div>
-
+      <DropdownMenuSeparator />
       <div className='w-full h-[25%] flex flex-row px-4 py-2 text-sm'>
         <div className='flex flex-col w-[80%] h-full'>
           <p className='font-semibold'>

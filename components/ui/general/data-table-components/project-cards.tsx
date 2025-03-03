@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import FilterPopOver from './filter-components/filter-popover';
 import { LuFilter } from 'react-icons/lu';
 import Card from '../../project-card';
@@ -13,17 +13,9 @@ import {
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
 } from 'react-icons/md';
-import { useProjectContext } from '@/lib/context/project-context';
 
 export default function ProjectCards({ query }: { query: string }) {
   const { projects = [], isLoading, isError, error } = useProject();
-  const { setProjects } = useProjectContext();
-
-  useEffect(() => {
-    if (projects.length) {
-      setProjects(projects);
-    }
-  }, [projects, setProjects]);
 
   const memoizedColumns = useMemo(() => columns, []);
   const memoizedProjects = useMemo(() => projects, [projects]);

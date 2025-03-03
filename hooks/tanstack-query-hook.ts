@@ -1,16 +1,16 @@
-"use client";
+'use client';
 
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { useToken } from "./api-calls/use-token";
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useToken } from './api-calls/use-token';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // General function for API mutations
 const apiMutation = async ({
   url,
-  method = "POST",
+  method = 'POST',
   body,
-  contentType = "application/json",
+  contentType = 'application/json',
   auth = true,
   additionalHeaders,
 }: {
@@ -27,7 +27,7 @@ const apiMutation = async ({
   const res = await fetch(`${API_URL}${url}`, {
     method,
     headers: {
-      "Content-Type": contentType,
+      'Content-Type': contentType,
       ...(auth ? { Authorization: `Bearer ${userData?.token}` } : {}),
       ...(additionalHeaders && additionalHeaders),
     },
@@ -38,7 +38,7 @@ const apiMutation = async ({
   try {
     responseData = await res.json();
   } catch (error) {
-    throw new Error("Failed to parse server response");
+    throw new Error('Failed to parse server response');
   }
 
   if (!res.ok)
@@ -50,12 +50,12 @@ const apiMutation = async ({
 export function useApiMutation<T>({
   url,
   method,
-  contentType = "application/json",
+  contentType = 'application/json',
   auth = true,
   additionalHeaders,
 }: {
   url: string;
-  method?: "POST" | "PUT" | "PATCH" | "DELETE";
+  method?: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   contentType: string;
   auth: boolean;
   additionalHeaders?: any;
@@ -87,7 +87,7 @@ export function useApiQuery<T>({
   url,
   additionalHeaders,
 }: {
-  key: string;
+  key: string | string[];
   url: string;
   additionalHeaders?: Record<string, string>;
 }) {
@@ -97,9 +97,9 @@ export function useApiQuery<T>({
     const userData = await getToken(); // Fetch token before making request
 
     const response = await fetch(`${API_URL}${url}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         ...(userData?.token
           ? { Authorization: `Bearer ${userData?.token}` }
           : {}),
@@ -126,3 +126,5 @@ export function useApiQuery<T>({
     error,
   };
 }
+
+export { useQuery };

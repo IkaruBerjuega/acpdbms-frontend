@@ -6,8 +6,13 @@ import { Tabs, TabsContent } from '@/components/ui/tabs';
 import Table from '@/components/ui/projects/table';
 import ProjectCards from '../general/data-table-components/project-cards';
 
-export default function ProjectList() {
+export default function ProjectList({
+  searchParams,
+}: {
+  searchParams?: { query?: string; page?: string };
+}) {
   const [activeTab, setActiveTab] = useState('list');
+  const query = searchParams?.query || '';
 
   return (
     <Tabs
@@ -31,7 +36,7 @@ export default function ProjectList() {
         {/* main content view cards */}
         <TabsContent value='card'>
           <div className='flex-grow bg-white-primary rounded-b-lg shadow-md system-padding'>
-            <ProjectCards query={''} />
+            <ProjectCards query={query} />
           </div>
         </TabsContent>
       </main>
