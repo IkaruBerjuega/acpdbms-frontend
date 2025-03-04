@@ -55,6 +55,7 @@ export default function ProjectDetails() {
                 inputType={'search'}
                 register={register}
                 placeholder='Select Client'
+                errorMessage={errors.client_name?.message}
                 required={true}
                 items={clientItems}
                 onSelect={(item: ClientItem) => {
@@ -64,7 +65,6 @@ export default function ProjectDetails() {
                   setValue('client_id', Number(item.value));
                   setValue('client_name', item.label);
                 }}
-                errorMessage={errors.client_id?.message}
               />
             </div>
           </div>
@@ -113,6 +113,7 @@ export default function ProjectDetails() {
               inputType={'default'}
               register={register}
               placeholder='Enter State'
+              errorMessage={errors.state?.message}
               required={true}
             />
             {/* City/Town */}
@@ -122,6 +123,7 @@ export default function ProjectDetails() {
               inputType={'default'}
               placeholder='Enter City/Town'
               register={register}
+              errorMessage={errors.city_town?.message}
               required={true}
             />
             {/* Street */}
@@ -131,6 +133,7 @@ export default function ProjectDetails() {
               inputType={'default'}
               placeholder='Enter Street'
               register={register}
+              errorMessage={errors.street?.message}
               required={true}
             />
             {/* Zip Code */}

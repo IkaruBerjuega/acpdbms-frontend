@@ -34,7 +34,7 @@ const steps = [
     id: 'Step 1',
     name: 'Project Details',
     fields: [
-      'client_id',
+      'client_name',
       'project_title',
       'state',
       'city_town',
