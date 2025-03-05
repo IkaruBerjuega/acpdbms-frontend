@@ -1,6 +1,3 @@
-"use client";
-import { use } from "react";
-import Breadcrumbs from "@/components/ui/breadcrumbs";
 import ProjectView from "@/components/ui/admin/projects/project-view";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import serverRequestAPI from "@/hooks/server-request";
@@ -17,8 +14,9 @@ type PageProps = {
 };
 
 export default async function Page({ params, searchParams }: PageProps) {
-  const { id } = use(params);
-  const { edit = "false" } = use(searchParams);
+  //await params and search params to destructure it
+  const { id } = await params;
+  const { edit = "false" } = await searchParams;
 
   //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
   const initialData: ProjectDetailsSchema = await serverRequestAPI({
