@@ -83,7 +83,7 @@ export function Combobox({
 
     if (newValue) {
       setSelectedValue(newValue); // Set the entered input as the selected value
-      if (onSelect) onSelect({ label: newValue, value: "" }); // Trigger onSelect with custom input
+      if (onSelect) onSelect({ label: newValue, value: newValue }); // Trigger onSelect with custom input
       setInputValue(""); // Clear the input after selection
       setOpen(false); // Close the popover
     }
@@ -112,7 +112,11 @@ export function Combobox({
           )}
           disabled={disabled} // Disable the button if disabled prop is true
         >
-          <div className="flex-1 truncate flex justify-start">
+          <div
+            className={`flex-1 truncate flex justify-start ${
+              !selectedValue && "text-gray-400"
+            }`}
+          >
             {selectedValue || placeholder}
           </div>
           {selectedValue && value !== "All Projects" && !disabled ? (
@@ -161,7 +165,7 @@ export function Combobox({
                   handleInputSelect();
                 }
               }}
-              className="absolute right-2 top-3 px-2 py-1 bg-maroon-600 text-white text-xs rounded"
+              className="absolute right-2 top-3 px-2 py-1 bg-black-primary hover:bg-black-secondary text-white-secondary text-xs rounded"
             >
               Add
             </button>

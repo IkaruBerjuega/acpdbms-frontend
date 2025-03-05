@@ -1,11 +1,11 @@
-import { CellContext, HeaderContext, Row } from '@tanstack/react-table';
-import { FilterType } from './filter-types';
+import { CellContext, HeaderContext, Row } from "@tanstack/react-table";
+import { FilterType } from "./filter-types";
 
 export interface UserInterface {
   id: number;
   email: string;
   is_admin: boolean;
-  role: 'admin' | 'employee' | 'client';
+  role: "admin" | "employee" | "client";
   profile_complete: boolean;
   must_change_password: boolean;
   profile_picture: string;
@@ -27,6 +27,8 @@ export interface EmployeeInterface {
   position: string;
   email: string;
   status: string;
+  has_ongoing_task?: boolean;
+  profile_picture_url?: string;
 }
 
 export interface ClientInterface {
@@ -38,6 +40,20 @@ export interface ClientInterface {
   last_name: string;
   email: string;
   status: string;
+  profile_picture_url?: string;
+}
+
+//team details response
+export interface ProjectManager {
+  id: number;
+  name: string;
+  role: "Project Manager";
+}
+
+export interface TeamDetailsResponse {
+  project_managers: ProjectManager[];
+  activated_accounts: EmployeeInterface[];
+  other_employees: EmployeeInterface[];
 }
 
 export interface ProjectListResponseInterface {
@@ -47,7 +63,13 @@ export interface ProjectListResponseInterface {
   start_date: string;
   end_date: string;
   finish_date?: string | null;
-  status: 'finished' | 'on-hold' | 'ongoing' | 'cancelled' | 'archived';
+  status:
+    | "finished"
+    | "on-hold"
+    | "ongoing"
+    | "cancelled"
+    | "archived"
+    | "pending";
   location: string;
   image_url?: string | null;
   project_manager: string;
@@ -69,24 +91,40 @@ export interface ColumnInterface<T> {
 }
 
 export interface ColumnInterfaceProp {
-  id_string?: string;
-  accessorKey_string?: string;
-  header_string?: string;
+  id?: string;
+  accessorKey?: string;
+  header?: string;
   meta?: FilterType;
-  cell_string?: boolean;
+  cell?: boolean | React.JSX.Element;
   filterFn?: boolean; // boolean because the system only uses one filter function
   enableHiding?: boolean;
 }
 
-export interface ClientListResponseInterface {
-  id: string;
-  user_id: string;
-  full_name: string;
-  first_name: string;
-  middle_name: string;
-  last_name: string;
-  email: string;
-  status: string;
+export type AccountActions =
+  | "sendReset"
+  | "deactivate"
+  | "archive"
+  | "activate"
+  | "unarchive"
+  | undefined;
+
+export type ProjectActions =
+  | "archive"
+  | "unarchive"
+  | "cancel"
+  | "remove"
+  | undefined;
+
+export interface Breadcrumbs {
+  href: string;
+  pageName: string;
+  active: boolean;
 }
 
-export type CheckboxData = ClientListResponseInterface;
+//types
+export type SupportedTableTypes =
+  | ClientInterface
+  | EmployeeInterface
+  | ProjectListResponseInterface;
+export type SupportedTableName = "Accounts" | "Projects";
+export type AccountsTableType = ClientInterface | EmployeeInterface;

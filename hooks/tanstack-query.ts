@@ -1,16 +1,16 @@
-'use client';
+"use client";
 
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { useToken } from './api-calls/use-token';
+import { Enabled, useMutation, useQuery } from "@tanstack/react-query";
+import { useToken } from "./api-calls/use-token";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // General function for API mutations
-const apiMutation = async ({
+export const requestAPI = async ({
   url,
-  method = 'POST',
+  method = "POST",
   body,
-  contentType = 'application/json',
+  contentType = "application/json",
   auth = true,
   additionalHeaders,
 }: {
@@ -28,7 +28,7 @@ const apiMutation = async ({
 
   const headers: Record<string, string> = {
     // Only add Content-Type header if the body is not FormData.
-    ...(!isFormData && contentType ? { 'Content-Type': contentType } : {}),
+    ...(!isFormData && contentType ? { "Content-Type": contentType } : {}),
     ...(auth ? { Authorization: `Bearer ${userData?.token}` } : {}),
     ...(additionalHeaders || {}),
   };
@@ -44,7 +44,7 @@ const apiMutation = async ({
   try {
     responseData = await res.json();
   } catch (error) {
-    throw new Error('Failed to parse server response');
+    throw new Error("Failed to parse server response");
   }
 
   if (!res.ok)
@@ -56,19 +56,19 @@ const apiMutation = async ({
 export function useApiMutation<T>({
   url,
   method,
-  contentType = 'application/json',
+  contentType = "application/json",
   auth = true,
   additionalHeaders,
 }: {
   url: string;
-  method?: 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  method?: "POST" | "PUT" | "PATCH" | "DELETE";
   contentType: string;
   auth: boolean;
   additionalHeaders?: any;
 }) {
   const mutation = useMutation({
     mutationFn: (body?: T) =>
-      apiMutation({
+      requestAPI({
         url,
         method,
         body,
@@ -82,7 +82,9 @@ export function useApiMutation<T>({
     mutate: mutation.mutate,
     isLoading: mutation.isPending,
     data: mutation.data,
-    error: mutation.error?.message,
+    error:
+      (mutation.error as unknown as { email?: string })?.email ||
+      mutation.error?.message,
   };
 }
 
@@ -90,10 +92,14 @@ export function useApiQuery<T>({
   key,
   url,
   additionalHeaders,
+  initialData,
+  enabled,
 }: {
   key: string;
   url: string;
   additionalHeaders?: Record<string, string>;
+  initialData?: T;
+  enabled?: Enabled<T, Error, T, string[]> | undefined;
 }) {
   const { getToken } = useToken();
 
@@ -101,9 +107,9 @@ export function useApiQuery<T>({
     const userData = await getToken();
 
     const response = await fetch(`${API_URL}${url}`, {
-      method: 'GET',
+      method: "GET",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
         ...(userData?.token
           ? { Authorization: `Bearer ${userData?.token}` }
           : {}),
@@ -121,6 +127,8 @@ export function useApiQuery<T>({
   const { data, isLoading, isPending, error } = useQuery({
     queryKey: [key],
     queryFn: () => fetchApiData(),
+    initialData: initialData,
+    enabled: enabled,
   });
 
   return {

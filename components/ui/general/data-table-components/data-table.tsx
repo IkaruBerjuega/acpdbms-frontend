@@ -1,7 +1,6 @@
-'use client';
-import { type ColumnDef, flexRender } from '@tanstack/react-table';
-
-import { Button } from '@/components/ui/button';
+"use client";
+import { type ColumnDef, flexRender } from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
 import {
   Table as TableRoot,
   TableBody,
@@ -9,10 +8,10 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { useSearchParams } from 'next/navigation';
-import FilterPopOver from './filter-components/filter-popover';
-import { LuFilter } from 'react-icons/lu';
+} from "@/components/ui/table";
+import { useSearchParams } from "next/navigation";
+import FilterPopOver from "./filter-components/filter-popover";
+import { LuFilter } from "react-icons/lu";
 
 import {
   DropdownMenu,
@@ -20,19 +19,19 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { PiDotsThreeVerticalBold } from 'react-icons/pi';
-import { TiPin } from 'react-icons/ti';
-import { IoArrowUpOutline } from 'react-icons/io5';
-import { useCustomTable } from './custom-tanstack';
-import { Pagination } from './Pagination';
+} from "@/components/ui/dropdown-menu";
+import { PiDotsThreeVerticalBold } from "react-icons/pi";
+import { TiPin } from "react-icons/ti";
+import { IoArrowUpOutline } from "react-icons/io5";
+import { useCustomTable } from "./custom-tanstack";
+import { Pagination } from "./Pagination";
 
 export default function DataTable<T>({
   columns,
   data,
   tableClassName,
   hidden,
-  id = 'data-table',
+  id = "data-table",
 }: {
   columns: ColumnDef<T>[];
   data: T[];
@@ -44,9 +43,9 @@ export default function DataTable<T>({
 
   // Extract the query from searchParams
 
-  const query = searchParams.get('query') || '';
+  const query = searchParams.get("query") || "";
 
-  const { table, filterComponents, filters, pagination } = useCustomTable(
+  const { table, filterComponents, filters, pagination } = useCustomTable<T>(
     query,
     data,
     columns,
@@ -55,33 +54,26 @@ export default function DataTable<T>({
   );
 
   return (
-    <div className={`flex w-full flex-col gap-2 ${hidden && 'hidden'}`}>
-      <div className='flex flex-wrap flex-col w-full h-auto gap-2'>
+    <div className={`flex w-full flex-col gap-2 ${hidden && "hidden"}`}>
+      <div className="flex flex-wrap flex-col w-full h-auto gap-2">
         <div>
           <FilterPopOver
-            width='w-auto'
+            width="w-auto"
             content={filters}
-            tableName='Projects'
-            popoverName='Add Filter'
-            icon={<LuFilter className='text-xs md:text-lg' />}
+            popoverName="+"
+            icon={<LuFilter className="text-xs md:text-lg" />}
           />
         </div>
 
-        <div className='flex flex-wrap flex-row gap-2 w-full h-auto'>
+        <div className="flex flex-wrap flex-row gap-2 w-full h-auto">
           {filterComponents}
         </div>
       </div>
-      <div className='rounded-lg border'>
-        <TableRoot
-          id={id}
-          className={`w-full table-auto ${tableClassName} `}
-        >
+      <div className="rounded-lg border">
+        <TableRoot id={id} className={`w-full table-auto ${tableClassName} `}>
           <TableHeader>
             {table?.getHeaderGroups().map((headerGroup) => (
-              <TableRow
-                key={headerGroup?.id}
-                className='text-sm'
-              >
+              <TableRow key={headerGroup?.id} className="text-sm">
                 {headerGroup?.headers.map((header) => {
                   const { column } = header;
                   return (
@@ -94,20 +86,20 @@ export default function DataTable<T>({
                         padding: header.column.getCanPin() ? 8 : 0,
                       }}
                       className={`py-1  ${
-                        column.getIsPinned() === 'right' &&
-                        'border-l-[1px] border-r-0 '
+                        column.getIsPinned() === "right" &&
+                        "border-l-[1px] border-r-0 "
                       } ${
-                        header.column.id === 'select' && 'w-[15px] px-2'
+                        header.column.id === "select" && "w-[15px] px-2"
                       } border-r-[1px] relative`}
                     >
                       <div
                         className={`flex  items-center h-full px-4  ${
-                          header.column.id === 'select'
-                            ? 'justify-start'
-                            : ' w-full'
+                          header.column.id === "select"
+                            ? "justify-start"
+                            : " w-full"
                         }`}
                       >
-                        <div className='text-xs md:text-sm font-semibold w-full'>
+                        <div className=" font-semibold w-full text-xs ">
                           {header.isPlaceholder
                             ? null
                             : flexRender(
@@ -118,73 +110,70 @@ export default function DataTable<T>({
 
                         {!header.isPlaceholder &&
                           header.column.getCanPin() &&
-                          header.id != 'select' && (
+                          header.id != "select" && (
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button
-                                  variant='ghost'
-                                  className='p-0'
-                                >
-                                  <PiDotsThreeVerticalBold className='h-4 w-4' />
+                                <Button variant="ghost" className="p-0">
+                                  <PiDotsThreeVerticalBold className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent
-                                side='bottom'
-                                align='end'
+                                side="bottom"
+                                align="end"
                                 sideOffset={8}
-                                className='text-xs md:text-sm'
+                                className="text-xs md:text-sm"
                               >
                                 <DropdownMenuItem
                                   onClick={() =>
                                     column.toggleSorting(
-                                      column.getIsSorted() === 'asc'
+                                      column.getIsSorted() === "asc"
                                     )
                                   }
-                                  className='text-xs md:text-sm'
+                                  className="text-xs md:text-sm"
                                 >
                                   {column.getIsSorted() ? (
-                                    column.getIsSorted() === 'desc' ? (
+                                    column.getIsSorted() === "desc" ? (
                                       <>
-                                        Sort ascending{' '}
-                                        <IoArrowUpOutline className='ml-5 text-lg text-maroon-600' />
+                                        Sort ascending{" "}
+                                        <IoArrowUpOutline className="ml-5 text-lg text-maroon-600" />
                                       </>
                                     ) : (
                                       <>
                                         Sort descending
-                                        <IoArrowUpOutline className='ml-5 text-lg rotate-180 text-maroon-600' />
+                                        <IoArrowUpOutline className="ml-5 text-lg rotate-180 text-maroon-600" />
                                       </>
                                     )
                                   ) : (
                                     <>
-                                      Sort ascending{' '}
-                                      <IoArrowUpOutline className='ml-5 text-lg text-maroon-600' />
+                                      Sort ascending{" "}
+                                      <IoArrowUpOutline className="ml-5 text-lg text-maroon-600" />
                                     </>
                                   )}
                                 </DropdownMenuItem>
                                 {column.getIsSorted() && (
                                   <DropdownMenuItem
                                     onClick={() => column.clearSorting()}
-                                    className='text-xs md:text-sm'
+                                    className="text-xs md:text-sm"
                                   >
                                     Unsort
                                   </DropdownMenuItem>
                                 )}
 
                                 <DropdownMenuSeparator />
-                                {header.column.getIsPinned() !== 'left' ? (
+                                {header.column.getIsPinned() !== "left" ? (
                                   <DropdownMenuItem
-                                    className='rounded p-2 flex text-xs md:text-sm  justify-between'
+                                    className="rounded p-2 flex text-xs md:text-sm  justify-between"
                                     onClick={() => {
-                                      header.column.pin('left');
+                                      header.column.pin("left");
                                     }}
                                   >
                                     Pin to the left
-                                    <TiPin className='ml-4 text-xl text-maroon-600' />
+                                    <TiPin className="ml-4 text-xl text-maroon-600" />
                                   </DropdownMenuItem>
                                 ) : null}
                                 {header.column.getIsPinned() ? (
                                   <DropdownMenuItem
-                                    className='rounded text-xs md:text-sm px-2'
+                                    className="rounded text-xs md:text-sm px-2"
                                     onClick={() => {
                                       header.column.pin(false);
                                     }}
@@ -192,15 +181,15 @@ export default function DataTable<T>({
                                     Unpin
                                   </DropdownMenuItem>
                                 ) : null}
-                                {header.column.getIsPinned() !== 'right' ? (
+                                {header.column.getIsPinned() !== "right" ? (
                                   <DropdownMenuItem
-                                    className='rounded px-2 flex text-xs md:text-sm justify-between'
+                                    className="rounded px-2 flex text-xs md:text-sm justify-between"
                                     onClick={() => {
-                                      header.column.pin('right');
+                                      header.column.pin("right");
                                     }}
                                   >
                                     Pin to the right
-                                    <TiPin className=' ml-4  -rotate-90 text-xl text-maroon-600' />
+                                    <TiPin className=" ml-4  -rotate-90 text-xl text-maroon-600" />
                                   </DropdownMenuItem>
                                 ) : null}
                               </DropdownMenuContent>
@@ -219,7 +208,7 @@ export default function DataTable<T>({
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
+                  data-state={row.getIsSelected() && "selected"}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
@@ -233,9 +222,9 @@ export default function DataTable<T>({
                     >
                       <div
                         className={`flex  items-center h-full px-4  ${
-                          cell.column.id === 'select'
-                            ? 'justify-start'
-                            : ' w-full'
+                          cell.column.id === "select"
+                            ? "justify-start"
+                            : " w-full"
                         }   header.column.id === "select" && "w-[15px] px-2"`}
                       >
                         {flexRender(
@@ -251,7 +240,7 @@ export default function DataTable<T>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className='h-24 text-center'
+                  className="h-24 text-center"
                 >
                   No results.
                 </TableCell>
@@ -260,10 +249,7 @@ export default function DataTable<T>({
           </TableBody>
         </TableRoot>
       </div>
-      <Pagination
-        table={table}
-        pagination={pagination}
-      />
+      <Pagination table={table} pagination={pagination} />
     </div>
   );
 }

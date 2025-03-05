@@ -64,7 +64,7 @@ export default function Navbar() {
         onClick={() => setisMobileNavOpen(!isMobileNavOpen)}
       >
         <Image
-          src={"/photos/nav-hamburger.svg"}
+          src={"/homepage/nav-hamburger.svg"}
           alt={"menu button"}
           width={30}
           height={30}

@@ -4,7 +4,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST<T extends LoginResponseInterface>(req: NextRequest) {
   const { token, user }: T = await req.json();
 
-  if (!token && !user) {
+  if (!token || !user) {
     return NextResponse.json(
       { error: "Token and User Data is required" },
       { status: 400 }
@@ -29,14 +29,14 @@ export async function POST<T extends LoginResponseInterface>(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const token = req.cookies.get("user-info-with-token")?.value;
+  const data = req.cookies.get("user-info-with-token")?.value;
 
-  if (!token) {
+  if (!data) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    const tokenData = JSON.parse(token); // Parse token (if stored as JSON)
+    const tokenData = JSON.parse(data); // Parse token (if stored as JSON)
     return NextResponse.json(tokenData); // Return user info (not raw token)
   } catch {
     return NextResponse.json({ error: "Invalid token" }, { status: 403 });
