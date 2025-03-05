@@ -14,8 +14,6 @@ interface ProjectsTableHeaderActionsProps {
 export default function ProjectsTableHeaderActions({
   components,
 }: ProjectsTableHeaderActionsProps) {
-  const router = useRouter();
-
   return (
     <DataTableHeader
       tableName="Project"

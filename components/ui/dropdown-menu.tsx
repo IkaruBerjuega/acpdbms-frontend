@@ -193,6 +193,7 @@ interface ItemProps {
   dialogTitle?: string;
   dialogBtnSubmitLabel?: string;
   isDialog?: boolean;
+  href?: string;
 }
 
 import Image from "next/image";
@@ -206,6 +207,7 @@ import {
   DialogTrigger,
 } from "./dialog";
 import { useState } from "react";
+import Link from "next/link";
 
 interface CustomDropdownMenuProps {
   btnLabel?: string;
@@ -240,11 +242,9 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-40" align="end" side="bottom">
-        <DropdownMenuLabel className="text-xs hidden">
-          {props.menuLabel}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator className="hidden" />
+      <DropdownMenuContent className="w-48" align="end" side="bottom">
+        <DropdownMenuLabel>{props.menuLabel}</DropdownMenuLabel>
+        <DropdownMenuSeparator />
         {items.map((item, index) => (
           <React.Fragment key={index}>
             {item.isDialog ? (
@@ -257,11 +257,11 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
                 <DialogTrigger asChild>
                   <DropdownMenuItem
                     onSelect={(e) => e.preventDefault()}
-                    className="h-8 p-0"
+                    className="h-7 p-0"
                   >
                     <Button
                       variant="ghost"
-                      className={`w-full h-full flex justify-start items-center gap-2 px-3 ${item.className}`}
+                      className={`w-full h-full flex justify-start items-center gap-2  ${item.className} px-2`}
                     >
                       <Image
                         src={item.iconSrc}
@@ -289,14 +289,14 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-            ) : (
+            ) : item.href ? (
               <DropdownMenuItem
                 onSelect={(e) => e.preventDefault()}
-                className="h-8 p-0"
+                className="h-7 p-0"
               >
-                <Button
-                  variant="ghost"
-                  className={`w-full h-full flex justify-start items-center gap-2 px-3 ${item.className}`}
+                <Link
+                  href={item.href}
+                  className={`w-full h-full flex justify-start items-center gap-2 ${item.className} px-2`}
                 >
                   <Image
                     src={item.iconSrc}
@@ -305,9 +305,9 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
                     height={16}
                   />
                   <span>{item.label}</span>
-                </Button>
+                </Link>
               </DropdownMenuItem>
-            )}
+            ) : null}
           </React.Fragment>
         ))}
       </DropdownMenuContent>

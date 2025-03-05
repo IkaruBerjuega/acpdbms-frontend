@@ -9,6 +9,7 @@ import { ProjectListResponseInterface } from "@/lib/definitions";
 import { AddBtn } from "../../button";
 import { VscListSelection } from "react-icons/vsc";
 import { PiCardsThreeLight } from "react-icons/pi";
+import Cards from "./cards";
 
 export default function ProjectList<T extends ProjectListResponseInterface>({
   isArchived,
@@ -51,7 +52,7 @@ export default function ProjectList<T extends ProjectListResponseInterface>({
         {/* main content view cards */}
         <TabsContent value="card">
           <div className="flex-grow">
-            <ProjectCards isArchived={isArchived} initialData={initialData} />
+            <Cards isArchived={isArchived} initialData={initialData} />
           </div>
         </TabsContent>
       </main>

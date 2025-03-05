@@ -152,12 +152,14 @@ export default function ProjectActions<T extends ProjectListResponseInterface>({
           onClick: () => {},
           iconSrc: "/button-svgs/table-action-view.svg",
           alt: "view project button",
+          href: `/admin/projects/${id}/view`,
         },
         {
           label: "Edit Project",
           onClick: () => {},
           iconSrc: "/button-svgs/table-action-edit.svg",
           alt: "edit project button",
+          href: `/admin/projects/${id}/view?edit=true`,
         },
 
         ...(canOnhold

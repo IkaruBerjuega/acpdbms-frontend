@@ -1,27 +1,42 @@
-'use client';
-import { use } from 'react';
-import Breadcrumbs from '@/components/ui/breadcrumbs';
-import ProjectView from '@/components/ui/components-to-relocate/project-view';
+"use client";
+import { use } from "react";
+import Breadcrumbs from "@/components/ui/breadcrumbs";
+import ProjectView from "@/components/ui/admin/projects/project-view";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import serverRequestAPI from "@/hooks/server-request";
+import { step1Schema } from "@/lib/form-constants/project-constants";
+import { z } from "zod";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+type ProjectDetailsSchema = z.infer<typeof step1Schema>;
 
 type PageProps = {
   params: Promise<{ id: string }>;
   searchParams: Promise<{ edit?: string }>;
 };
 
-export default function Page({ params, searchParams }: PageProps) {
+export default async function Page({ params, searchParams }: PageProps) {
   const { id } = use(params);
-  const { edit = 'false' } = use(searchParams);
-  console.log(edit);
+  const { edit = "false" } = use(searchParams);
+
+  //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
+  const initialData: ProjectDetailsSchema = await serverRequestAPI({
+    url: `${API_URL}/projects/${id}`,
+    auth: true,
+  });
+
   return (
-    <main className='w-full h-auto flex justify-center flex-col'>
-      <Breadcrumbs
+    <main className="w-full h-auto flex justify-center flex-col">
+      <SidebarTrigger
         breadcrumbs={[
           {
-            label: 'Projects',
-            href: '/admin/projects',
+            pageName: "Projects",
+            href: "/admin/projects",
+            active: false,
           },
           {
-            label: 'View Project Details',
+            pageName: "View Project Details",
             href: `/admin/projects/${id}/view`,
             active: true,
           },

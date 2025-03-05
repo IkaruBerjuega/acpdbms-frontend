@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import { flexRender } from "@tanstack/react-table";
 
 export default function Card({
   row,
@@ -32,6 +33,10 @@ export default function Card({
   const customLoader = ({ src }: { src: string }) => {
     return src;
   };
+
+  const actionsCell = row
+    .getAllCells()
+    .find((cell: { column: { id: string } }) => cell.column.id === "actions");
 
   return (
     <div
@@ -94,44 +99,13 @@ export default function Card({
             </div>
           </div>
 
-          <div onClick={(e) => e.stopPropagation()} className="ml-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 w-8 p-0 rounded-full hover:bg-slate-100"
-                >
-                  <MoreVertical className="h-4 w-4" />
-                  <span className="sr-only">Open menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent side="bottom" align="end" className="w-48">
-                <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="cursor-pointer">
-                  <Link
-                    href={`/admin/projects/${row.getValue("id")}/view`}
-                    className="flex items-center w-full"
-                  >
-                    <ExternalLink className="h-4 w-4 mr-2" />
-                    View Details
-                  </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <div className="flex items-center w-full">
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit Project
-                  </div>
-                </DropdownMenuItem>
-                <DropdownMenuItem className="cursor-pointer">
-                  <div className="flex items-center w-full">
-                    <Archive className="h-4 w-4 mr-2" />
-                    Archive
-                  </div>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+          <div onClick={(e) => e.stopPropagation()} className="ml-2 rotate-90">
+            {actionsCell
+              ? flexRender(
+                  actionsCell.column.columnDef.cell,
+                  actionsCell.getContext()
+                )
+              : null}
           </div>
         </div>
 
