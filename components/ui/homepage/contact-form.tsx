@@ -52,10 +52,10 @@ export default function ContactForm() {
     mutate(
       data, // Actual request body
       {
-        onSuccess: (response) => {
+        onSuccess: (response: { message?: string }) => {
           onSuccess(response);
         },
-        onError: (error) => {
+        onError: (error: { message?: string }) => {
           onError(error);
         },
       }

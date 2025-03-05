@@ -27,6 +27,8 @@ export interface EmployeeInterface {
   position: string;
   email: string;
   status: string;
+  has_ongoing_task?: boolean;
+  profile_picture_url?: string;
 }
 
 export interface ClientInterface {
@@ -38,6 +40,39 @@ export interface ClientInterface {
   last_name: string;
   email: string;
   status: string;
+  profile_picture_url?: string;
+}
+
+//team details response
+export interface ProjectManager {
+  id: number;
+  name: string;
+  role: "Project Manager";
+}
+
+export interface TeamDetailsResponse {
+  project_managers: ProjectManager[];
+  activated_accounts: EmployeeInterface[];
+  other_employees: EmployeeInterface[];
+}
+
+export interface ProjectListResponseInterface {
+  id: string;
+  client_name: string;
+  project_title: string;
+  start_date: string;
+  end_date: string;
+  finish_date?: string | null;
+  status:
+    | "finished"
+    | "on-hold"
+    | "ongoing"
+    | "cancelled"
+    | "archived"
+    | "pending";
+  location: string;
+  image_url?: string | null;
+  project_manager: string;
 }
 
 export interface ColumnInterface<T> {
@@ -73,6 +108,13 @@ export type AccountActions =
   | "unarchive"
   | undefined;
 
+export type ProjectActions =
+  | "archive"
+  | "unarchive"
+  | "cancel"
+  | "remove"
+  | undefined;
+
 export interface Breadcrumbs {
   href: string;
   pageName: string;
@@ -80,6 +122,9 @@ export interface Breadcrumbs {
 }
 
 //types
-export type SupportedTableTypes = ClientInterface | EmployeeInterface;
+export type SupportedTableTypes =
+  | ClientInterface
+  | EmployeeInterface
+  | ProjectListResponseInterface;
 export type SupportedTableName = "Accounts" | "Projects";
 export type AccountsTableType = ClientInterface | EmployeeInterface;

@@ -10,6 +10,7 @@ import { toast } from "@/hooks/use-toast";
 import { AccountActionsRequest } from "@/lib/form-constants/form-constants";
 import { useQueryClient } from "@tanstack/react-query";
 import { useQueryParams } from "@/hooks/use-query-params";
+import { useCheckboxStore } from "@/hooks/states/create-store";
 
 interface AccountActionsProps<T> {
   attrs: T;
@@ -29,6 +30,7 @@ const AccountActions = <T extends AccountsTableType>({
 
   // Get QueryClient from the context
   const queryClient = useQueryClient();
+  const { resetData } = useCheckboxStore();
 
   const onSuccess = (
     response: { message?: string },
@@ -93,6 +95,7 @@ const AccountActions = <T extends AccountsTableType>({
     },
     undefined: null,
   };
+
   const { paramsKey } = useQueryParams<{
     role: "client" | "employee";
     archived?: "true" | null;
@@ -119,9 +122,25 @@ const AccountActions = <T extends AccountsTableType>({
       action === "sendReset" ? { email: email } : { user_ids: [user_id] };
 
     actionFn.mutate(body, {
-      onSuccess: (response) => onSuccess(response, title, message, queryKey),
-      onError: (error) => onError(error, title, message, queryKey),
+      onSuccess: (response: {
+        message?: string;
+        skipped_clients?: { message: string };
+      }) => {
+        if (response.skipped_clients) {
+          const error = {
+            message:
+              "The selected account is not deactivated because it linked to an ongoing project",
+          };
+          onError(error, title, message, queryKey);
+
+          return;
+        }
+        onSuccess(response, title, message, queryKey);
+      },
+      onError: (error: { message?: string }) =>
+        onError(error, title, message, queryKey),
     });
+    resetData();
   };
 
   const isStatusActivated = status === "activated";

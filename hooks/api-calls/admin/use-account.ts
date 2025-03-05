@@ -1,5 +1,6 @@
 "use client";
 
+import AddClient from "@/components/ui/admin/accounts/sidepanel-contents.tsx/add-client";
 import { useApiMutation, useApiQuery } from "@/hooks/tanstack-query";
 
 export const useAccounts = <T>({
@@ -60,10 +61,28 @@ export const useAccountActions = <T>() => {
     auth: true,
   });
 
+  //client add
+  const addClient = useApiMutation<T>({
+    url: "/clients",
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+  });
+
+  //employee add
+  const addEmployee = useApiMutation<T>({
+    url: "/employees",
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+  });
+
   return {
     sendReset,
     deactivateAcc,
     archiveAcc,
     activateAcc,
+    addClient,
+    addEmployee,
   };
 };

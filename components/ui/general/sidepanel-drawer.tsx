@@ -42,15 +42,20 @@ export default function SidepanelDrawerComponent({
   const btnCollpaseSrc = "/button-svgs/sidepanel-collapse.svg";
 
   return (
-    <>
+    <Drawer open={canOpen} onOpenChange={(isOpen) => !isOpen && closeDrawer()}>
       {isDesktop ? (
         <div
-          className={`h-full hidden flex-col-start-center ${
+          className={`h-full hidden flex-col-start-center p-4 ${
             canOpen &&
-            "w-1/4 xl:flex bg-white-primary shadow-md rounded-br-lg system-padding"
+            "w-1/4 lg:flex bg-white-primary shadow-md rounded-br-lg system-padding"
           }`}
         >
-          <div className="w-full flex-row-end-start">
+          <div className="w-full flex-row-between-start">
+            <div className="flex-col-start">
+              <h1 className="text-base font-bold">{title}</h1>
+              <h2 className="text-sm ">{description}</h2>
+            </div>
+
             <Button
               onClick={closeDrawer}
               className="p-0 h-8 w-8"
@@ -58,8 +63,8 @@ export default function SidepanelDrawerComponent({
             >
               <Image
                 src={btnCollpaseSrc}
-                width={20}
-                height={20}
+                width={16}
+                height={16}
                 alt={"collapse sidebar button"}
                 onClick={closeDrawer}
               />
@@ -68,10 +73,7 @@ export default function SidepanelDrawerComponent({
           {content}
         </div>
       ) : (
-        <Drawer
-          open={canOpen}
-          onOpenChange={(isOpen) => !isOpen && closeDrawer()}
-        >
+        <>
           <DrawerTrigger className="hidden" asChild />
           <DrawerContent className="xl:hidden system-padding">
             <DrawerHeader>
@@ -80,16 +82,16 @@ export default function SidepanelDrawerComponent({
             </DrawerHeader>
             {content}
             <DrawerFooter>
-              <Button>Submit</Button>
+              {/* <Button>Submit</Button>
               <DrawerClose asChild>
                 <Button variant="outline" onClick={closeDrawer}>
                   Cancel
                 </Button>
-              </DrawerClose>
+              </DrawerClose> */}
             </DrawerFooter>
           </DrawerContent>
-        </Drawer>
+        </>
       )}
-    </>
+    </Drawer>
   );
 }

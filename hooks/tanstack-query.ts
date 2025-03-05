@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { Enabled, useMutation, useQuery } from "@tanstack/react-query";
 import { useToken } from "./api-calls/use-token";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -78,7 +78,9 @@ export function useApiMutation<T>({
     mutate: mutation.mutate,
     isLoading: mutation.isPending,
     data: mutation.data,
-    error: mutation.error?.message,
+    error:
+      (mutation.error as unknown as { email?: string })?.email ||
+      mutation.error?.message,
   };
 }
 
@@ -87,11 +89,13 @@ export function useApiQuery<T>({
   url,
   additionalHeaders,
   initialData,
+  enabled,
 }: {
   key: string;
   url: string;
   additionalHeaders?: Record<string, string>;
   initialData?: T;
+  enabled?: Enabled<T, Error, T, string[]> | undefined;
 }) {
   const { getToken } = useToken(); // Call useToken() at the top level
 
@@ -120,6 +124,7 @@ export function useApiQuery<T>({
     queryKey: [key],
     queryFn: () => fetchApiData(), // Pass function reference, NOT a function call
     initialData: initialData,
+    enabled: enabled,
   });
 
   return {

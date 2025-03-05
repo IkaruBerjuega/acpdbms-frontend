@@ -156,6 +156,9 @@ const ButtonTooltip = ({
   );
 };
 
+import { useState } from "react";
+import { LoadingCircle } from "./general/loading-circle";
+
 interface ButtonIconTooltipDialog {
   iconSrc: string;
   alt: string;
@@ -167,8 +170,8 @@ interface ButtonIconTooltipDialog {
   submitTitle?: string;
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  disabled?: boolean;
 }
-import { useState } from "react";
 
 const ButtonIconTooltipDialog = ({
   iconSrc,
@@ -181,6 +184,7 @@ const ButtonIconTooltipDialog = ({
   submitTitle = "Submit",
   className,
   onClick,
+  disabled,
 }: ButtonIconTooltipDialog) => {
   const [open, setOpen] = useState(false);
 
@@ -191,10 +195,16 @@ const ButtonIconTooltipDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <div
-          className={`border-[1px] px-2 py-1 ${className} rounded-md hover:bg-white-secondary cursor-pointer flex-col-center`}
+      <DialogTrigger
+        asChild
+        className={`${disabled ? "pointer-events-none opacity-50" : ""}`}
+      >
+        <button
+          className={`border-[1px] px-2 py-1 ${className} rounded-md hover:bg-white-secondary cursor-pointer flex-col-center ${
+            disabled ? "cursor-not-allowed" : ""
+          }`}
           onClick={() => setOpen(true)}
+          disabled={disabled}
         >
           <TooltipProvider>
             <Tooltip delayDuration={1}>
@@ -206,7 +216,7 @@ const ButtonIconTooltipDialog = ({
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </div>
+        </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -217,6 +227,65 @@ const ButtonIconTooltipDialog = ({
         <DialogFooter>
           <Button type={submitType} onClick={handleSubmit}>
             {submitTitle}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+interface BtnDialogProps {
+  btnTitle: string;
+  alt: string;
+  dialogTitle: string;
+  dialogDescription: string;
+  dialogContent?: React.JSX.Element;
+  submitType: "button" | "submit" | "reset" | undefined;
+  submitTitle?: string;
+  className?: string;
+  isLoading?: boolean;
+  onClick?: (e?: React.BaseSyntheticEvent) => Promise<void>;
+  disabled?: boolean;
+  variant?: "ghost" | "outline" | "default";
+}
+
+const BtnDialog = (props: BtnDialogProps) => {
+  const [open, setOpen] = useState(false);
+
+  const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault(); // Prevent default form submission
+    if (props.onClick) {
+      await props.onClick(); // ✅ Call the submit function passed via props
+    }
+    setOpen(false); // Close the dialog
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          variant={props.variant}
+          disabled={props.disabled || props.isLoading}
+        >
+          {props.isLoading ? (
+            <>
+              Submitting
+              <LoadingCircle color="border-white-secondary" size={15} />
+            </>
+          ) : (
+            props.btnTitle
+          )}
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{props.dialogTitle}</DialogTitle>
+          <DialogDescription>{props.dialogDescription}</DialogDescription>
+        </DialogHeader>
+        {props.dialogContent}
+        <DialogFooter>
+          <Button type={props.submitType} onClick={handleSubmit}>
+            {props.submitTitle}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -267,4 +336,5 @@ export {
   ButtonTooltip,
   ButtonIconTooltipDialog,
   buttonVariants,
+  BtnDialog,
 };

@@ -3,8 +3,8 @@ import Table from "@/components/ui/admin/accounts/table";
 import { AccountsTableType, Breadcrumbs } from "@/lib/definitions";
 import serverRequestAPI from "@/hooks/server-request";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import DrawerComponent from "@/components/ui/general/drawer";
-import Drawer from "@/components/ui/general/drawer";
+import DrawerComponent from "@/components/ui/general/sidepanel-drawer";
+import Drawer from "@/components/ui/general/sidepanel-drawer";
 import Sidepanel from "@/components/ui/admin/accounts/sidepanel";
 
 export default async function Page({
@@ -73,7 +73,7 @@ export default async function Page({
   return (
     <main className="w-full h-full flex-col-start gap-2">
       <SidebarTrigger breadcrumbs={breadcrumbs} />
-      <AccountsTableHeaderActions />
+      <AccountsTableHeaderActions<AccountsTableType> />
 
       <div className="flex-grow flex-row-start gap-2 relative">
         <div className="flex-grow rounded-bl-lg bg-white-primary shadow-md system-padding ">

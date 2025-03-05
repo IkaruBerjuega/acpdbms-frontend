@@ -4,6 +4,8 @@ import {
   SupportedTableTypes,
   ColumnInterfaceProp,
   SupportedTableName,
+  AccountsTableType,
+  ProjectListResponseInterface,
 } from "@/lib/definitions";
 import { multiFilter } from "@/lib/utils";
 import { ColumnDef, Row, Table } from "@tanstack/react-table";
@@ -11,6 +13,7 @@ import { Checkbox } from "../../checkbox";
 import { useCheckboxStore } from "@/hooks/states/create-store";
 import React from "react";
 import AccountActions from "../../admin/accounts/table-actions";
+import ProjectActions from "../../admin/projects/table-actions";
 
 interface TableActionsInterface<T extends SupportedTableTypes> {
   tableName: SupportedTableName;
@@ -22,7 +25,17 @@ const TableActions = <T extends SupportedTableTypes>({
   attrs,
 }: TableActionsInterface<T>): JSX.Element => {
   if (tableName === "Accounts") {
-    return <AccountActions<T> attrs={attrs} />;
+    return (
+      <AccountActions<AccountsTableType> attrs={attrs as AccountsTableType} />
+    );
+  }
+
+  if (tableName === "Projects") {
+    return (
+      <ProjectActions<ProjectListResponseInterface>
+        attrs={attrs as ProjectListResponseInterface}
+      />
+    );
   }
   return <div>There is no table {tableName}</div>;
 };
@@ -88,10 +101,23 @@ const RowCheckbox = <T,>({ row, rowData }: RowCheckboxProps<T>) => {
 };
 
 const getStatusColor = (status: string) => {
+  const green = "bg-green-200 text-green-700";
+  const lightGray = "bg-gray-200 text-gray-700";
+  const dark = "bg-black-secondary text-white-secondary";
+  const yellow = "bg-yellow-200 text-yellow-700";
+  const red = "bg-red-200 text-red-700";
+
   const colorMap: Record<string, string> = {
-    activated: "bg-green-200 text-green-700",
-    deactivated: "bg-gray-200 text-gray-700",
-    archived: "bg-black-secondary text-white-secondary",
+    //account statuses
+    activated: green,
+    deactivated: lightGray,
+    archived: dark,
+
+    //project statuses
+    finished: green,
+    ongoing: yellow,
+    cancelled: red,
+    paused: lightGray,
   };
 
   return colorMap[status] || "bg-gray-200 text-gray-700";
@@ -139,7 +165,7 @@ export const useCreateTableColumns = <T,>(
               ? row.getValue(column.accessorKey)
               : column.id
               ? row.getValue(column.id)
-              : "";
+              : "N/A";
 
             if (isStatus) {
               return (
@@ -163,7 +189,7 @@ export const useCreateTableColumns = <T,>(
               );
             }
 
-            return <div>{value}</div>;
+            return <div>{value || "N/A"}</div>;
           }
         : undefined,
 

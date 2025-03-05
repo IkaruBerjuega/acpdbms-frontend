@@ -13,7 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { AddBtn } from "../../button";
 import { titleCase } from "@/lib/utils";
 
-export default function AccountsTableHeaderActions() {
+export default function AccountsTableHeaderActions<T>() {
   const { paramsKey, params } = useQueryParams();
   const pathname = usePathname();
   const { replace } = useRouter();
@@ -23,6 +23,7 @@ export default function AccountsTableHeaderActions() {
   const role = paramsKey[tabParameter] || "employee";
   const isClient = role === "client";
   const tableName = isClient ? "Client" : "Employee";
+  const isArchived = paramsKey["archived"] === "true";
 
   // Function to update query parameters without modifying params directly
   const createQueryString = useCallback(
@@ -63,7 +64,7 @@ export default function AccountsTableHeaderActions() {
           mutate(
             { user_ids: userIds },
             {
-              onSuccess: (response) => {
+              onSuccess: (response: { message: string }) => {
                 toast({
                   title: "Archive Accounts",
                   description:
@@ -72,11 +73,19 @@ export default function AccountsTableHeaderActions() {
                 });
 
                 queryClient.invalidateQueries({
-                  queryKey: [isClient ? "clients" : "employees"],
+                  queryKey: [
+                    isClient
+                      ? !isArchived
+                        ? "clients"
+                        : "clients-archived"
+                      : !isArchived
+                      ? "employees"
+                      : "employees-archived",
+                  ],
                 });
                 resetData();
               },
-              onError: (error) => {
+              onError: (error: { message: string }) => {
                 toast({
                   title: "Archive Accounts",
                   description:

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: "Seb Neue", sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 @layer base {
@@ -136,6 +136,10 @@ body {
 
   .flex-col-start-center {
     @apply flex flex-col justify-center items-start;
+  }
+
+  .flex-row-start-center {
+    @apply flex flex-col justify-start items-center;
   }
 
   .flex-row-around-center {

@@ -2,6 +2,10 @@ import { Row } from "@tanstack/react-table";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+export function requireError(name: string) {
+  return `${name} is Required`;
+}
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }

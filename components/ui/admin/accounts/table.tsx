@@ -8,7 +8,6 @@ import {
 import { useCreateTableColumns } from "../../general/data-table-components/create-table-columns";
 import DataTable from "../../general/data-table-components/data-table";
 import { useAccounts } from "@/hooks/api-calls/admin/use-account";
-import { ButtonIconTooltipDialog } from "../../button";
 
 export default function Table<T extends AccountsTableType>({
   initialData,
@@ -20,6 +19,7 @@ export default function Table<T extends AccountsTableType>({
   isArchived: boolean;
 }) {
   const accountStatuses = ["activated", "deactivated", "archived"];
+  const hasOngoinTasksOptions = ["true", "false"];
 
   const employeeColumns: ColumnInterfaceProp[] = [
     {
@@ -76,6 +76,22 @@ export default function Table<T extends AccountsTableType>({
       },
       filterFn: true,
     },
+    ...(!isArchived
+      ? [
+          {
+            accessorKey: "has_ongoing_task",
+            header: "Has Ongoing Tasks",
+            meta: {
+              filter_name: "Status",
+              filter_type: "select" as "select",
+              filter_options: hasOngoinTasksOptions,
+              filter_columnAccessor: "status",
+            },
+            filterFn: true,
+          },
+        ]
+      : []),
+
     {
       accessorKey: "status",
       header: "Status",
@@ -85,6 +101,7 @@ export default function Table<T extends AccountsTableType>({
         filter_options: accountStatuses,
         filter_columnAccessor: "status",
       },
+      filterFn: true,
     },
     {
       id: "actions",
@@ -137,6 +154,7 @@ export default function Table<T extends AccountsTableType>({
       },
       filterFn: true,
     },
+
     {
       accessorKey: "status",
       header: "Status",

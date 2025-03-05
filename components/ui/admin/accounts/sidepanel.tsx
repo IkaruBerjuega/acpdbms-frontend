@@ -1,21 +1,18 @@
-import SidepanelDrawerComponent from "../../general/drawer";
-
-function AddEmployee({ isOpen }: { isOpen: boolean }) {
-  return <div></div>;
-}
-
-function GrantAccess({ isOpen }: { isOpen: boolean }) {
-  return <div></div>;
-}
-
-function AddClient({ isOpen }: { isOpen: boolean }) {
-  return <div></div>;
-}
+import SidepanelDrawerComponent from "../../general/sidepanel-drawer";
+import AddClient from "./sidepanel-contents.tsx/add-client";
+import AddEmployee from "./sidepanel-contents.tsx/add-employee";
+import GrantAccess from "./sidepanel-contents.tsx/grant-access";
 
 interface SidepanelProps {
-  activeKey: string;
+  activeKey: "add" | "grant_access";
   isEmployee: boolean;
   isOpen: boolean;
+}
+
+interface ConfigProps {
+  title: string;
+  content: JSX.Element;
+  desc: string;
 }
 
 export default function Sidepanel({
@@ -23,25 +20,35 @@ export default function Sidepanel({
   isEmployee,
   isOpen,
 }: SidepanelProps) {
-  const map = {
+  const config: Record<string, ConfigProps> = {
     add: {
+      title: isEmployee ? "Add Employee" : "Add Client",
       content: isEmployee ? (
         <AddEmployee isOpen={isOpen} />
       ) : (
         <AddClient isOpen={isOpen} />
       ),
+      desc: isEmployee
+        ? "Create a new Employee Account"
+        : "Create a new Client Account",
     },
     grant_access: {
+      title: "Grant Project Access",
       content: <GrantAccess isOpen={isOpen} />,
+      desc: "Grant Project Access to Employees",
     },
   };
+
+  const content = config[activeKey].content;
+  const title = config[activeKey].title;
+  const desc = config[activeKey].desc;
 
   return (
     <SidepanelDrawerComponent
       paramKey={activeKey}
-      content={<></>}
-      title={""}
-      description={""}
+      content={content}
+      title={title}
+      description={desc}
     />
   );
 }

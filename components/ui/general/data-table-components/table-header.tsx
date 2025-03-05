@@ -5,6 +5,7 @@ import { ButtonIconTooltipDialog, ButtonTooltip } from "../../button";
 import { Search } from "./search";
 import { useCallback } from "react";
 import { useQueryParams } from "@/hooks/use-query-params";
+import { useCheckboxStore } from "@/hooks/states/create-store";
 
 interface onArchiveInterface {
   fn: () => void;
@@ -31,8 +32,10 @@ export default function DataTableHeader({
   const { replace } = useRouter();
 
   const isArchived = paramsKey["archived"] === "true";
-  2;
+  const { data, resetData } = useCheckboxStore();
+
   const toggleArchived = useCallback(() => {
+    resetData();
     if (isArchived) {
       params.delete("archived"); // Remove param when toggled to false
     } else {
@@ -45,6 +48,28 @@ export default function DataTableHeader({
     replace(newUrl);
   }, [params, pathname, isArchived, replace]);
 
+  const archiveUnarchiveImgSrc = isArchived
+    ? "/button-svgs/table-header-unarchive.svg"
+    : "/button-svgs/table-header-archive.svg";
+
+  const archiveUnarchiveImgAlt = isArchived
+    ? "unarchive many accounts button"
+    : "archive many accounts button";
+
+  const archiveUnarchiveTitle = isArchived
+    ? "Unarchive Accounts"
+    : "Archive Accounts";
+
+  const archiveUnarchiveDesc = isArchived
+    ? "Do you confirm on unarchiving the accounts"
+    : "Do you confirm on archiving the accounts";
+
+  let isBtnArchiveUnarchiveDisabled =
+    data.length > 0 &&
+    data.some(
+      (item) => item.status === "deactivated" || item.status === "finished"
+    );
+
   return (
     <div className="system-padding bg-white-primary w-full lg:w-full flex-row-between-center rounded-t-lg shadow-md">
       <Search
@@ -54,24 +79,27 @@ export default function DataTableHeader({
       <div className="flex-grow flex justify-end h-full gap-2">
         {onArchive && (
           <ButtonIconTooltipDialog
-            iconSrc={"/button-svgs/table-header-archive.svg"}
-            alt={"Archive many accounts button"}
-            tooltipContent={"Archive Accounts"}
-            dialogTitle={"Archive Accounts"}
-            dialogDescription={
-              "Do you confirm on archiving the selected accounts?"
-            }
+            iconSrc={archiveUnarchiveImgSrc}
+            alt={archiveUnarchiveImgAlt}
+            tooltipContent={archiveUnarchiveTitle}
+            dialogTitle={archiveUnarchiveTitle}
+            dialogDescription={archiveUnarchiveDesc}
             dialogContent={onArchive.archiveDialogContent}
             submitType={"button"}
             submitTitle="Confirm"
             onClick={() => onArchive.fn()}
-            className="bg-black-secondary hover:!bg-black-primary"
+            className={` ${
+              isArchived
+                ? "bg-green-600 hover:!bg-green-900"
+                : "bg-black-primary hover:!bg-black-secondary"
+            } `}
+            disabled={!isBtnArchiveUnarchiveDisabled}
           />
         )}
         {onShowArchive && (
           <ButtonTooltip
             tooltip={`Show Archived ${tableName}s`}
-            className={`${isArchived && "bg-green-200"}`}
+            className={`${isArchived && "bg-green-200 hover:!bg-green-300"}`}
             iconSrc="/button-svgs/table-header-show-archive.svg"
             onClick={toggleArchived}
           />

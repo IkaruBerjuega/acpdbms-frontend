@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useSearchParams } from "next/navigation";
-import FilterPopOver from "./filter-components/fiter-popover";
+import FilterPopOver from "./filter-components/filter-popover";
 import { LuFilter } from "react-icons/lu";
 
 import {
@@ -24,7 +24,7 @@ import { PiDotsThreeVerticalBold } from "react-icons/pi";
 import { TiPin } from "react-icons/ti";
 import { IoArrowUpOutline } from "react-icons/io5";
 import { useCustomTable } from "./custom-tanstack";
-import { Pagination } from "./pagination";
+import { Pagination } from "./Pagination";
 
 export default function DataTable<T>({
   columns,
@@ -42,6 +42,7 @@ export default function DataTable<T>({
   const searchParams = useSearchParams();
 
   // Extract the query from searchParams
+
   const query = searchParams.get("query") || "";
 
   const { table, filterComponents, filters, pagination } = useCustomTable<T>(
@@ -68,7 +69,7 @@ export default function DataTable<T>({
           {filterComponents}
         </div>
       </div>
-      <div className="rounded-lg border ">
+      <div className="rounded-lg border">
         <TableRoot id={id} className={`w-full table-auto ${tableClassName} `}>
           <TableHeader>
             {table?.getHeaderGroups().map((headerGroup) => (
@@ -106,6 +107,7 @@ export default function DataTable<T>({
                                 header.getContext()
                               )}
                         </div>
+
                         {!header.isPlaceholder &&
                           header.column.getCanPin() &&
                           header.id != "select" && (
