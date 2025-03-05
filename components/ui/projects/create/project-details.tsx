@@ -13,7 +13,6 @@ interface ClientItem {
 }
 
 export default function ProjectDetails() {
-  // Form control using react-hook-form context
   const {
     control,
     formState: { errors },
@@ -33,7 +32,7 @@ export default function ProjectDetails() {
   // map clientAccounts to the items expected by FormInput
   const clientItems: ClientItem[] =
     clientAccounts?.data?.map((client: ClientListResponseInterface) => ({
-      value: client.id, // id is a string
+      value: client.id,
       label: client.full_name,
     })) || [];
 
@@ -55,6 +54,9 @@ export default function ProjectDetails() {
                 label={'Client Name'}
                 inputType={'search'}
                 register={register}
+                placeholder='Select Client'
+                errorMessage={errors.client_name?.message}
+                required={true}
                 items={clientItems}
                 onSelect={(item: ClientItem) => {
                   console.log('Selected item:', item);
@@ -63,7 +65,6 @@ export default function ProjectDetails() {
                   setValue('client_id', Number(item.value));
                   setValue('client_name', item.label);
                 }}
-                errorMessage={errors.client_id?.message}
               />
             </div>
           </div>
@@ -87,6 +88,8 @@ export default function ProjectDetails() {
                   inputType={'default'}
                   register={register}
                   errorMessage={errors.project_title?.message}
+                  required={true}
+                  placeholder='Enter Project Title'
                 />
               </div>
             </div>
@@ -109,6 +112,8 @@ export default function ProjectDetails() {
               label={'State'}
               inputType={'default'}
               register={register}
+              placeholder='Enter State'
+              errorMessage={errors.state?.message}
               required={true}
             />
             {/* City/Town */}
@@ -116,7 +121,9 @@ export default function ProjectDetails() {
               name={'city_town'}
               label={'City/Town'}
               inputType={'default'}
+              placeholder='Enter City/Town'
               register={register}
+              errorMessage={errors.city_town?.message}
               required={true}
             />
             {/* Street */}
@@ -124,7 +131,9 @@ export default function ProjectDetails() {
               name={'street'}
               label={'Street'}
               inputType={'default'}
+              placeholder='Enter Street'
               register={register}
+              errorMessage={errors.street?.message}
               required={true}
             />
             {/* Zip Code */}
@@ -132,9 +141,11 @@ export default function ProjectDetails() {
               name={'zip_code'}
               label={'Zip Code'}
               inputType={'default'}
+              placeholder='Enter Zip Code'
               register={register}
               errorMessage={errors.zip_code?.message}
               validationRules={{ valueAsNumber: true }}
+              required={true}
             />
           </div>
         </div>
@@ -157,6 +168,8 @@ export default function ProjectDetails() {
               control={control}
               errorMessage={errors.start_date?.message}
               inputType={'date'}
+              placeholder='Start Date'
+              required={true}
             />
             {/* End Date */}
             <FormInput
@@ -166,6 +179,8 @@ export default function ProjectDetails() {
               control={control}
               errorMessage={errors.end_date?.message}
               inputType={'date'}
+              placeholder='End Date'
+              required={true}
             />
           </div>
         </div>

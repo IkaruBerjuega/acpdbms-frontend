@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { LoginResponseInterface } from './lib/definitions';
 
 // export async function middleware(req: NextRequest) {
 //   return NextResponse.next();
@@ -49,7 +50,7 @@ export async function middleware(req: NextRequest) {
   const role = user.role;
 
   try {
-    // Validate the token with the Laravel backend
+    // // Validate the token with the Laravel backend
     const laravelResponse = await fetch(LARAVEL_AUTH_CHECK_URL, {
       method: 'GET',
       headers: {
