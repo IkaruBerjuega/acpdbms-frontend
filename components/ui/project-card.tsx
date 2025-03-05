@@ -10,7 +10,7 @@ import {
   Archive,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-
+import { getStatusColor } from './general/data-table-components/create-table-columns';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,23 +31,6 @@ export default function Card({
 }) {
   const customLoader = ({ src }: { src: string }) => {
     return src;
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'finished':
-        return 'bg-emerald-500 text-white';
-      case 'ongoing':
-        return 'bg-slate-500 text-white';
-      case 'on-hold':
-        return 'bg-amber-500 text-white';
-      case 'cancelled':
-        return 'bg-red-500 text-white';
-      case 'archived':
-        return 'bg-red-300 text-white';
-      default:
-        return 'bg-slate-300 text-slate-700';
-    }
   };
 
   return (
@@ -102,7 +85,7 @@ export default function Card({
       <div className='flex flex-col flex-grow p-4'>
         <div className='flex justify-between items-start mb-3'>
           <div>
-            <h3 className='text-lg font-semibold text-maroon-700 line-clamp-1 group-hover:text-maroon-800'>
+            <h3 className='text-lg font-semibold text-maroon-700 group-hover:text-maroon-800'>
               {row.getValue('project_title')}
             </h3>
             <div className='flex items-center text-slate-500 mt-1'>

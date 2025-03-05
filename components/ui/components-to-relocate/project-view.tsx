@@ -26,6 +26,7 @@ import { useProjectViewEdit } from '@/hooks/general/use-viewedit';
 import { useUpdateProjectImage } from './use-upload-project-image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { getStatusColor } from '../general/data-table-components/create-table-columns';
 
 type ProjectDetailsSchema = z.infer<typeof step1Schema>;
 
@@ -133,19 +134,6 @@ function ProjectDetails({ id, edit }: { id: string; edit: string }) {
     }
   };
 
-  const getStatusColor = (status: string | undefined) => {
-    switch (status) {
-      case 'finished':
-        return 'bg-emerald-500 hover:bg-emerald-600';
-      case 'on-hold':
-        return 'bg-amber-500 hover:bg-amber-600';
-      case 'ongoing':
-        return 'bg-slate-300 hover:bg-slate-400';
-      default:
-        return 'bg-slate-300 hover:bg-slate-400';
-    }
-  };
-
   return (
     <>
       <Card className='border-none shadow-md'>
@@ -170,10 +158,13 @@ function ProjectDetails({ id, edit }: { id: string; edit: string }) {
                   className='object-cover h-full w-full'
                 />
                 {isHovered && (
-                  <div className='absolute inset-0 flex items-center justify-center hover:bg-black-500 bg-opacity-30 text-white text-sm font-bold transition-opacity'>
-                    Change Photo
+                  <div className='absolute inset-0 flex items-center justify-center hover:bg-primary hover:bg-opacity-60'>
+                    <p className='text-sm text-secondary font-bold'>
+                      Change Photo
+                    </p>
                   </div>
                 )}
+
                 <input
                   type='file'
                   id='fileInput'
@@ -190,13 +181,15 @@ function ProjectDetails({ id, edit }: { id: string; edit: string }) {
                   <MapPin className='h-4 w-4 mr-1' />
                   <span className='text-sm'>{projectLocation}</span>
                 </div>
-                <Badge
-                  className={`${getStatusColor(
-                    status
-                  )} text-white font-medium py-1`}
-                >
-                  {status}
-                </Badge>
+                <div className='absolute pt-24 flex items-center justify-center'>
+                  <Badge
+                    className={`${getStatusColor(
+                      status ?? 'unknown'
+                    )} py-1 text-xs font-medium hover:bg-white`}
+                  >
+                    {status}
+                  </Badge>
+                </div>
               </div>
             </div>
             {!isEdit && (
@@ -223,7 +216,7 @@ function ProjectDetails({ id, edit }: { id: string; edit: string }) {
                   </h2>
                 </div>
 
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-6'>
+                <div className='grid grid-cols-1 md:grid-cols-2 ml-6 gap-6'>
                   {isEdit ? (
                     <>
                       <FormInput
@@ -269,7 +262,7 @@ function ProjectDetails({ id, edit }: { id: string; edit: string }) {
                   )}
                 </div>
               </div>
-
+              <Separator className='bg-primary opacity-20' />
               {/* Location Section */}
               <div>
                 <div className='flex items-center mb-4'>
@@ -279,7 +272,7 @@ function ProjectDetails({ id, edit }: { id: string; edit: string }) {
                   </h2>
                 </div>
 
-                <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+                <div className='grid grid-cols-1 md:grid-cols-2 ml-6 gap-6'>
                   {isEdit ? (
                     <>
                       <FormInput
@@ -357,7 +350,7 @@ function ProjectDetails({ id, edit }: { id: string; edit: string }) {
                   )}
                 </div>
               </div>
-
+              <Separator className='bg-primary opacity-30' />
               {/* Duration Section */}
               <div>
                 <div className='flex items-center mb-4'>
@@ -367,7 +360,7 @@ function ProjectDetails({ id, edit }: { id: string; edit: string }) {
                   </h2>
                 </div>
 
-                <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+                <div className='grid grid-cols-1 md:grid-cols-3 ml-6 gap-6'>
                   {isEdit ? (
                     <>
                       <FormInput
@@ -420,7 +413,9 @@ function ProjectDetails({ id, edit }: { id: string; edit: string }) {
                       {details?.finish_date && (
                         <div className='space-y-1'>
                           <div className='flex items-center'>
-                            <Calendar className='h-4 w-4 text-slate-500 mr-2' />
+                            <Calendar
+                              className={'h-4 w-4 text-emerald-500 mr-2'}
+                            />
                             <span className='text-sm font-medium text-slate-700'>
                               Finish Date
                             </span>

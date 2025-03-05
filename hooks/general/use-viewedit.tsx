@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useApiQuery, useApiMutation } from '@/hooks/tanstack-query-hook';
+import { useApiQuery, useApiMutation } from '@/hooks/tanstack-query';
 import { ProjectDetailsInterface } from '@/lib/definitions';
 
 export const useProjectViewEdit = (id: string) => {

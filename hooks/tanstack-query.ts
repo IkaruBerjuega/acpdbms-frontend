@@ -1,12 +1,12 @@
 'use client';
 
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { Enabled, useMutation, useQuery } from '@tanstack/react-query';
 import { useToken } from './api-calls/use-token';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 // General function for API mutations
-const apiMutation = async ({
+export const requestAPI = async ({
   url,
   method = 'POST',
   body,
@@ -24,14 +24,20 @@ const apiMutation = async ({
   const { getToken } = useToken();
   const userData = auth ? await getToken() : null; // Fetch token before making request
 
+  const isFormData = body instanceof FormData;
+
+  const headers: Record<string, string> = {
+    // Only add Content-Type header if the body is not FormData.
+    ...(!isFormData && contentType ? { 'Content-Type': contentType } : {}),
+    ...(auth ? { Authorization: `Bearer ${userData?.token}` } : {}),
+    ...(additionalHeaders || {}),
+  };
+
   const res = await fetch(`${API_URL}${url}`, {
     method,
-    headers: {
-      'Content-Type': contentType,
-      ...(auth ? { Authorization: `Bearer ${userData?.token}` } : {}),
-      ...(additionalHeaders && additionalHeaders),
-    },
-    body: body ? JSON.stringify(body) : undefined,
+    headers,
+    // If body is FormData, send it as is. Otherwise, stringify it.
+    body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
   });
 
   let responseData;
@@ -62,23 +68,23 @@ export function useApiMutation<T>({
 }) {
   const mutation = useMutation({
     mutationFn: (body?: T) =>
-      apiMutation({
+      requestAPI({
         url,
         method,
         body,
         contentType,
         auth,
-        ...(additionalHeaders && additionalHeaders),
+        additionalHeaders,
       }),
-
-    //You should be passing the onSuccess and onError directly on where wil you use it
   });
 
   return {
     mutate: mutation.mutate,
     isLoading: mutation.isPending,
     data: mutation.data,
-    error: mutation.error?.message,
+    error:
+      (mutation.error as unknown as { email?: string })?.email ||
+      mutation.error?.message,
   };
 }
 
@@ -86,15 +92,19 @@ export function useApiQuery<T>({
   key,
   url,
   additionalHeaders,
+  initialData,
+  enabled,
 }: {
   key: string | string[];
   url: string;
   additionalHeaders?: Record<string, string>;
+  initialData?: T;
+  enabled?: Enabled<T, Error, T, string[]> | undefined;
 }) {
-  const { getToken } = useToken(); // Call useToken() at the top level
+  const { getToken } = useToken();
 
   const fetchApiData = async (): Promise<T> => {
-    const userData = await getToken(); // Fetch token before making request
+    const userData = await getToken();
 
     const response = await fetch(`${API_URL}${url}`, {
       method: 'GET',
@@ -103,7 +113,7 @@ export function useApiQuery<T>({
         ...(userData?.token
           ? { Authorization: `Bearer ${userData?.token}` }
           : {}),
-        ...(additionalHeaders && additionalHeaders),
+        ...(additionalHeaders || {}),
       },
     });
 
@@ -113,10 +123,12 @@ export function useApiQuery<T>({
 
     return response.json();
   };
-
+  key = '';
   const { data, isLoading, isPending, error } = useQuery({
     queryKey: [key],
-    queryFn: () => fetchApiData(), // Pass function reference, NOT a function call
+    queryFn: () => fetchApiData(),
+    initialData: initialData,
+    enabled: enabled,
   });
 
   return {
