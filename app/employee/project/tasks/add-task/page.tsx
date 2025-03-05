@@ -1,10 +1,10 @@
-import Breadcrumbs from '@/app/ui/breadcrumbs';
-import AddTask from '@/app/ui/employee/project/tasks/add-task-form';
+// import { Breadcrumb } from '@/components/ui/breadcrumb';
+// import AddTask from '@/app/ui/employee/project/tasks/add-task-form';
 
 export default async function Page() {
   return (
-    <main className='w-full h-auto flex justify-center flex-col'>
-      <Breadcrumbs
+    <main className="w-full h-auto flex justify-center flex-col">
+      {/* <Breadcrumbs
         breadcrumbs={[
           {
             label: 'Tasks',
@@ -16,8 +16,8 @@ export default async function Page() {
             active: true,
           },
         ]}
-      />
-      <AddTask />
+      /> */}
+      {/* <AddTask /> */}
     </main>
   );
 }

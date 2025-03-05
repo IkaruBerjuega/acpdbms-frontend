@@ -1,18 +1,25 @@
-import Breadcrumbs from '@/components/ui/projects/create/breadcrumbs';
-import CreateForm from '@/components/ui/projects/create/create-form';
+import Breadcrumbs from "@/components/ui/admin/projects/create/breadcrumbs";
+import CreateForm from "@/components/ui/admin/projects/create/create-form";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default function Page() {
   return (
-    <main className='flex flex-col gap-5'>
-      <Breadcrumbs
+    <main className="flex flex-col gap-2">
+      <SidebarTrigger
         breadcrumbs={[
           {
-            label: 'Projects',
-            href: '/admin/projects',
+            href: "",
+            pageName: "Admin",
+            active: false,
           },
           {
-            label: 'Add Project',
-            href: '/admin/projects/create',
+            href: "/admin/projects/",
+            pageName: "Projects",
+            active: false,
+          },
+          {
+            href: "",
+            pageName: "Add Project",
             active: true,
           },
         ]}

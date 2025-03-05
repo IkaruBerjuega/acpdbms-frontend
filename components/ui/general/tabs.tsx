@@ -12,7 +12,7 @@ interface TabsInterface {
 
 export default function Tabs({ activeTab, tabItems }: TabsInterface) {
   return (
-    <div className="rounded-md flex-row-between-center bg-white-secondary h-full px-1.5 py-1 ">
+    <div className="rounded-md flex-row-between-center bg-gray-200 h-full px-1.5 py-1 ">
       {tabItems.map(({ item, action }, index) => (
         <button
           key={index}

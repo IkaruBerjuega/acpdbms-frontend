@@ -18,7 +18,7 @@ import { ItemInterface } from "@/lib/filter-types";
 interface FormInputType<T extends FieldValues> {
   items?: ItemInterface[];
   control?: Control<T>;
-  register: UseFormRegister<T>;
+  register?: UseFormRegister<T>;
   validationRules?: object;
   name: Path<T>;
   label: string;
@@ -72,11 +72,17 @@ export default function FormInput<T extends FieldValues>({
   const isDefault = inputType === "default";
   const isTextArea = inputType === "textArea";
 
+  // create a required rule that checks if the field is empty
+  const requiredRule = required ? { required: `${label} is required` } : {};
+
+  // combine the required rule with any custom validationRules:
+  const finalRules = { ...requiredRule, ...validationRules };
+
   return (
     <div className={`flex flex-col ${className}`}>
       <Label
         htmlFor={name}
-        className={`font-semibold text-xs text-darkgray-500 ${labelColor}`}
+        className={`font-semibold text-xs text-gray-500 ${labelColor}`}
       >
         {label}
         {required !== false && <span className="text-red-500 ml-1">*</span>}
@@ -84,7 +90,7 @@ export default function FormInput<T extends FieldValues>({
 
       {isSearch ? (
         <Controller
-          rules={validationRules}
+          rules={finalRules}
           control={control}
           name={name}
           render={({ field: { onChange, value, onBlur } }) => (
@@ -117,11 +123,11 @@ export default function FormInput<T extends FieldValues>({
           className={`text-xs sm:text-sm mt-1 ${fieldBg} ${
             borderNone ? "border-none" : ""
           }`}
-          {...register(name, validationRules)}
+          {...(register && register(name, validationRules))}
         />
       ) : isDate ? (
         <Controller
-          rules={validationRules}
+          rules={finalRules}
           control={control}
           name={name}
           render={({ field: { onChange, value, onBlur } }) => (
@@ -144,7 +150,7 @@ export default function FormInput<T extends FieldValues>({
           className={`text-xs sm:text-sm flex-grow ${fieldBg} ${
             borderNone ? "border-none" : ""
           }`}
-          {...register(name, validationRules)}
+          {...(register && register(name, validationRules))}
         />
       ) : null}
 

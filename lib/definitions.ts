@@ -27,6 +27,8 @@ export interface EmployeeInterface {
   position: string;
   email: string;
   status: string;
+  has_ongoing_task?: boolean;
+  profile_picture_url?: string;
 }
 
 export interface ClientInterface {
@@ -38,6 +40,20 @@ export interface ClientInterface {
   last_name: string;
   email: string;
   status: string;
+  profile_picture_url?: string;
+}
+
+//team details response
+export interface ProjectManager {
+  id: number;
+  name: string;
+  role: 'Project Manager';
+}
+
+export interface TeamDetailsResponse {
+  project_managers: ProjectManager[];
+  activated_accounts: EmployeeInterface[];
+  other_employees: EmployeeInterface[];
 }
 
 export interface ProjectListResponseInterface {
@@ -47,46 +63,16 @@ export interface ProjectListResponseInterface {
   start_date: string;
   end_date: string;
   finish_date?: string | null;
-  status: 'finished' | 'on-hold' | 'ongoing' | 'cancelled' | 'archived';
+  status:
+    | 'finished'
+    | 'on-hold'
+    | 'ongoing'
+    | 'cancelled'
+    | 'archived'
+    | 'pending';
   location: string;
   image_url?: string | null;
   project_manager: string;
-}
-
-export interface ColumnInterface<T> {
-  id?: string;
-  accessorKey?: keyof T | string;
-  header:
-    | (() => React.JSX.Element)
-    | (({ table }: HeaderContext<T, unknown>) => React.JSX.Element);
-  meta?: FilterType;
-  cell?: ({ row }: CellContext<T, unknown>) => React.JSX.Element;
-  filterFn?: <T>(
-    row: Row<T>,
-    columnId: string,
-    filterValues: string[]
-  ) => boolean; // boolean because the system only uses one filter function
-}
-
-export interface ColumnInterfaceProp {
-  id_string?: string;
-  accessorKey_string?: string;
-  header_string?: string;
-  meta?: FilterType;
-  cell_string?: boolean;
-  filterFn?: boolean; // boolean because the system only uses one filter function
-  enableHiding?: boolean;
-}
-
-export interface ClientListResponseInterface {
-  id: string;
-  user_id: string;
-  full_name: string;
-  first_name: string;
-  middle_name: string;
-  last_name: string;
-  email: string;
-  status: string;
 }
 
 export interface ProjectDetailsInterface {
@@ -106,4 +92,56 @@ export interface ProjectDetailsInterface {
   project_manager: string;
 }
 
-export type CheckboxData = ClientListResponseInterface;
+export interface ColumnInterface<T> {
+  id?: string;
+  accessorKey?: keyof T | string;
+  header:
+    | (() => React.JSX.Element)
+    | (({ table }: HeaderContext<T, unknown>) => React.JSX.Element);
+  meta?: FilterType;
+  cell?: ({ row }: CellContext<T, unknown>) => React.JSX.Element;
+  filterFn?: <T>(
+    row: Row<T>,
+    columnId: string,
+    filterValues: string[]
+  ) => boolean; // boolean because the system only uses one filter function
+}
+
+export interface ColumnInterfaceProp {
+  id?: string;
+  accessorKey?: string;
+  header?: string;
+  meta?: FilterType;
+  cell?: boolean | React.JSX.Element;
+  filterFn?: boolean; // boolean because the system only uses one filter function
+  enableHiding?: boolean;
+}
+
+export type AccountActions =
+  | 'sendReset'
+  | 'deactivate'
+  | 'archive'
+  | 'activate'
+  | 'unarchive'
+  | undefined;
+
+export type ProjectActions =
+  | 'archive'
+  | 'unarchive'
+  | 'cancel'
+  | 'remove'
+  | undefined;
+
+export interface Breadcrumbs {
+  href: string;
+  pageName: string;
+  active: boolean;
+}
+
+//types
+export type SupportedTableTypes =
+  | ClientInterface
+  | EmployeeInterface
+  | ProjectListResponseInterface;
+export type SupportedTableName = 'Accounts' | 'Projects';
+export type AccountsTableType = ClientInterface | EmployeeInterface;

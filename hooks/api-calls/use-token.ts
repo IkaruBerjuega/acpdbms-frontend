@@ -22,7 +22,7 @@ export const useToken = () => {
       const response = await fetch(`/api/auth/token`, {
         method: "GET",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // ✅ Ensure cookies are included in the request
+        credentials: "include", //Ensure cookies are included in the request
       });
 
       if (!response.ok) return null;

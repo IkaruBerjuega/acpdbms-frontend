@@ -13,7 +13,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
 
 interface NavigationInterface {
@@ -21,6 +20,7 @@ interface NavigationInterface {
   url: string;
   icon: IconType;
   isActive?: boolean;
+  query?: string;
 }
 
 const adminNavs: NavigationInterface[] = [
@@ -37,7 +37,8 @@ const adminNavs: NavigationInterface[] = [
   },
   {
     title: "Accounts",
-    url: "/admin/accounts?role=employee",
+    url: "/admin/accounts",
+    query: "role=employee",
     icon: RiAccountCircleLine,
   },
   {
@@ -83,8 +84,6 @@ export function NavMain({ role }: { role: string }) {
 
   let navs: NavigationInterface[];
 
-  const { open } = useSidebar();
-
   if (role === "admin") navs = adminNavs;
   else if (role === "employee") navs = employeeNavs;
   else if (role === "client") navs = clientNavs;
@@ -95,9 +94,10 @@ export function NavMain({ role }: { role: string }) {
       <SidebarMenu className=" ">
         {navs.map((nav) => {
           const isActive = pathname.startsWith(nav.url);
+          const { query } = nav;
           return (
             <SidebarMenuItem key={nav.title}>
-              <Link href={nav.url}>
+              <Link href={`${nav.url}${query ? `?${query}` : ""}`}>
                 <SidebarMenuButton
                   asChild
                   tooltip={nav.title}

@@ -3,7 +3,7 @@
 import { SearchInput } from "../../input";
 import { AiOutlineSearch } from "react-icons/ai"; // Import the search icon from react-icons
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useDebouncedCallback } from "use-debounce";
 
 export function Search({

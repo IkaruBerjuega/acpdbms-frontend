@@ -21,7 +21,7 @@ export default function ProjectCards({ query }: { query: string }) {
   const memoizedProjects = useMemo(() => projects, [projects]);
 
   if (isLoading) return <p>Loading projects...</p>;
-  if (isError) return <p>Error: {error?.message}</p>;
+  if (error) return <p>Error: {error?.message}</p>;
 
   const { table, filterComponents, filters, pagination } = useCustomTable(
     query,

@@ -24,7 +24,7 @@ export default function LoginForm() {
 
   const { handleSubmit, register } = methods;
 
-  const { mutate, isLoading, error, data } = useLogin();
+  const { mutate, isLoading, error } = useLogin();
 
   //destructure to get store token function from useToken. This stores http only cookie
   //it will store the logged in user's information and the token
