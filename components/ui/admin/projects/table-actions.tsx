@@ -17,16 +17,19 @@ export default function ProjectActions<T extends ProjectListResponseInterface>({
 }: ProjectActionsProps<T>): JSX.Element {
   const { id, status, project_title } = attrs;
 
-  const isOngoing = status === "ongoing";
+  // const isOngoing = status === "ongoing";
   const isArchived = status === "archived";
   const isFinished = status === "finished";
   const isPending = status === "pending";
   const isCancelled = status === "cancelled";
+  const isOnHold = status === "on-hold";
 
   const canCancel = !isArchived && !isFinished && !isCancelled;
   const canArchive = isFinished && !isArchived;
   const canDestroy = isPending || isCancelled;
-  const canUnarchive = isArchived;
+  // const canUnarchive = isArchived;
+  const canOnhold = !isArchived && !isFinished && !isCancelled && !isOnHold;
+  const canContinue = isOnHold;
 
   const DialogContent = () => (
     <div className="w-full text-sm">
@@ -66,8 +69,13 @@ export default function ProjectActions<T extends ProjectListResponseInterface>({
     queryClient.invalidateQueries({ queryKey: [queryKey] });
   };
 
-  const { cancelProject, archiveUnarchiveProject, removeProject } =
-    useProjectActions<ProjectActionSchema>(id);
+  const {
+    cancelProject,
+    archiveUnarchiveProject,
+    removeProject,
+    onholdProject,
+    continueProject,
+  } = useProjectActions<ProjectActionSchema>(id);
 
   const actions = {
     cancel: {
@@ -80,7 +88,7 @@ export default function ProjectActions<T extends ProjectListResponseInterface>({
       action: removeProject,
       title: "Remove Project",
       successMessage: "The selected project is now removed",
-      queryKey: "projects-archived",
+      queryKey: "projects",
     },
     archive: {
       action: archiveUnarchiveProject,
@@ -88,17 +96,29 @@ export default function ProjectActions<T extends ProjectListResponseInterface>({
       successMessage: "The selected project is now archived",
       queryKey: "projects",
     },
-    unarchive: {
-      action: archiveUnarchiveProject,
-      title: "Unarchive Project",
-      successMessage: "The selected project is now unarchived",
-      queryKey: "projects-archived",
+    // unarchive: {
+    //   action: archiveUnarchiveProject,
+    //   title: "Unarchive Project",
+    //   successMessage: "The selected project is now unarchived",
+    //   queryKey: "projects-archived",
+    // },
+    onhold: {
+      action: onholdProject,
+      title: "On-hold Project",
+      successMessage: "The selected project is now set to on-hold",
+      queryKey: "projects",
+    },
+    continue: {
+      action: continueProject,
+      title: "Continue Project",
+      successMessage: "The selected project is now continued",
+      queryKey: "projects",
     },
     undefined: null,
   };
 
   const onClick = ({ action }: { action: Actions }) => {
-    if (!action) return;
+    if (!action || !actions[action]) return;
 
     const actionFn = actions[action].action;
     const title = actions[action].title;
@@ -139,6 +159,39 @@ export default function ProjectActions<T extends ProjectListResponseInterface>({
           iconSrc: "/button-svgs/table-action-edit.svg",
           alt: "edit project button",
         },
+
+        ...(canOnhold
+          ? [
+              {
+                dialogTitle: "On-hold Project",
+                label: "Set to on-hold",
+                onClick: () => onClick({ action: "onhold" }),
+                iconSrc: "/button-svgs/table-action-onhold.svg",
+                alt: "on-hold project button",
+                dialogContent: <DialogContent />,
+                dialogBtnSubmitLabel: "Confirm",
+                dialogDescription:
+                  "Are you sure you want to set this project to on-hold? If this project is on-hold, the project team will not be able to create and finish tasks",
+                isDialog: true,
+              },
+            ]
+          : []),
+        ...(canContinue
+          ? [
+              {
+                dialogTitle: "Continue Project",
+                label: "Continue",
+                onClick: () => onClick({ action: "continue" }),
+                iconSrc: "/button-svgs/table-action-continue.svg",
+                alt: "unarchive project button",
+                dialogContent: <DialogContent />,
+                dialogBtnSubmitLabel: "Confirm",
+                dialogDescription:
+                  "Are you sure you want to continue this project?",
+                isDialog: true,
+              },
+            ]
+          : []),
         ...(canCancel
           ? [
               {
@@ -191,24 +244,24 @@ export default function ProjectActions<T extends ProjectListResponseInterface>({
               },
             ]
           : []),
-        ...(canUnarchive
-          ? [
-              {
-                dialogTitle: "Unarchive Project",
-                label: "Unarchive",
-                onClick: () => onClick({ action: "unarchive" }),
-                iconSrc: "/button-svgs/table-action-unarchive.svg",
-                alt: "unarchive project button",
-                dialogContent: <DialogContent />,
-                dialogBtnSubmitLabel: "Confirm",
-                dialogDescription:
-                  "Are you sure you want to remove this project?",
-                className:
-                  "bg-green-500 hover:!bg-green-600 text-white-primary hover:!text-white-secondary",
-                isDialog: true,
-              },
-            ]
-          : []),
+        // ...(canUnarchive
+        //   ? [
+        //       {
+        //         dialogTitle: "Unarchive Project",
+        //         label: "Unarchive",
+        //         onClick: () => onClick({ action: "unarchive" }),
+        //         iconSrc: "/button-svgs/table-action-unarchive.svg",
+        //         alt: "unarchive project button",
+        //         dialogContent: <DialogContent />,
+        //         dialogBtnSubmitLabel: "Confirm",
+        //         dialogDescription:
+        //           "Are you sure you want to remove this project?",
+        //         className:
+        //           "bg-green-500 hover:!bg-green-600 text-white-primary hover:!text-white-secondary",
+        //         isDialog: true,
+        //       },
+        //     ]
+        //   : []),
       ]}
     />
   );

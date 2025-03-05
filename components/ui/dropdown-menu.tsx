@@ -215,20 +215,19 @@ interface CustomDropdownMenuProps {
   items: ItemProps[];
   btnVariant: "ghost" | "outline" | "default";
 }
-
 const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
   const { items } = props;
-  const [open, setOpen] = useState(false);
+  const [selectedDialog, setSelectedDialog] = useState<string | null>(null);
 
   const onClick = (item: ItemProps) => {
-    item.onClick();
-    setOpen(false); // Close the dialog
+    item.onClick(); // Execute the action
+    setSelectedDialog(null); // Close the dialog
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={props.btnVariant} className="p-2 h-8 ">
+        <Button variant={props.btnVariant} className="p-2 h-8">
           {props.btnSrc && props.btnSrcAlt && (
             <Image
               src={props.btnSrc}
@@ -241,15 +240,20 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-40 " align="end" side="bottom">
-        <DropdownMenuLabel className="text-xs">
+      <DropdownMenuContent className="w-40" align="end" side="bottom">
+        <DropdownMenuLabel className="text-xs hidden">
           {props.menuLabel}
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator className="hidden" />
         {items.map((item, index) => (
           <React.Fragment key={index}>
             {item.isDialog ? (
-              <Dialog open={open} onOpenChange={setOpen}>
+              <Dialog
+                open={selectedDialog === item.label}
+                onOpenChange={(open) =>
+                  setSelectedDialog(open ? item.label : null)
+                }
+              >
                 <DialogTrigger asChild>
                   <DropdownMenuItem
                     onSelect={(e) => e.preventDefault()}
@@ -262,8 +266,8 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
                       <Image
                         src={item.iconSrc}
                         alt={`${item.iconSrc} button`}
-                        width={18}
-                        height={18}
+                        width={16}
+                        height={16}
                       />
                       <span>{item.label}</span>
                     </Button>
@@ -292,13 +296,13 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
               >
                 <Button
                   variant="ghost"
-                  className={`w-full h-full flex justify-start items-center  gap-2 px-3 ${item.className}`}
+                  className={`w-full h-full flex justify-start items-center gap-2 px-3 ${item.className}`}
                 >
                   <Image
                     src={item.iconSrc}
                     alt={`${item.iconSrc} button`}
-                    width={18}
-                    height={18}
+                    width={16}
+                    height={16}
                   />
                   <span>{item.label}</span>
                 </Button>

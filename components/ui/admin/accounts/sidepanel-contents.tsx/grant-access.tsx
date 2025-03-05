@@ -19,13 +19,15 @@ import {
   employeesToAssign,
   grantProjectAccess,
 } from "@/lib/form-constants/form-constants";
-import { requireError } from "@/lib/utils";
+import { cn, requireError } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { SubmitHandler } from "react-hook-form";
 import { useCheckboxStore } from "@/hooks/states/create-store";
 import { CiCircleMinus } from "react-icons/ci";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Image from "next/image";
 
 export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
   const {
@@ -245,21 +247,39 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
                 Members<span className="text-red-500">*</span>
               </h1>
               <h2 className="text-xs">(Select employees from the table)</h2>
-              <div className="w-full flex-col-center-start text-sm mt-2 space-y-2">
+              <div className="w-full flex-col-center-start text-sm mt-4 space-y-2 flex-grow">
                 {selectedMembers.map((employee, index) => {
                   const number = index + 1;
+                  const initials = `${employee.first_name[0]} ${employee.last_name[0]}`;
                   return (
                     <div
                       key={index}
-                      className="text-sm flex-row-between-start w-full"
+                      className="text-sm flex-row-between-center w-full"
                     >
-                      <div>
-                        {number}. {employee.full_name}
+                      <div className="flex-row-start-center gap-2">
+                        <span> {number}. </span>
+                        <Avatar>
+                          <AvatarImage
+                            src={employee.profile_picture_url}
+                            alt="@shadcn"
+                          />
+                          <AvatarFallback>{initials}</AvatarFallback>
+                        </Avatar>
+                        <span>{employee.full_name}</span>
                       </div>
-                      <CiCircleMinus
-                        className="text-red-700 text-xl"
+                      <Button
+                        variant={"ghost"}
+                        type="button"
+                        className="p-2 h-9"
                         onClick={() => removeMember(employee.id)}
-                      />
+                      >
+                        <Image
+                          src={"/button-svgs/table-action-remove.svg"}
+                          alt={`Remove Selected Employee: ${employee.full_name}`}
+                          width={20}
+                          height={20}
+                        />
+                      </Button>
                     </div>
                   );
                 })}

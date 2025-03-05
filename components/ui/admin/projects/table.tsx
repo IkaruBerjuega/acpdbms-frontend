@@ -107,7 +107,7 @@ export default function Table<T>({
   ];
   const transformedColumns = useCreateTableColumns<T>(columns, "Projects");
 
-  const { data: ProjectList, isLoading } = useProjectList<T>({
+  const { data: projectList, isLoading } = useProjectList<T>({
     isArchived: isArchived,
     initialData: initialData,
   });
@@ -116,9 +116,9 @@ export default function Table<T>({
     return <>Loading</>;
   }
 
-  if (!ProjectList) {
-    return <>No Projects Yet</>;
+  if (!projectList || projectList.length === 0) {
+    return <>{isArchived ? "No Archived Projects Yet" : "No Projects Yet"} </>;
   }
 
-  return <DataTable columns={transformedColumns} data={ProjectList} />;
+  return <DataTable columns={transformedColumns} data={projectList} />;
 }

@@ -52,15 +52,6 @@ export async function middleware(req: NextRequest) {
   const role = user.role;
 
   try {
-    // Validate the token with the Laravel backend
-    // const laravelResponse = await fetch(LARAVEL_AUTH_CHECK_URL, {
-    //   method: "GET",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${token}`,
-    //   },
-    // });
-    // // Validate the token with the Laravel backend
     const laravelResponse = await fetch(LARAVEL_AUTH_CHECK_URL, {
       method: "GET",
       headers: {

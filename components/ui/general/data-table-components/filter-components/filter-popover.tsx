@@ -61,7 +61,7 @@ export default function FilterPopOver({
           <div>
             {content.map((option, index) => (
               <Popover key={index}>
-                <PopoverTrigger asChild>
+                <PopoverTrigger asChild className="h-8 p-0">
                   <Button
                     variant="ghost"
                     className="flex gap-2 p-2 w-full justify-start rounded-md"
