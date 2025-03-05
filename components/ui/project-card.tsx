@@ -1,8 +1,16 @@
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
-import { PiDotsThreeVerticalBold } from 'react-icons/pi';
-import cx from 'classnames';
-
+import {
+  Calendar,
+  MapPin,
+  User,
+  MoreVertical,
+  ExternalLink,
+  Edit,
+  Archive,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { getStatusColor } from './general/data-table-components/create-table-columns';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,10 +29,14 @@ export default function Card({
   isClient: boolean;
   fn: (projectId?: string, projectName?: string) => void;
 }) {
+  const customLoader = ({ src }: { src: string }) => {
+    return src;
+  };
+
   return (
     <div
       key={row.id}
-      className='flex flex-col col-span-1 h-[300px] cursor-pointer sm:h-[350px] bg-white shadow-md rounded-xl overflow-hidden '
+      className='group flex flex-col h-full bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md transition-all duration-200'
       onClick={() =>
         fn(
           row.getValue('id') as string,
@@ -32,94 +44,134 @@ export default function Card({
         )
       }
     >
-      <div className='w-full h-[74%] bg-gray shadow-sm'>
-        <div className='relative w-full h-[70%] flex justify-center items-center'>
-          {row.getValue('image_url') ? (
-            <Image
-              src={row.getValue('image_url')}
-              alt='Project'
-              className='object-cover' // Ensures the image covers the parent div
-              layout='fill' // Use layout='fill' to fill the parent div
-            />
-          ) : (
-            <p className='text-white font-semibold'>No Image</p>
-          )}
-        </div>
+      {/* Image Section */}
+      <div className='relative w-full aspect-video overflow-hidden'>
+        {/* {row.getValue('image_url') ? ( */}
+        <Image
+          loader={customLoader}
+          src={
+            // row.getValue('image_url') ||
+            'https://media.istockphoto.com/id/1217618992/photo/3d-house.jpg?s=612x612&w=0&k=20&c=brVxRkoQX9q-2TwiyjgjYyNJrBCs-j41J34fLVp3pdA='
+          }
+          alt={`${row.getValue('project_title')} Project`}
+          className='object-cover transition-transform duration-300 group-hover:scale-105'
+          layout='fill'
+          priority
+        />
+        {/* ) : (
+          <Image
+            loader={customLoader}
+            src='https://media.istockphoto.com/id/1217618992/photo/3d-house.jpg?s=612x612&w=0&k=20&c=brVxRkoQX9q-2TwiyjgjYyNJrBCs-j41J34fLVp3pdA='
+            alt='Default Project Image'
+            className='object-cover transition-transform duration-300 group-hover:scale-105'
+            layout='fill'
+            priority
+          />
+        )} */}
 
-        <div className='w-full h-[30%] bg-white flex flex-row py-2 justify-between'>
-          <div className='flex flex-col px-4'>
-            <p className='text-md sm:text-lg font-semibold text-maroon-700'>
+        {/* Status Badge */}
+        <div className='absolute top-3 left-3'>
+          <Badge
+            className={`${getStatusColor(
+              row.getValue('status')
+            )} px-2 py-1 text-xs font-medium`}
+          >
+            {row.getValue('status')}
+          </Badge>
+        </div>
+      </div>
+
+      {/* Content Section */}
+      <div className='flex flex-col flex-grow p-4'>
+        <div className='flex justify-between items-start mb-3'>
+          <div>
+            <h3 className='text-lg font-semibold text-maroon-700 group-hover:text-maroon-800'>
               {row.getValue('project_title')}
-            </p>
-            <p className='text-darkgray-400 text-sm sm:text-md'>
-              {row.getValue('location')}
-            </p>
+            </h3>
+            <div className='flex items-center text-slate-500 mt-1'>
+              <MapPin className='h-3.5 w-3.5 mr-1' />
+              <p className='text-sm line-clamp-1'>{row.getValue('location')}</p>
+            </div>
           </div>
 
-          <div className='px-2' onClick={(e) => e.stopPropagation()}>
-            {/* Prevent click event from bubbling up */}
+          <div onClick={(e) => e.stopPropagation()} className='ml-2'>
             <DropdownMenu>
-              <DropdownMenuTrigger asChild className='h-8 w-8'>
-                <Button variant='ghost' className='h-8 w-8 p-0'>
-                  <PiDotsThreeVerticalBold className='h-4 w-4' />
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  className='h-8 w-8 p-0 rounded-full hover:bg-slate-100'
+                >
+                  <MoreVertical className='h-4 w-4' />
+                  <span className='sr-only'>Open menu</span>
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent side='bottom' align='end' sideOffset={8}>
+              <DropdownMenuContent side='bottom' align='end' className='w-48'>
                 <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation(); // Prevents card click
-                    navigator.clipboard.writeText(row.getValue('project_id'));
-                  }}
-                >
-                  <Link href={`/admin/accounts/${row.getValue('id')}/view`}>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem className='cursor-pointer'>
+                  <Link
+                    href={`/admin/projects/${row.getValue('id')}/view`}
+                    className='flex items-center w-full'
+                  >
+                    <ExternalLink className='h-4 w-4 mr-2' />
                     View Details
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                  Edit
+                <DropdownMenuItem className='cursor-pointer'>
+                  <div className='flex items-center w-full'>
+                    <Edit className='h-4 w-4 mr-2' />
+                    Edit Project
+                  </div>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={(e) => e.stopPropagation()}>
-                  Archive
+                <DropdownMenuItem className='cursor-pointer'>
+                  <div className='flex items-center w-full'>
+                    <Archive className='h-4 w-4 mr-2' />
+                    Archive
+                  </div>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
-      </div>
 
-      <div className='w-full h-[25%] flex flex-row px-4 py-2 text-sm'>
-        <div className='flex flex-col w-[80%] h-full'>
-          <p className='font-semibold'>
-            Client Name:{' '}
-            <span className='font-normal'>{row.getValue('client_name')}</span>
-          </p>
-          <p className='font-semibold'>
-            Project Timeline:{' '}
-            <span className='font-normal'>
-              {row.getValue('start_date')} - {row.getValue('end_date')}
-            </span>
-          </p>
-          {row.getValue('finish_date') ? (
-            <p className='font-semibold'>
-              Date Finished:{' '}
-              <span className='font-normal'>{row.getValue('finish_date')}</span>
-            </p>
-          ) : null}
+        <div className='mt-1 space-y-2 flex-grow'>
+          <div className='flex items-start'>
+            <User className='h-4 w-4 text-slate-400 mt-0.5 mr-2' />
+            <div>
+              <p className='text-xs text-slate-500'>Client</p>
+              <p className='text-sm font-medium'>
+                {row.getValue('client_name')}
+              </p>
+            </div>
+          </div>
+
+          <div className='flex items-start'>
+            <Calendar className='h-4 w-4 text-slate-400 mt-0.5 mr-2' />
+            <div>
+              <p className='text-xs text-slate-500'>Timeline</p>
+              <p className='text-sm'>
+                {row.getValue('start_date')} - {row.getValue('end_date')}
+              </p>
+            </div>
+          </div>
+
+          {row.getValue('finish_date') && (
+            <div className='flex items-start'>
+              <Calendar className='h-4 w-4 text-emerald-500 mt-0.5 mr-2' />
+              <div>
+                <p className='text-xs text-slate-500'>Completed</p>
+                <p className='text-sm'>{row.getValue('finish_date')}</p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className='h-[1%] w-full rounded-b-xl'>
-        <div
-          className={cx('w-full h-full rounded-b-md', {
-            'bg-green-500': row.getValue('status') === 'finished',
-            'bg-yellow-500': row.getValue('status') === 'ongoing',
-            'bg-darkgray-500': row.getValue('status') === 'on-hold',
-            'bg-red-500': row.getValue('status') === 'cancelled',
-            'bg-red-300': row.getValue('status') === 'archived',
-          })}
-        ></div>
-      </div>
+      {/* Bottom Indicator */}
+      <div
+        className={`h-1 w-full ${getStatusColor(row.getValue('status'))}`}
+      ></div>
     </div>
   );
 }

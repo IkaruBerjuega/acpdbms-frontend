@@ -1,11 +1,11 @@
-import { CellContext, HeaderContext, Row } from "@tanstack/react-table";
-import { FilterType } from "./filter-types";
+import { CellContext, HeaderContext, Row } from '@tanstack/react-table';
+import { FilterType } from './filter-types';
 
 export interface UserInterface {
   id: number;
   email: string;
   is_admin: boolean;
-  role: "admin" | "employee" | "client";
+  role: 'admin' | 'employee' | 'client';
   profile_complete: boolean;
   must_change_password: boolean;
   profile_picture: string;
@@ -47,7 +47,7 @@ export interface ClientInterface {
 export interface ProjectManager {
   id: number;
   name: string;
-  role: "Project Manager";
+  role: 'Project Manager';
 }
 
 export interface TeamDetailsResponse {
@@ -64,14 +64,31 @@ export interface ProjectListResponseInterface {
   end_date: string;
   finish_date?: string | null;
   status:
-    | "finished"
-    | "on-hold"
-    | "ongoing"
-    | "cancelled"
-    | "archived"
-    | "pending";
+    | 'finished'
+    | 'on-hold'
+    | 'ongoing'
+    | 'cancelled'
+    | 'archived'
+    | 'pending';
   location: string;
   image_url?: string | null;
+  project_manager: string;
+}
+
+export interface ProjectDetailsInterface {
+  id: string;
+  client_id: number;
+  client_name: string;
+  project_title: string;
+  start_date: string;
+  end_date: string;
+  finish_date?: string | undefined | null;
+  status: 'finished' | 'on-hold' | 'ongoing' | 'cancelled' | 'archived';
+  street: string;
+  city_town: string;
+  state: string;
+  zip_code: number;
+  image_url?: string | undefined | null;
   project_manager: string;
 }
 
@@ -101,18 +118,18 @@ export interface ColumnInterfaceProp {
 }
 
 export type AccountActions =
-  | "sendReset"
-  | "deactivate"
-  | "archive"
-  | "activate"
-  | "unarchive"
+  | 'sendReset'
+  | 'deactivate'
+  | 'archive'
+  | 'activate'
+  | 'unarchive'
   | undefined;
 
 export type ProjectActions =
-  | "archive"
-  | "unarchive"
-  | "cancel"
-  | "remove"
+  | 'archive'
+  | 'unarchive'
+  | 'cancel'
+  | 'remove'
   | undefined;
 
 export interface Breadcrumbs {
@@ -126,5 +143,5 @@ export type SupportedTableTypes =
   | ClientInterface
   | EmployeeInterface
   | ProjectListResponseInterface;
-export type SupportedTableName = "Accounts" | "Projects";
+export type SupportedTableName = 'Accounts' | 'Projects';
 export type AccountsTableType = ClientInterface | EmployeeInterface;
