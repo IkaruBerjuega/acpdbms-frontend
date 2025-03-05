@@ -1,9 +1,9 @@
-import { useFormContext } from "react-hook-form";
-import { useAccounts } from "@/hooks/api-calls/admin/use-account";
-import FormInput from "../../../general/form-components/form-input";
+import { useForm, Controller, useFormContext } from "react-hook-form";
+import { IoWarningOutline } from "react-icons/io5";
+import { useAccount } from "@/hooks/api-calls/admin/use-account";
+import FormInput from "../../general/form-components/form-input";
 import { ProjectFormSchemaType } from "@/lib/form-constants/project-constants";
-import { ClientInterface } from "@/lib/definitions"; // Adjust the path if needed
-import { requireError } from "@/lib/utils";
+import { ClientListResponseInterface } from "@/lib/definitions"; // Adjust the path if needed
 
 type StepInputs = ProjectFormSchemaType;
 
@@ -13,24 +13,26 @@ interface ClientItem {
 }
 
 export default function ProjectDetails() {
-  // Form control using react-hook-form context
   const {
     control,
     formState: { errors },
     register,
     setValue,
-    watch,
   } = useFormContext<StepInputs>();
 
-  const { data } = useAccounts<ClientInterface>({
-    role: "client",
-    isArchived: false,
-  });
+  const renderError = (message: string) => (
+    <p className="mt-2 text-sm text-red-400 flex items-center">
+      <IoWarningOutline className="text-red-400 text-xs mr-1" />
+      {message}
+    </p>
+  );
+
+  const { clientAccounts } = useAccount();
 
   // map clientAccounts to the items expected by FormInput
   const clientItems: ClientItem[] =
-    data?.map((client: ClientInterface) => ({
-      value: String(client.id), // id is a string
+    clientAccounts?.data?.map((client: ClientListResponseInterface) => ({
+      value: client.id,
       label: client.full_name,
     })) || [];
 
@@ -52,8 +54,10 @@ export default function ProjectDetails() {
                 label={"Client Name"}
                 inputType={"search"}
                 register={register}
+                placeholder="Select Client"
+                errorMessage={errors.client_name?.message}
+                required={true}
                 items={clientItems}
-                placeholder="Ex. John Doe"
                 onSelect={(item: ClientItem) => {
                   console.log("Selected item:", item);
                   console.log("Setting client_id:", Number(item.value));
@@ -61,13 +65,6 @@ export default function ProjectDetails() {
                   setValue("client_id", Number(item.value));
                   setValue("client_name", item.label);
                 }}
-                clearFn={() => {
-                  // Convert the string id to a number for client_id
-                  setValue("client_id", undefined);
-                  setValue("client_name", "");
-                }}
-                validationRules={{ required: requireError("Client") }}
-                errorMessage={errors.client_id?.message}
               />
             </div>
           </div>
@@ -90,9 +87,9 @@ export default function ProjectDetails() {
                   label={"Project Title"}
                   inputType={"default"}
                   register={register}
-                  placeholder="Ex. Dela Rosa House"
-                  validationRules={{ required: requireError("Project Title") }}
                   errorMessage={errors.project_title?.message}
+                  required={true}
+                  placeholder="Enter Project Title"
                 />
               </div>
             </div>
@@ -114,9 +111,9 @@ export default function ProjectDetails() {
               name={"state"}
               label={"State"}
               inputType={"default"}
-              placeholder="Ex. California"
               register={register}
-              validationRules={{ required: requireError("State") }}
+              placeholder="Enter State"
+              errorMessage={errors.state?.message}
               required={true}
             />
             {/* City/Town */}
@@ -124,9 +121,9 @@ export default function ProjectDetails() {
               name={"city_town"}
               label={"City/Town"}
               inputType={"default"}
+              placeholder="Enter City/Town"
               register={register}
-              placeholder="Ex. Los Angeles"
-              validationRules={{ required: requireError("City/Town") }}
+              errorMessage={errors.city_town?.message}
               required={true}
             />
             {/* Street */}
@@ -134,9 +131,9 @@ export default function ProjectDetails() {
               name={"street"}
               label={"Street"}
               inputType={"default"}
+              placeholder="Enter Street"
               register={register}
-              placeholder="Ex. 123 Sunset Blvd"
-              validationRules={{ required: requireError("Streets") }}
+              errorMessage={errors.street?.message}
               required={true}
             />
             {/* Zip Code */}
@@ -144,13 +141,11 @@ export default function ProjectDetails() {
               name={"zip_code"}
               label={"Zip Code"}
               inputType={"default"}
+              placeholder="Enter Zip Code"
               register={register}
               errorMessage={errors.zip_code?.message}
-              placeholder="90028"
-              validationRules={{
-                valueAsNumber: true,
-                required: requireError("Zip Code"),
-              }}
+              validationRules={{ valueAsNumber: true }}
+              required={true}
             />
           </div>
         </div>
@@ -167,56 +162,25 @@ export default function ProjectDetails() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
             {/* Start Date */}
             <FormInput
-              name="start_date"
-              label="Start Date"
+              name={"start_date"}
+              label={"Start Date"}
               register={register}
               control={control}
               errorMessage={errors.start_date?.message}
-              validationRules={{
-                required: requireError("Start Date is required"),
-                validate: (value: string | number | Date) => {
-                  const startDate = new Date(value);
-                  const endDate = new Date(String(watch("end_date"))); // Get the end date value
-
-                  if (startDate < new Date()) {
-                    return "Start Date must be in the future";
-                  }
-
-                  if (watch("end_date") && startDate >= endDate) {
-                    return "Start Date must be before End Date";
-                  }
-
-                  return true;
-                },
-              }}
-              inputType="date"
+              inputType={"date"}
+              placeholder="Start Date"
+              required={true}
             />
-
             {/* End Date */}
             <FormInput
-              name="end_date"
-              label="End Date"
+              name={"end_date"}
+              label={"End Date"}
               register={register}
               control={control}
               errorMessage={errors.end_date?.message}
-              validationRules={{
-                required: requireError("End Date is required"),
-                validate: (value: string | number | Date) => {
-                  const startDate = new Date(String(watch("start_date")));
-                  const endDate = new Date(value);
-
-                  if (endDate < new Date()) {
-                    return "End Date must be in the future";
-                  }
-
-                  if (startDate && startDate >= endDate) {
-                    return "End Date must be after Start Date";
-                  }
-
-                  return true;
-                },
-              }}
-              inputType="date"
+              inputType={"date"}
+              placeholder="End Date"
+              required={true}
             />
           </div>
         </div>

@@ -40,6 +40,13 @@ export const useProjectActions = <T>(projectId?: string) => {
     auth: true,
   });
 
+  const addProject = useApiMutation<FormData>({
+    url: "/projects",
+    method: "POST",
+    contentType: "",
+    auth: true,
+  });
+
   const cancelProject = useApiMutation<T>({
     url: `/projects/cancel`,
     method: "PATCH",
@@ -66,5 +73,6 @@ export const useProjectActions = <T>(projectId?: string) => {
     cancelProject,
     removeProject,
     archiveUnarchiveProject,
+    addProject,
   };
 };

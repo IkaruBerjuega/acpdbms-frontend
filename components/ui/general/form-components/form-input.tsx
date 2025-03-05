@@ -72,6 +72,12 @@ export default function FormInput<T extends FieldValues>({
   const isDefault = inputType === "default";
   const isTextArea = inputType === "textArea";
 
+  // create a required rule that checks if the field is empty
+  const requiredRule = required ? { required: `${label} is required` } : {};
+
+  // combine the required rule with any custom validationRules:
+  const finalRules = { ...requiredRule, ...validationRules };
+
   return (
     <div className={`flex flex-col ${className}`}>
       <Label
@@ -84,7 +90,7 @@ export default function FormInput<T extends FieldValues>({
 
       {isSearch ? (
         <Controller
-          rules={validationRules}
+          rules={finalRules}
           control={control}
           name={name}
           render={({ field: { onChange, value, onBlur } }) => (
@@ -121,7 +127,7 @@ export default function FormInput<T extends FieldValues>({
         />
       ) : isDate ? (
         <Controller
-          rules={validationRules}
+          rules={finalRules}
           control={control}
           name={name}
           render={({ field: { onChange, value, onBlur } }) => (

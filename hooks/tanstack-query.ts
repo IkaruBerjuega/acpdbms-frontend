@@ -24,14 +24,20 @@ export const requestAPI = async ({
   const { getToken } = useToken();
   const userData = auth ? await getToken() : null; // Fetch token before making request
 
+  const isFormData = body instanceof FormData;
+
+  const headers: Record<string, string> = {
+    // Only add Content-Type header if the body is not FormData.
+    ...(!isFormData && contentType ? { "Content-Type": contentType } : {}),
+    ...(auth ? { Authorization: `Bearer ${userData?.token}` } : {}),
+    ...(additionalHeaders || {}),
+  };
+
   const res = await fetch(`${API_URL}${url}`, {
     method,
-    headers: {
-      "Content-Type": contentType,
-      ...(auth ? { Authorization: `Bearer ${userData?.token}` } : {}),
-      ...(additionalHeaders && additionalHeaders),
-    },
-    body: body ? JSON.stringify(body) : body,
+    headers,
+    // If body is FormData, send it as is. Otherwise, stringify it.
+    body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
   });
 
   let responseData;
@@ -68,10 +74,8 @@ export function useApiMutation<T>({
         body,
         contentType,
         auth,
-        ...(additionalHeaders && additionalHeaders),
+        additionalHeaders,
       }),
-
-    //You should be passing the onSuccess and onError directly on where wil you use it
   });
 
   return {
@@ -97,10 +101,10 @@ export function useApiQuery<T>({
   initialData?: T;
   enabled?: Enabled<T, Error, T, string[]> | undefined;
 }) {
-  const { getToken } = useToken(); // Call useToken() at the top level
+  const { getToken } = useToken();
 
   const fetchApiData = async (): Promise<T> => {
-    const userData = await getToken(); // Fetch token before making request
+    const userData = await getToken();
 
     const response = await fetch(`${API_URL}${url}`, {
       method: "GET",
@@ -109,7 +113,7 @@ export function useApiQuery<T>({
         ...(userData?.token
           ? { Authorization: `Bearer ${userData?.token}` }
           : {}),
-        ...(additionalHeaders && additionalHeaders),
+        ...(additionalHeaders || {}),
       },
     });
 
@@ -122,7 +126,7 @@ export function useApiQuery<T>({
 
   const { data, isLoading, isPending, error } = useQuery({
     queryKey: [key],
-    queryFn: () => fetchApiData(), // Pass function reference, NOT a function call
+    queryFn: () => fetchApiData(),
     initialData: initialData,
     enabled: enabled,
   });

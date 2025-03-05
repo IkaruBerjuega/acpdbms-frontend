@@ -277,7 +277,7 @@ const BtnDialog = (props: BtnDialogProps) => {
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] text-sm">
         <DialogHeader>
           <DialogTitle>{props.dialogTitle}</DialogTitle>
           <DialogDescription>{props.dialogDescription}</DialogDescription>

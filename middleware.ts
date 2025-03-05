@@ -2,6 +2,14 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { LoginResponseInterface } from "./lib/definitions";
 
+// export async function middleware(req: NextRequest) {
+//   return NextResponse.next();
+// }
+
+// export const config = {
+//   matcher: ['/admin/:path*', '/employee/:path*', '/client/:path*', '/login'],
+// };
+
 const LARAVEL_AUTH_CHECK_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth/check`;
 
 export async function middleware(req: NextRequest) {
@@ -52,6 +60,14 @@ export async function middleware(req: NextRequest) {
     //     Authorization: `Bearer ${token}`,
     //   },
     // });
+    // // Validate the token with the Laravel backend
+    const laravelResponse = await fetch(LARAVEL_AUTH_CHECK_URL, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
 
     // if (!laravelResponse.ok) {
     //   return NextResponse.redirect(new URL("/login", req.url));

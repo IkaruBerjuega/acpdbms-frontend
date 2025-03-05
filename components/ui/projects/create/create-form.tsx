@@ -5,30 +5,22 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  BtnDialog,
-  Button,
-  ButtonIconTooltipDialog,
-} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 import { ProjectFormSchemaType } from "@/lib/form-constants/project-constants";
-import { Dialog } from "../../../general/dialog-custom";
+import { Dialog } from "../../general/dialog-custom";
 import StepperIndicator from "./stepper";
 import ProjectDetails from "./project-details";
 import { toast } from "@/hooks/use-toast";
-import { useProjectActions } from "@/hooks/general/use-project";
+import { useAddProject } from "@/hooks/api-calls/admin/use-add-project";
 
-const defaultValues = {
+const defaultValues: ProjectFormSchemaType = {
   client_id: undefined,
-  client_name: undefined,
+  client_name: "",
   project_title: "",
-  region: "",
-  province: "",
+  state: "",
   city_town: "",
-  barangay: "",
   street: "",
-  block: "",
-  lot: "",
   zip_code: undefined,
   status: "ongoing",
   image_url:
@@ -42,15 +34,11 @@ const steps = [
     id: "Step 1",
     name: "Project Details",
     fields: [
-      "client_id",
+      "client_name",
       "project_title",
-      "region",
-      "province",
+      "state",
       "city_town",
-      "barangay",
       "street",
-      "block",
-      "lot",
       "zip_code",
       "start_date",
       "end_date",
@@ -70,15 +58,14 @@ export default function HookMultiStepForm() {
   const constRouter = useRouter();
 
   const methods = useForm<ProjectFormSchemaType>({
-    mode: "onBlur",
+    mode: "onSubmit",
     defaultValues,
   });
 
   const {
     handleSubmit,
     trigger,
-    watch,
-    formState: { errors, isValid },
+    formState: { errors },
   } = methods;
 
   const resetForm = () => {
@@ -89,14 +76,12 @@ export default function HookMultiStepForm() {
     });
   };
 
-  const { addProject } = useProjectActions();
+  const { mutate: handleAddProject } = useAddProject();
 
-  const { mutate, isLoading } = addProject;
-
-  const processSubmit: SubmitHandler<ProjectFormSchemaType> = (data) => {
+  const processForm: SubmitHandler<ProjectFormSchemaType> = (data) => {
     const formData = new FormData();
 
-    // Append ProjectDetails (step 1) fields
+    // Append fields to FormData
     formData.append("client_id", data.client_id?.toString() || "");
     formData.append("client_name", data.client_name);
     formData.append("project_title", data.project_title);
@@ -104,18 +89,24 @@ export default function HookMultiStepForm() {
     formData.append("city_town", data.city_town);
     formData.append("street", data.street);
     formData.append("zip_code", data.zip_code?.toString() || "");
-    formData.append("start_date", data.start_date?.toISOString() || "");
-    formData.append("end_date", data.end_date?.toISOString() || "");
+    formData.append(
+      "start_date",
+      data.start_date ? data.start_date.toISOString().split("T")[0] : ""
+    );
+    formData.append(
+      "end_date",
+      data.end_date ? data.end_date.toISOString().split("T")[0] : ""
+    );
     formData.append("status", data.status);
     formData.append("image_url", data.image_url);
 
-    console.log("Formatted data:", Array.from(formData.entries()));
+    console.log("FormData entries:", Array.from(formData.entries()));
 
-    mutate(formData, {
+    handleAddProject(formData, {
       onSuccess: () => {
         resetForm();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         console.error("Error adding project", error);
       },
     });
@@ -125,7 +116,7 @@ export default function HookMultiStepForm() {
   type FieldPath = FieldName; // Only step 1 fields are used
 
   const next = async () => {
-    // Determine fields to validate for the current step
+    // Validate current step fields
     const fields: FieldPath[] = steps[currentStep].fields as FieldPath[];
     const values = methods.getValues(fields);
     console.log("Field Values:", values);
@@ -140,7 +131,7 @@ export default function HookMultiStepForm() {
       setCurrentStep(currentStep + 1);
     } else {
       console.log("Submitting Form");
-      handleSubmit(processSubmit)();
+      handleSubmit(processForm)();
     }
   };
 
@@ -151,11 +142,10 @@ export default function HookMultiStepForm() {
   };
 
   const stepLabels = ["Project Details"];
-  const projectName = watch("project_title");
 
   return (
     <FormProvider {...methods}>
-      <div className="system-padding bg-white-primary rounded-lg shadow-md flex-grow">
+      <div className="lg:px-10">
         <StepperIndicator
           stepLabels={stepLabels}
           activeStep={currentStep + 1}
@@ -170,9 +160,9 @@ export default function HookMultiStepForm() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit(processSubmit)}>
+        <form onSubmit={handleSubmit(processForm)}>
           {getStepContent(currentStep)}
-          <div className="flex-row-end-center">
+          <div className="flex justify-end space-x-[20px] h-[100px] items-end">
             {currentStep !== 0 && (
               <Button
                 type="button"
@@ -184,21 +174,16 @@ export default function HookMultiStepForm() {
               </Button>
             )}
             {currentStep === steps.length - 1 ? (
-              <BtnDialog
-                btnTitle={"Submit"}
-                isLoading={isLoading}
-                alt={"Submit Button"}
-                dialogTitle={"Add Project"}
+              <Dialog
+                label={"Submit"}
+                dialogTitle={"Are you sure you want to add this project?"}
                 dialogDescription={
-                  "Are you sure you want to create this project?"
+                  "Make sure to confirm everything before submitting."
                 }
-                dialogContent={
-                  <div className="w-full">Project Name: {projectName}</div>
-                }
-                onClick={() => next()}
-                disabled={!isValid}
-                submitType={"submit"}
-                submitTitle="Confirm"
+                className="w-[100px] bg-gray-800 hover:bg-primary text-white-primary hover:text-white-primary"
+                dialogCancel={"Cancel"}
+                dialogAction={"Submit"}
+                onClick={next}
               />
             ) : (
               <Button
