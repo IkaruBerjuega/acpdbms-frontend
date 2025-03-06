@@ -34,7 +34,7 @@ export function AppSidebar() {
       </SidebarContent>
       <SidebarFooter>
         <Notifications />
-        <NavUser user={data.user} />
+        <NavUser role="admin" />
       </SidebarFooter>
     </Sidebar>
   );

@@ -37,7 +37,7 @@ export default function Navbar() {
 
   return (
     <>
-      <nav className="hidden lg:flex-row-between-start w-full shadow-sm relative lg:fixed homepage-nav-bar-padding bg-white-primary  z-50">
+      <nav className="hidden lg:flex-row-between-center w-full shadow-sm relative lg:fixed homepage-nav-bar-padding bg-white-primary  z-50">
         <div className="hidden lg:flex gap-6 text-md leading-none">
           {items.map((item, index) => (
             <Link key={index} href={item.link}>

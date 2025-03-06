@@ -12,3 +12,13 @@ export function useLogin() {
     auth: false,
   });
 }
+
+// Custom hook for login
+export function useLogout() {
+  return useApiMutation<null>({
+    url: "/logout",
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+  });
+}

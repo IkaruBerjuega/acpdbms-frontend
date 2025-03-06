@@ -58,8 +58,8 @@ export default function AccountsTableHeaderActions<T>() {
       tableName={tableName}
       onArchive={{
         fn: () => {
-          const userIds = data.map(
-            (account: AccountsTableType) => account.user_id
+          const userIds = (data as AccountsTableType[]).map(
+            (account) => account.user_id
           );
           mutate(
             { user_ids: userIds },
@@ -98,11 +98,13 @@ export default function AccountsTableHeaderActions<T>() {
         },
         archiveDialogContent: (
           <div className="flex-col-center-start max-h-[200px] overflow-y-auto">
-            {data.map((account: AccountsTableType, index) => (
-              <p key={index} className="text-xs">
-                - {account.full_name}
-              </p>
-            ))}
+            {(data as AccountsTableType[]).map(
+              (account: AccountsTableType, index) => (
+                <p key={index} className="text-xs">
+                  - {account.full_name}
+                </p>
+              )
+            )}
           </div>
         ),
       }}

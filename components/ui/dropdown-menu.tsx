@@ -193,6 +193,7 @@ interface ItemProps {
   dialogTitle?: string;
   dialogBtnSubmitLabel?: string;
   isDialog?: boolean;
+  href?: string;
 }
 
 import Image from "next/image";
@@ -206,6 +207,7 @@ import {
   DialogTrigger,
 } from "./dialog";
 import { useState } from "react";
+import Link from "next/link";
 
 interface CustomDropdownMenuProps {
   btnLabel?: string;
@@ -215,20 +217,19 @@ interface CustomDropdownMenuProps {
   items: ItemProps[];
   btnVariant: "ghost" | "outline" | "default";
 }
-
 const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
   const { items } = props;
-  const [open, setOpen] = useState(false);
+  const [selectedDialog, setSelectedDialog] = useState<string | null>(null);
 
   const onClick = (item: ItemProps) => {
-    item.onClick();
-    setOpen(false); // Close the dialog
+    item.onClick(); // Execute the action
+    setSelectedDialog(null); // Close the dialog
   };
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={props.btnVariant} className="p-2 h-8 ">
+        <Button variant={props.btnVariant} className="p-2 h-8">
           {props.btnSrc && props.btnSrcAlt && (
             <Image
               src={props.btnSrc}
@@ -241,29 +242,32 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
         </Button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className="w-40 " align="end" side="bottom">
-        <DropdownMenuLabel className="text-xs">
-          {props.menuLabel}
-        </DropdownMenuLabel>
+      <DropdownMenuContent className="w-48" align="end" side="bottom">
+        <DropdownMenuLabel>{props.menuLabel}</DropdownMenuLabel>
         <DropdownMenuSeparator />
         {items.map((item, index) => (
           <React.Fragment key={index}>
             {item.isDialog ? (
-              <Dialog open={open} onOpenChange={setOpen}>
+              <Dialog
+                open={selectedDialog === item.label}
+                onOpenChange={(open) =>
+                  setSelectedDialog(open ? item.label : null)
+                }
+              >
                 <DialogTrigger asChild>
                   <DropdownMenuItem
                     onSelect={(e) => e.preventDefault()}
-                    className="h-8 p-0"
+                    className="h-7 p-0"
                   >
                     <Button
                       variant="ghost"
-                      className={`w-full h-full flex justify-start items-center gap-2 px-3 ${item.className}`}
+                      className={`w-full h-full flex justify-start items-center gap-2  ${item.className} px-2`}
                     >
                       <Image
                         src={item.iconSrc}
                         alt={`${item.iconSrc} button`}
-                        width={18}
-                        height={18}
+                        width={16}
+                        height={16}
                       />
                       <span>{item.label}</span>
                     </Button>
@@ -285,25 +289,25 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
                   </DialogFooter>
                 </DialogContent>
               </Dialog>
-            ) : (
+            ) : item.href ? (
               <DropdownMenuItem
                 onSelect={(e) => e.preventDefault()}
-                className="h-8 p-0"
+                className="h-7 p-0"
               >
-                <Button
-                  variant="ghost"
-                  className={`w-full h-full flex justify-start items-center  gap-2 px-3 ${item.className}`}
+                <Link
+                  href={item.href}
+                  className={`w-full h-full flex justify-start items-center gap-2 ${item.className} px-2`}
                 >
                   <Image
                     src={item.iconSrc}
                     alt={`${item.iconSrc} button`}
-                    width={18}
-                    height={18}
+                    width={16}
+                    height={16}
                   />
                   <span>{item.label}</span>
-                </Button>
+                </Link>
               </DropdownMenuItem>
-            )}
+            ) : null}
           </React.Fragment>
         ))}
       </DropdownMenuContent>

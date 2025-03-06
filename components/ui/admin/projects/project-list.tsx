@@ -2,10 +2,14 @@
 
 import { useState } from "react";
 import ProjectsTableHeaderActions from "@/components/ui/admin/projects/table-header";
-import { Tabs, TabsContent } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Table from "@/components/ui/admin/projects/table";
-import ProjectCards from "../../general/data-table-components/project-cards";
+import ProjectCards from "./project-cards";
 import { ProjectListResponseInterface } from "@/lib/definitions";
+import { AddBtn } from "../../button";
+import { VscListSelection } from "react-icons/vsc";
+import { PiCardsThreeLight } from "react-icons/pi";
+import Cards from "./cards";
 
 export default function ProjectList<T extends ProjectListResponseInterface>({
   isArchived,
@@ -14,18 +18,28 @@ export default function ProjectList<T extends ProjectListResponseInterface>({
   isArchived: boolean;
   initialData: T[];
 }) {
-  const [activeTab, setActiveTab] = useState("list");
-
   return (
-    <Tabs
-      defaultValue={activeTab}
-      onValueChange={setActiveTab}
-      className="flex flex-col flex-grow gap-2 "
-    >
+    <Tabs defaultValue={"list"} className="flex flex-col flex-grow gap-2 ">
       {/* header actions */}
       <ProjectsTableHeaderActions
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        components={
+          <>
+            {/* add project button */}
+            <AddBtn
+              label={`Add Project`}
+              href={"/admin/projects/create"}
+              dark={true}
+            />
+            <TabsList className="flex h-full">
+              <TabsTrigger value="list">
+                <VscListSelection className="h-5 w-5 text-gray-500 " />
+              </TabsTrigger>
+              <TabsTrigger value="card">
+                <PiCardsThreeLight className="h-5 w-5 text-gray-500" />
+              </TabsTrigger>
+            </TabsList>
+          </>
+        }
       />
 
       {/* main content view table */}
@@ -38,7 +52,7 @@ export default function ProjectList<T extends ProjectListResponseInterface>({
         {/* main content view cards */}
         <TabsContent value="card">
           <div className="flex-grow">
-            <ProjectCards query={""} />
+            <Cards isArchived={isArchived} initialData={initialData} />
           </div>
         </TabsContent>
       </main>

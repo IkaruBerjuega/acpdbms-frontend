@@ -1,5 +1,4 @@
 import { cookies } from "next/headers";
-import { useToken } from "./api-calls/use-token";
 
 interface ServerRequestAPI {
   url: string;

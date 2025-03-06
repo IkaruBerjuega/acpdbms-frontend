@@ -107,7 +107,7 @@ export function NavMain({ role }: { role: string }) {
                   <div
                     className={`flex rounded-md ${
                       isActive
-                        ? "bg-black-primary text-primary-foreground  hover:bg-black-primary"
+                        ? "bg-black-secondary text-primary-foreground  hover:bg-black-primary"
                         : "text-primary-foreground"
                     }`}
                   >

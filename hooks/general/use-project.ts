@@ -17,7 +17,7 @@ export const useProjectList = <T>({
 }: useProjectListProps<T>) => {
   return useApiQuery<T[]>({
     key: !isArchived ? "projects" : "projects-archived",
-    url: !isArchived ? "/project-list" : "/projects-archived",
+    url: !isArchived ? "/project-list" : "/projects/archived",
     initialData: initialData,
   });
 };
@@ -49,13 +49,13 @@ export const useProjectActions = <T>(projectId?: string) => {
 
   const cancelProject = useApiMutation<T>({
     url: `/projects/cancel`,
-    method: "PATCH",
+    method: "POST",
     contentType: "application/json",
     auth: true,
   });
 
   const removeProject = useApiMutation<T>({
-    url: `/projects/${projectId}`,
+    url: `/projects`,
     method: "DELETE",
     contentType: "application/json",
     auth: true,
@@ -63,7 +63,21 @@ export const useProjectActions = <T>(projectId?: string) => {
 
   const archiveUnarchiveProject = useApiMutation<T>({
     url: `/projects/archive`,
-    method: "PATCH",
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+  });
+
+  const onholdProject = useApiMutation<T>({
+    url: `/projects/on-hold`,
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+  });
+
+  const continueProject = useApiMutation<T>({
+    url: `/projects/continue`,
+    method: "POST",
     contentType: "application/json",
     auth: true,
   });
@@ -74,5 +88,7 @@ export const useProjectActions = <T>(projectId?: string) => {
     removeProject,
     archiveUnarchiveProject,
     addProject,
+    onholdProject,
+    continueProject,
   };
 };
