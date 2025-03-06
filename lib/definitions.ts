@@ -75,6 +75,23 @@ export interface ProjectListResponseInterface {
   project_manager: string;
 }
 
+export interface ProjectDetailsInterface {
+  id: string;
+  client_id: number;
+  client_name: string;
+  project_title: string;
+  start_date: string;
+  end_date: string;
+  finish_date?: string | undefined | null;
+  status: "finished" | "on-hold" | "ongoing" | "cancelled" | "archived";
+  street: string;
+  city_town: string;
+  state: string;
+  zip_code: number;
+  image_url?: string | undefined | null;
+  project_manager: string;
+}
+
 export interface ColumnInterface<T> {
   id?: string;
   accessorKey?: keyof T | string;
@@ -110,9 +127,11 @@ export type AccountActions =
 
 export type ProjectActions =
   | "archive"
-  | "unarchive"
+  //| "unarchive"
   | "cancel"
   | "remove"
+  | "onhold"
+  | "continue"
   | undefined;
 
 export interface Breadcrumbs {

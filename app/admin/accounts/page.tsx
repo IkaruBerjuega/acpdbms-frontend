@@ -3,8 +3,6 @@ import Table from "@/components/ui/admin/accounts/table";
 import { AccountsTableType, Breadcrumbs } from "@/lib/definitions";
 import serverRequestAPI from "@/hooks/server-request";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import DrawerComponent from "@/components/ui/general/sidepanel-drawer";
-import Drawer from "@/components/ui/general/sidepanel-drawer";
 import Sidepanel from "@/components/ui/admin/accounts/sidepanel";
 
 export default async function Page({
