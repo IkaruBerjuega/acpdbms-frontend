@@ -1,6 +1,8 @@
 "use client";
 import { useSearchParams } from "next/navigation";
+
 import { useEffect } from "react";
+
 import { useCustomTable } from "../../general/data-table-components/custom-tanstack";
 import FilterPopOver from "../../general/data-table-components/filter-components/filter-popover";
 import { LuFilter } from "react-icons/lu";
