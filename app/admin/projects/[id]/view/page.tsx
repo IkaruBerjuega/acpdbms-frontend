@@ -1,8 +1,8 @@
-import ProjectView from "@/components/ui/admin/projects/project-view";
-import { SidebarTrigger } from "@/components/ui/sidebar";
-import serverRequestAPI from "@/hooks/server-request";
-import { step1Schema } from "@/lib/form-constants/project-constants";
-import { z } from "zod";
+import ProjectView from '@/components/ui/admin/projects/project-view';
+import { SidebarTrigger } from '@/components/ui/sidebar';
+import serverRequestAPI from '@/hooks/server-request';
+import { step1Schema } from '@/lib/form-constants/project-constants';
+import { z } from 'zod';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -16,7 +16,7 @@ type PageProps = {
 export default async function Page({ params, searchParams }: PageProps) {
   //await params and search params to destructure it
   const { id } = await params;
-  const { edit = "false" } = await searchParams;
+  const { edit = 'false' } = await searchParams;
 
   //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
   const initialData: ProjectDetailsSchema = await serverRequestAPI({
@@ -25,22 +25,25 @@ export default async function Page({ params, searchParams }: PageProps) {
   });
 
   return (
-    <main className="w-full h-auto flex justify-center flex-col">
+    <main className='w-full h-auto flex justify-center flex-col'>
       <SidebarTrigger
         breadcrumbs={[
           {
-            pageName: "Projects",
-            href: "/admin/projects",
+            pageName: 'Projects',
+            href: '/admin/projects',
             active: false,
           },
           {
-            pageName: "View Project Details",
+            pageName: 'View Project Details',
             href: `/admin/projects/${id}/view`,
             active: true,
           },
         ]}
       />
-      <ProjectView id={id} edit={edit} />
+      <ProjectView
+        id={id}
+        edit={edit}
+      />
     </main>
   );
 }

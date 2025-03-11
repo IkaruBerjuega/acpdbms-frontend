@@ -1,3 +1,3 @@
 export default function Information() {
-  return <h1>Project Information</h1>;
+  return <h1>Information</h1>;
 }

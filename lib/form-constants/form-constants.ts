@@ -53,7 +53,7 @@ export interface addClientAccountRequest {
 export interface employeesToAssign {
   employee_id: string;
   employee_name: string;
-  role?: "Project Manager" | "Member";
+  role?: 'Project Manager' | 'Member';
 }
 
 export interface grantProjectAccessRequest {
@@ -64,4 +64,18 @@ export interface grantProjectAccess {
   project_id: string;
   project_name: string;
   team: employeesToAssign[];
+}
+
+export interface editAccountDetails {
+  email?: string;
+  first_name?: string;
+  middle_name?: string;
+  last_name?: string;
+  phoneNumber: string;
+  street?: string;
+  city_town?: string;
+  state?: string;
+  zip_code?: string;
+  profile_picture_url?: string;
+  position?: string;
 }

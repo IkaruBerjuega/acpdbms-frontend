@@ -12,6 +12,7 @@ export type ProjectFormSchemaType = {
   end_date?: Date;
   status: string;
   image_url: string;
+  project_description: string;
 };
 
 export const step1Schema = z.object({
