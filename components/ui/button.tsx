@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import { Slot } from "@radix-ui/react-slot";
-import { cva, type VariantProps } from "class-variance-authority";
-import Image from "next/image";
-import { cn } from "@/lib/utils";
-import Link from "next/link";
+import * as React from 'react';
+import { Slot } from '@radix-ui/react-slot';
+import { cva, type VariantProps } from 'class-variance-authority';
+import Image from 'next/image';
+import { cn } from '@/lib/utils';
+import Link from 'next/link';
 import {
   Dialog,
   DialogContent,
@@ -14,34 +14,34 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { useRouter } from "next/navigation";
+} from '@/components/ui/dialog';
+import { useRouter } from 'next/navigation';
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none  focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none  focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90",
+          'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline:
-          "border border-input bg-background hover:bg-accent hover:text-accent-foreground",
+          'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
         secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+          'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        ghost: 'hover:bg-accent hover:text-accent-foreground',
+        link: 'text-primary underline-offset-4 hover:underline',
       },
       size: {
-        default: "h-10 px-4 py-2 rounded-md",
-        sm: "h-9 rounded-md px-3",
-        lg: "h-11 rounded-md px-8",
-        icon: "h-10 w-10",
+        default: 'h-10 px-4 py-2 rounded-md',
+        sm: 'h-9 rounded-md px-3',
+        lg: 'h-11 rounded-md px-8',
+        icon: 'h-10 w-10',
       },
     },
     defaultVariants: {
-      variant: "default",
-      size: "default",
+      variant: 'default',
+      size: 'default',
     },
   }
 );
@@ -54,7 +54,7 @@ export interface ButtonProps
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
+    const Comp = asChild ? Slot : 'button';
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
@@ -64,7 +64,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     );
   }
 );
-Button.displayName = "Button";
+Button.displayName = 'Button';
 
 interface ButtonLinkProps
   extends React.AnchorHTMLAttributes<HTMLAnchorElement>,
@@ -94,7 +94,7 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }), {
-          "pointer-events-none opacity-50": disabled,
+          'pointer-events-none opacity-50': disabled,
         })}
         ref={ref}
         href={href}
@@ -106,14 +106,14 @@ const ButtonLink = React.forwardRef<HTMLAnchorElement, ButtonLinkProps>(
     );
   }
 );
-ButtonLink.displayName = "ButtonLink";
+ButtonLink.displayName = 'ButtonLink';
 
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
+} from '@/components/ui/tooltip';
 
 interface ButtonTooltipInterface {
   tooltip: string;
@@ -126,16 +126,28 @@ interface ButtonTooltipInterface {
 const ButtonTooltip = ({
   tooltip,
   iconSrc,
-  className,
+  className = '',
   href,
   onClick,
 }: ButtonTooltipInterface) => {
+  const router = useRouter();
+
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // Execute any additional onClick logic if provided
+    onClick?.();
+    // If an href is provided, navigate to it
+    if (href) {
+      e.preventDefault();
+      router.push(href);
+    }
+  };
+
   return (
     <TooltipProvider>
       <Tooltip delayDuration={1}>
         <TooltipTrigger
-          onClick={onClick}
-          className={`px-2 py-1 border-[1px] rounded-md  hover:bg-white-secondary ${className}`}
+          onClick={handleClick}
+          className={`px-2 py-1 border-[1px] rounded-md hover:bg-white-secondary ${className}`}
         >
           {iconSrc ? (
             <Image
@@ -156,8 +168,8 @@ const ButtonTooltip = ({
   );
 };
 
-import { useState } from "react";
-import { LoadingCircle } from "./general/loading-circle";
+import { useState } from 'react';
+import { LoadingCircle } from './general/loading-circle';
 
 interface ButtonIconTooltipDialog {
   iconSrc: string;
@@ -166,7 +178,7 @@ interface ButtonIconTooltipDialog {
   dialogTitle: string;
   dialogDescription: string;
   dialogContent?: React.JSX.Element;
-  submitType: "button" | "submit" | "reset" | undefined;
+  submitType: 'button' | 'submit' | 'reset' | undefined;
   submitTitle?: string;
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
@@ -180,8 +192,8 @@ const ButtonIconTooltipDialog = ({
   dialogTitle,
   dialogDescription,
   dialogContent,
-  submitType = "button",
-  submitTitle = "Submit",
+  submitType = 'button',
+  submitTitle = 'Submit',
   className,
   onClick,
   disabled,
@@ -194,14 +206,17 @@ const ButtonIconTooltipDialog = ({
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+    >
       <DialogTrigger
         asChild
-        className={`${disabled ? "pointer-events-none opacity-50" : ""}`}
+        className={`${disabled ? 'pointer-events-none opacity-50' : ''}`}
       >
         <button
           className={`border-[1px] px-2 py-1 ${className} rounded-md hover:bg-white-secondary cursor-pointer flex-col-center ${
-            disabled ? "cursor-not-allowed" : ""
+            disabled ? 'cursor-not-allowed' : ''
           }`}
           onClick={() => setOpen(true)}
           disabled={disabled}
@@ -209,7 +224,12 @@ const ButtonIconTooltipDialog = ({
           <TooltipProvider>
             <Tooltip delayDuration={1}>
               <TooltipTrigger asChild>
-                <Image src={iconSrc} alt={alt} width={18} height={18} />
+                <Image
+                  src={iconSrc}
+                  alt={alt}
+                  width={18}
+                  height={18}
+                />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{tooltipContent}</p>
@@ -218,14 +238,17 @@ const ButtonIconTooltipDialog = ({
           </TooltipProvider>
         </button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className='sm:max-w-[425px]'>
         <DialogHeader>
           <DialogTitle>{dialogTitle}</DialogTitle>
           <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
         {dialogContent}
         <DialogFooter>
-          <Button type={submitType} onClick={handleSubmit}>
+          <Button
+            type={submitType}
+            onClick={handleSubmit}
+          >
             {submitTitle}
           </Button>
         </DialogFooter>
@@ -240,13 +263,13 @@ interface BtnDialogProps {
   dialogTitle: string;
   dialogDescription: string;
   dialogContent?: React.JSX.Element;
-  submitType: "button" | "submit" | "reset" | undefined;
+  submitType: 'button' | 'submit' | 'reset' | undefined;
   submitTitle?: string;
   className?: string;
   isLoading?: boolean;
   onClick?: (e?: React.BaseSyntheticEvent) => Promise<void>;
   disabled?: boolean;
-  variant?: "ghost" | "outline" | "default";
+  variant?: 'ghost' | 'outline' | 'default';
 }
 
 const BtnDialog = (props: BtnDialogProps) => {
@@ -261,7 +284,10 @@ const BtnDialog = (props: BtnDialogProps) => {
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
+    <Dialog
+      open={open}
+      onOpenChange={setOpen}
+    >
       <DialogTrigger asChild>
         <Button
           variant={props.variant}
@@ -270,21 +296,27 @@ const BtnDialog = (props: BtnDialogProps) => {
           {props.isLoading ? (
             <>
               Submitting
-              <LoadingCircle color="border-white-secondary" size={15} />
+              <LoadingCircle
+                color='border-white-secondary'
+                size={15}
+              />
             </>
           ) : (
             props.btnTitle
           )}
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px] text-sm">
+      <DialogContent className='sm:max-w-[425px] text-sm'>
         <DialogHeader>
           <DialogTitle>{props.dialogTitle}</DialogTitle>
           <DialogDescription>{props.dialogDescription}</DialogDescription>
         </DialogHeader>
         {props.dialogContent}
         <DialogFooter>
-          <Button type={props.submitType} onClick={handleSubmit}>
+          <Button
+            type={props.submitType}
+            onClick={handleSubmit}
+          >
             {props.submitTitle}
           </Button>
         </DialogFooter>
@@ -298,7 +330,7 @@ interface AddBtn {
   href?: string;
   label: string;
   className?: string;
-  variant?: "default" | "outline" | "ghost";
+  variant?: 'default' | 'outline' | 'ghost';
   dark: boolean;
 }
 
@@ -306,8 +338,8 @@ const AddBtn = ({ variant, onClick, label, href, className, dark }: AddBtn) => {
   const router = useRouter();
 
   const imgAddSrc = dark
-    ? "/button-svgs/table-header-add.svg"
-    : "/button-svgs/table-header-add-dark.svg";
+    ? '/button-svgs/table-header-add.svg'
+    : '/button-svgs/table-header-add-dark.svg';
 
   return (
     <Button
@@ -319,11 +351,16 @@ const AddBtn = ({ variant, onClick, label, href, className, dark }: AddBtn) => {
       }
       className={`flex-row-center ${className} ${
         !dark &&
-        "bg-white-primary hover:!bg-white-secondary text-black-secondary hover:!text-black-primary"
+        'bg-white-primary hover:!bg-white-secondary text-black-secondary hover:!text-black-primary'
       }`}
       variant={variant}
     >
-      <Image src={imgAddSrc} alt={label} width={10} height={10} />
+      <Image
+        src={imgAddSrc}
+        alt={label}
+        width={10}
+        height={10}
+      />
       {label}
     </Button>
   );
