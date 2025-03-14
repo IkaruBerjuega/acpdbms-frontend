@@ -54,7 +54,7 @@ export default function DataTable<T>({
   );
 
   return (
-    <div className={`flex w-full flex-col gap-2 ${hidden && "hidden"}`}>
+    <div className={`flex w-full flex-col gap-2 ${hidden && "hidden"} min-w-0`}>
       <div className="flex flex-wrap flex-col w-full h-auto gap-2">
         <div>
           <FilterPopOver
@@ -66,10 +66,10 @@ export default function DataTable<T>({
         </div>
 
         <div className="flex flex-wrap flex-row gap-2 w-full h-auto">
-          {filterComponents}
+          a{filterComponents}
         </div>
       </div>
-      <div className="rounded-lg border">
+      <div className="rounded-lg border min-w-0">
         <TableRoot id={id} className={`w-full table-auto ${tableClassName} `}>
           <TableHeader>
             {table?.getHeaderGroups().map((headerGroup) => (

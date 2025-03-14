@@ -66,16 +66,9 @@ export default function ProjectCards<T>({
       </div>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 gap-12 sm:gap-4 ">
         {table.getRowModel().rows?.length ? (
-          table.getRowModel().rows.map((row) => (
-            <Card
-              key={row.id}
-              row={row}
-              isClient={false}
-              fn={function (projectId?: string, projectName?: string): void {
-                throw new Error("Function not implemented.");
-              }}
-            />
-          ))
+          table
+            .getRowModel()
+            .rows.map((row) => <Card key={row.id} row={row} isClient={false} />)
         ) : (
           <div className="w-full h-full col-span-full flex justify-center items-center">
             No projects.

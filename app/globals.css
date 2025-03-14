@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: "Roboto", sans-serif;
+  font-family: "Poppins";
 }
 
 @layer base {
@@ -130,6 +130,10 @@ body {
   .flex-row-center {
     @apply flex flex-row justify-center items-center;
   }
+
+  .flex-row-center-start {
+    @apply flex flex-row justify-center items-start;
+  }
   .flex-col-center {
     @apply flex flex-col justify-center items-center;
   }
@@ -156,6 +160,9 @@ body {
 
   .flex-col-between-center {
     @apply flex flex-col justify-between items-center;
+  }
+  .flex-col-between-start {
+    @apply flex flex-col justify-between items-start;
   }
 
   .flex-row-start-end {

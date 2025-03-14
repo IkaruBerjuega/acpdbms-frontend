@@ -31,8 +31,8 @@ const defaultValues = {
   lot: "",
   zip_code: undefined,
   status: "ongoing",
-  image_url:
-    "https://scontent.fcrk1-5.fna.fbcdn.net/v/t39.30808-6/422698331_877393341058901_3120897789009871049_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=qOLzxf2J41MQ7kNvgEn7eAO&_nc_zt=23&_nc_ht=scontent.fcrk1-5.fna&_nc_gid=AIJFexT1K0_qCR78m0kJimG&oh=00_AYDWysoIAWi2w9PjRNRWoRzsLvd4CkFpYMLta3efL1j_qg&oe=6715A93A",
+  // image_url:
+  //   "https://scontent.fcrk1-5.fna.fbcdn.net/v/t39.30808-6/422698331_877393341058901_3120897789009871049_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=qOLzxf2J41MQ7kNvgEn7eAO&_nc_zt=23&_nc_ht=scontent.fcrk1-5.fna&_nc_gid=AIJFexT1K0_qCR78m0kJimG&oh=00_AYDWysoIAWi2w9PjRNRWoRzsLvd4CkFpYMLta3efL1j_qg&oe=6715A93A",
   start_date: undefined,
   end_date: undefined,
 };
@@ -43,14 +43,12 @@ const steps = [
     name: "Project Details",
     fields: [
       "client_id",
+      "client_name",
       "project_title",
-      "region",
-      "province",
+      "state",
       "city_town",
       "barangay",
       "street",
-      "block",
-      "lot",
       "zip_code",
       "start_date",
       "end_date",
@@ -196,7 +194,6 @@ export default function HookMultiStepForm() {
                   <div className="w-full">Project Name: {projectName}</div>
                 }
                 onClick={() => next()}
-                disabled={!isValid}
                 submitType={"submit"}
                 submitTitle="Confirm"
               />

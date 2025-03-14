@@ -165,7 +165,7 @@ interface ButtonIconTooltipDialog {
   tooltipContent: string;
   dialogTitle: string;
   dialogDescription: string;
-  dialogContent?: React.JSX.Element;
+  dialogContent?: JSX.Element;
   submitType: "button" | "submit" | "reset" | undefined;
   submitTitle?: string;
   className?: string;
@@ -300,9 +300,18 @@ interface AddBtn {
   className?: string;
   variant?: "default" | "outline" | "ghost";
   dark: boolean;
+  disabled?: boolean;
 }
 
-const AddBtn = ({ variant, onClick, label, href, className, dark }: AddBtn) => {
+const AddBtn = ({
+  variant,
+  onClick,
+  label,
+  href,
+  className,
+  dark,
+  disabled,
+}: AddBtn) => {
   const router = useRouter();
 
   const imgAddSrc = dark
@@ -322,8 +331,10 @@ const AddBtn = ({ variant, onClick, label, href, className, dark }: AddBtn) => {
         "bg-white-primary hover:!bg-white-secondary text-black-secondary hover:!text-black-primary"
       }`}
       variant={variant}
+      disabled={disabled}
+      type="button"
     >
-      <Image src={imgAddSrc} alt={label} width={10} height={10} />
+      <Image src={imgAddSrc} alt={label} width={16} height={16} />
       {label}
     </Button>
   );

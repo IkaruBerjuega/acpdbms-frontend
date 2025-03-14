@@ -19,11 +19,12 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { useLogin, useLogout } from "@/hooks/api-calls/use-login";
-import { useToken } from "@/hooks/api-calls/use-token";
-import { useEffect, useState } from "react";
-import { LoginResponseInterface } from "@/lib/definitions";
+import { useLogout } from "@/hooks/general/use-login";
+import { useToken } from "@/hooks/general/use-token";
+
 import { useRouter } from "next/navigation";
+import { useUserBasicInfo } from "@/hooks/api-calls/admin/use-account";
+import { getInitialsFallback } from "@/lib/utils";
 
 export function NavUser({
   role = "admin",
@@ -34,36 +35,25 @@ export function NavUser({
 
   const { mutate } = useLogout();
 
-  const [userDetails, setUserDetails] = useState<
-    LoginResponseInterface["user"] | null
-  >();
-
-  const { getToken, deleteToken } = useToken();
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const data = await getToken();
-      setUserDetails(data?.user);
-    };
-    fetchData();
-  }, []);
+  const { deleteToken } = useToken();
 
   const router = useRouter();
 
+  const { data } = useUserBasicInfo();
+
+  const name = data?.full_name || "Admin";
+  const profileSrc = data?.profile_picture_url;
+  const email = data?.email;
+  const initialsAsProfileSrcFallback = getInitialsFallback(name);
+
   const handleLogout = () => {
     mutate(null, {
-      onSuccess: async (response: { message?: string }) => {
+      onSuccess: async () => {
         await deleteToken();
         router.push("/login");
       },
     });
   };
-
-  const name = role === "admin" ? "Admin" : userDetails?.name;
-  const profileSrc =
-    userDetails?.profile_picture ||
-    "/system-component-images/avatar-placeholder.webp";
-  const email = userDetails?.email;
 
   return (
     <SidebarMenu>
@@ -76,7 +66,9 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-full">
                 <AvatarImage src={profileSrc} alt={name} />
-                <AvatarFallback className="rounded-full">CN</AvatarFallback>
+                <AvatarFallback className="rounded-full text-black-primary">
+                  {initialsAsProfileSrcFallback}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-semibold">{name}</span>
@@ -95,7 +87,9 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-full">
                   <AvatarImage src={profileSrc} alt={name} />
-                  <AvatarFallback className="rounded-full">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-full">
+                    {initialsAsProfileSrcFallback}
+                  </AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{name}</span>

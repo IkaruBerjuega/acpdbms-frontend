@@ -5,8 +5,6 @@ import { ProjectFormSchemaType } from "@/lib/form-constants/project-constants";
 import { ClientInterface } from "@/lib/definitions"; // Adjust the path if needed
 import { requireError } from "@/lib/utils";
 
-type StepInputs = ProjectFormSchemaType;
-
 interface ClientItem {
   value: string;
   label: string;
@@ -20,7 +18,7 @@ export default function ProjectDetails() {
     register,
     setValue,
     watch,
-  } = useFormContext<StepInputs>();
+  } = useFormContext<ProjectFormSchemaType>();
 
   const { data } = useAccounts<ClientInterface>({
     role: "client",
@@ -67,7 +65,7 @@ export default function ProjectDetails() {
                   setValue("client_name", "");
                 }}
                 validationRules={{ required: requireError("Client") }}
-                errorMessage={errors.client_id?.message}
+                errorMessage={errors.client_name?.message}
               />
             </div>
           </div>
@@ -117,6 +115,7 @@ export default function ProjectDetails() {
               placeholder="Ex. California"
               register={register}
               validationRules={{ required: requireError("State") }}
+              errorMessage={errors?.state?.message}
               required={true}
             />
             {/* City/Town */}
@@ -127,6 +126,7 @@ export default function ProjectDetails() {
               register={register}
               placeholder="Ex. Los Angeles"
               validationRules={{ required: requireError("City/Town") }}
+              errorMessage={errors.city_town?.message}
               required={true}
             />
             {/* Street */}
@@ -136,6 +136,7 @@ export default function ProjectDetails() {
               inputType={"default"}
               register={register}
               placeholder="Ex. 123 Sunset Blvd"
+              errorMessage={errors.street?.message}
               validationRules={{ required: requireError("Streets") }}
               required={true}
             />

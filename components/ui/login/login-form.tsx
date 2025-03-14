@@ -1,21 +1,21 @@
-'use client';
-import { useForm, SubmitHandler } from 'react-hook-form';
-import FormInput from '@/components/ui/general/form-components/form-input';
-import { Checkbox } from '@/components/ui/checkbox';
-import { LoginSchemaType } from '@/lib/form-constants/form-constants';
-import { Button } from '../button';
-import { useToken } from '@/hooks/api-calls/use-token';
-import { useLogin } from '@/hooks/api-calls/use-login';
-import { LoadingCircle } from '../general/loading-circle';
-import { useRouter } from 'next/navigation';
-import { emailPattern } from '@/lib/utils';
-import { LoginResponseInterface } from '@/lib/definitions';
+"use client";
+import { useForm, SubmitHandler } from "react-hook-form";
+import FormInput from "@/components/ui/general/form-components/form-input";
+import { Checkbox } from "@/components/ui/checkbox";
+import { LoginSchemaType } from "@/lib/form-constants/form-constants";
+import { Button } from "../button";
+import { useToken } from "@/hooks/general/use-token";
+import { useLogin } from "@/hooks/general/use-login";
+import { LoadingCircle } from "../general/loading-circle";
+import { useRouter } from "next/navigation";
+import { emailPattern } from "@/lib/utils";
+import { LoginResponseInterface } from "@/lib/definitions";
 
 export default function LoginForm() {
   const methods = useForm<LoginSchemaType>({
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -36,12 +36,12 @@ export default function LoginForm() {
 
     if (isStored) {
       const role = responseData.user.role;
-      if (role === 'admin') {
-        router.push('/admin/dashboard');
-      } else if (role === 'employee') {
-        router.push('/employee/tasks');
+      if (role === "admin") {
+        router.push("/admin/dashboard");
+      } else if (role === "employee") {
+        router.push("/employee/tasks");
       } else {
-        router.push('/client/tasks');
+        router.push("/client/tasks");
       }
     }
   };
@@ -57,57 +57,57 @@ export default function LoginForm() {
   };
 
   const emailValidation = {
-    required: 'Email is required',
+    required: "Email is required",
     pattern: {
       value: emailPattern,
-      message: 'Invalid email format',
+      message: "Invalid email format",
     },
   };
 
   const passwordValidation = {
-    required: 'Password is required',
+    required: "Password is required",
   };
 
   return (
     <form onSubmit={handleSubmit(processForm)}>
-      <div className='text-red-500 justify-center text-center h-6 text-sm mt-2'>
+      <div className="text-red-500 justify-center text-center h-6 text-sm mt-2">
         {error && <p>{error}</p>}
       </div>
 
-      <div className='mt-8'>
+      <div className="mt-8">
         <FormInput
-          name={'email'}
-          dataType='email'
-          inputType='default'
+          name={"email"}
+          dataType="email"
+          inputType="default"
           validationRules={emailValidation}
-          label={''}
-          placeholder={'Enter Email'}
+          label={""}
+          placeholder={"Enter Email"}
           register={register}
           required={false}
         />
       </div>
-      <div className='mt-4'>
+      <div className="mt-4">
         <FormInput
-          name={'password'}
-          dataType='password'
-          inputType='default'
+          name={"password"}
+          dataType="password"
+          inputType="default"
           validationRules={passwordValidation}
-          label={''}
-          placeholder={'Enter Password'}
+          label={""}
+          placeholder={"Enter Password"}
           register={register}
           required={false}
         />
       </div>
 
-      <div className='flex items-center justify-between mt-4'>
-        <div className='flex items-center'>
+      <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center">
           <Checkbox
-            id='remember-me'
-            className='border-black rounded data-[state=checked]:bg-eerieblack'
+            id="remember-me"
+            className="border-black rounded data-[state=checked]:bg-eerieblack"
           />
           <label
-            htmlFor='remember-me'
-            className='text-xs ml-2 text-gray-800 hover:underline leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70'
+            htmlFor="remember-me"
+            className="text-xs ml-2 text-gray-800 hover:underline leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             Remember Me
           </label>
@@ -115,8 +115,8 @@ export default function LoginForm() {
       </div>
 
       <Button
-        type='submit'
-        className='w-full px-6 py-2.5 text-sm font-medium tracking-wide text-white-secondary mt-10'
+        type="submit"
+        className="w-full px-6 py-2.5 text-sm font-medium tracking-wide text-white-secondary mt-10"
         disabled={isLoading}
       >
         {isLoading ? (
@@ -124,7 +124,7 @@ export default function LoginForm() {
             Logging in <LoadingCircle size={15} />
           </>
         ) : (
-          'LOG IN'
+          "LOG IN"
         )}
       </Button>
     </form>

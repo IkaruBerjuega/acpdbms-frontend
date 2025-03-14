@@ -154,7 +154,8 @@ export const getFileExtension = (mimeType: string): string => {
   }
 };
 
-export function titleCase(str: string) {
+export function titleCase(str: string | null) {
+  if (!str) return;
   return str
     .toLowerCase()
     .split(" ")
@@ -162,6 +163,73 @@ export function titleCase(str: string) {
       return word.charAt(0).toUpperCase() + word.slice(1);
     })
     .join(" ");
+}
+
+// Task phase badge colors
+export const tailwindColors = [
+  "slate",
+  "gray",
+  "stone",
+  "red",
+  "orange",
+  "amber",
+  "yellow",
+  "lime",
+  "green",
+  "emerald",
+  "teal",
+  "cyan",
+  "sky",
+  "blue",
+  "indigo",
+  "violet",
+  "purple",
+  "fuchsia",
+  "pink",
+  "rose",
+];
+
+// Generate safelist patterns for bg-[color]-200 and text-[color]-600
+export const safelist = tailwindColors.flatMap((color) => [
+  `bg-${color}-50`, // For light background
+  `text-${color}-600`, // For dark text
+]);
+
+export const getPhaseBadgeColor = (phases: string[]) => {
+  const usedColors = new Set<string>();
+
+  return phases.reduce((acc, phase) => {
+    let color;
+    do {
+      color = tailwindColors[Math.floor(Math.random() * tailwindColors.length)];
+    } while (usedColors.has(color)); // Ensure uniqueness
+
+    usedColors.add(color);
+
+    acc[phase] = {
+      light: `bg-${color}-50`,
+      dark: `text-${color}-600`,
+    };
+
+    console.log(acc);
+
+    return acc;
+  }, {} as Record<string, { light: string; dark: string }>);
+};
+
+//for avatar fallback
+export function getInitialsFallback(name: string) {
+  const initialsAsProfileSrcFallback =
+    name !== "Admin"
+      ? name
+          ?.split(" ")
+          .map((part, index, arr) =>
+            index === 0 || index === arr.length - 1 ? part[0] : null
+          )
+          .filter(Boolean)
+          .join("")
+      : "A";
+  return initialsAsProfileSrcFallback;
 }
 
 //REGEX PATTERNS

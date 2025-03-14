@@ -1,12 +1,14 @@
-import ProjectView from "@/components/ui/admin/projects/project-view";
+import ProjectView from "@/components/ui/general/data-table-components/project-view";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import serverRequestAPI from "@/hooks/server-request";
-import { step1Schema } from "@/lib/form-constants/project-constants";
+import {
+  ProjectDetailsInterface,
+  TeamMemberDashboard,
+  TeamMemberDashboardResponse,
+} from "@/lib/definitions";
 import { z } from "zod";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-type ProjectDetailsSchema = z.infer<typeof step1Schema>;
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -19,7 +21,13 @@ export default async function Page({ params, searchParams }: PageProps) {
   const { edit = "false" } = await searchParams;
 
   //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
-  const initialData: ProjectDetailsSchema = await serverRequestAPI({
+  const initialData: ProjectDetailsInterface = await serverRequestAPI({
+    url: `${API_URL}/projects/${id}`,
+    auth: true,
+  });
+
+  //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
+  const teamMembers: TeamMemberDashboardResponse = await serverRequestAPI({
     url: `${API_URL}/projects/${id}`,
     auth: true,
   });
@@ -40,7 +48,12 @@ export default async function Page({ params, searchParams }: PageProps) {
           },
         ]}
       />
-      <ProjectView id={id} edit={edit} />
+      <ProjectView
+        id={id}
+        edit={edit}
+        projectDetailsInitialData={initialData}
+        teamInitialData={teamMembers}
+      />
     </main>
   );
 }

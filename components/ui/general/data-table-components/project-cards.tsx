@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import FilterPopOver from './filter-components/filter-popover';
-import { LuFilter } from 'react-icons/lu';
-import Card from '../../project-card';
-import { useCustomTable } from './custom-tanstack';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Pagination } from './Pagination';
-import { ColumnDef } from '@tanstack/react-table';
+import FilterPopOver from "./filter-components/filter-popover";
+import { LuFilter } from "react-icons/lu";
+import Card from "../../project-card";
+import { useCustomTable } from "./custom-tanstack";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Pagination } from "./Pagination";
+import { ColumnDef } from "@tanstack/react-table";
 
 export default function ProjectCards<T>({
   columns,
@@ -16,7 +16,7 @@ export default function ProjectCards<T>({
   data: T[];
 }) {
   const searchParams = useSearchParams();
-  const query = searchParams.get('query') || '';
+  const query = searchParams.get("query") || "";
 
   const { table, filterComponents, filters, pagination } = useCustomTable<T>(
     query,
@@ -29,24 +29,24 @@ export default function ProjectCards<T>({
   const router = useRouter();
 
   return (
-    <div className='flex flex-grow w-full flex-col gap-2'>
-      <div className='flex flex-wrap flex-col w-full h-auto gap-2'>
+    <div className="flex flex-grow w-full flex-col gap-2">
+      <div className="flex flex-wrap flex-col w-full h-auto gap-2">
         <div>
           <FilterPopOver
-            width='w-auto'
+            width="w-auto"
             content={filters}
-            popoverName='Add Filter'
-            icon={<LuFilter className='text-xs md:text-lg' />}
+            popoverName="Add Filter"
+            icon={<LuFilter className="text-xs md:text-lg" />}
           />
         </div>
-        <div className='flex flex-wrap flex-row gap-2 w-full h-auto'>
+        <div className="flex flex-wrap flex-row gap-2 w-full h-auto">
           {filterComponents}
         </div>
       </div>
-      <div className='w-full grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 gap-12 sm:gap-4 '>
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 gap-12 sm:gap-4 ">
         {table.getRowModel().rows.length ? (
-          table.getRowModel().rows.map((row) => {
-            const projectId = row.getValue('id') as string | undefined;
+          table.getRowModel().rows.map((row, index) => {
+            const projectId = row.getValue("id") as string | undefined;
             return (
               <Card
                 key={projectId ?? row.id}
@@ -59,7 +59,7 @@ export default function ProjectCards<T>({
             );
           })
         ) : (
-          <div className='w-full h-full col-span-full flex justify-center items-center'>
+          <div className="w-full h-full col-span-full flex justify-center items-center">
             No projects.
           </div>
         )}

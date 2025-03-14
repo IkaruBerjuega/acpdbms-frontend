@@ -1,6 +1,6 @@
 //used for combobox item interface
 export interface ItemInterface {
-  value: string;
+  value: string | number;
   label: string;
   element?: JSX.Element;
   highlight?: { initialColor: string; hoverColor: string };

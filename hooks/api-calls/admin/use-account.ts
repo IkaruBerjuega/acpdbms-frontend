@@ -1,15 +1,15 @@
 "use client";
 
-import AddClient from "@/components/ui/admin/accounts/sidepanel-contents.tsx/add-client";
 import { useApiMutation, useApiQuery } from "@/hooks/tanstack-query";
+import { UserBasicInfo } from "@/lib/definitions";
 
 export const useAccounts = <T>({
   role,
   isArchived,
   initialData,
 }: {
-  role: "employee" | "client";
-  isArchived: boolean;
+  role?: "employee" | "client";
+  isArchived?: boolean;
   initialData?: T[];
 }) => {
   const employeesQuery = useApiQuery<T[]>({
@@ -28,8 +28,15 @@ export const useAccounts = <T>({
   const data = role === "employee" ? employeesQuery : clientsQuery;
 
   return {
-    ...data, // Include { data, isPending, error } from useApiQuery
+    ...data,
   };
+};
+
+export const useUserBasicInfo = () => {
+  return useApiQuery<UserBasicInfo>({
+    key: "user-basic-info",
+    url: "/user/basic-info",
+  });
 };
 
 export const useAccountActions = <T>() => {

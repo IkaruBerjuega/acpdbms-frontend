@@ -1,0 +1,91 @@
+"use client";
+import {
+  ItemTypes,
+  TaskItem,
+  TaskItemProps,
+  TaskStatuses,
+} from "@/lib/definitions";
+import { titleCase } from "@/lib/utils";
+import { useDrop } from "react-dnd";
+import TaskCard from "./task-card";
+import { useState } from "react";
+
+export default function TaskColumn({
+  columnStatus,
+  tasks,
+  moveTask,
+}: {
+  columnStatus: TaskStatuses;
+  tasks: TaskItemProps[] | undefined;
+  moveTask: ({
+    id,
+    droppedStatus,
+  }: {
+    id: number;
+    droppedStatus: string;
+  }) => void;
+}) {
+  const [{ isOver, draggedTask }, drop] = useDrop<
+    TaskItemProps,
+    { columnStatus: string }, // Updated drop result type
+    { isOver: boolean; draggedTask: TaskItemProps | null }
+  >(() => ({
+    accept: ItemTypes.TASK,
+    drop: () => ({ columnStatus }), // Updated
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+      draggedTask: monitor.getItem(),
+    }),
+  }));
+
+  function getStatusBgColor(status: string) {
+    if (status === "to do") return "bg-orange-400";
+    if (status === "in progress") return "bg-yellow-400";
+    if (status === "paused") return "bg-gray-400";
+    if (status === "needs review") return "bg-blue-400";
+    if (status === "done" || "finished") return "bg-green-400";
+  }
+
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+  // const [order, setOrder] = useState<""
+
+  return (
+    <div
+      className={`w-1/5 flex-col-start gap-1 overflow-y-auto  `}
+      ref={drop as unknown as React.RefObject<HTMLDivElement>}
+    >
+      <div className="flex-row-start-center gap-2 px-2">
+        <div
+          className={`w-[10px] h-[10px] rounded-full bg-gray-200 ${getStatusBgColor(
+            columnStatus
+          )}`}
+        ></div>
+        <h3 className="font-semibold text-sm">{titleCase(columnStatus)}</h3>
+      </div>
+      <div
+        className={`rounded-md border-[1px] p-1 space-y-2 transition-all w-full duration-300 ${
+          isOver ? "bg-black-secondary bg-opacity-50" : "border-none"
+        }`}
+      >
+        {tasks?.map((task, index) => {
+          let className = isOver && draggedTask ? "opacity-60" : "opacity-100";
+          return (
+            <TaskCard
+              className={className}
+              key={task.id}
+              moveTask={moveTask}
+              {...task}
+            />
+          );
+        })}
+        {isOver && draggedTask && (
+          <TaskCard
+            className={"opacity-100"}
+            moveTask={moveTask}
+            {...draggedTask}
+          />
+        )}
+      </div>
+    </div>
+  );
+}

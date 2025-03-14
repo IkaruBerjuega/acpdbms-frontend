@@ -85,7 +85,7 @@ const getRoleRedirect = (role: string) => {
   return (
     {
       admin: "/admin/dashboard",
-      employee: "/employee/project/tasks",
+      employee: "/employee/tasks",
       client: "/client",
     }[role] || "/login"
   );

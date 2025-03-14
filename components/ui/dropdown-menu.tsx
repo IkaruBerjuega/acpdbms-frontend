@@ -188,7 +188,7 @@ interface ItemProps {
   iconSrc: string;
   className?: string;
   alt: string;
-  dialogContent?: React.JSX.Element;
+  dialogContent?: JSX.Element;
   dialogDescription?: string;
   dialogTitle?: string;
   dialogBtnSubmitLabel?: string;
