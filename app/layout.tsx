@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { QueryProvider } from "@/components/ui/general/query-provider";
 import { Toaster } from "@/components/ui/toaster";
 
-const roboto = Roboto({
+const roboto = Inter({
   weight: "400",
   subsets: ["latin"],
   display: "swap",

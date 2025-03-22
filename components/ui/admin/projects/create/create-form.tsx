@@ -1,60 +1,60 @@
-'use client';
+"use client";
 
-import { FaTriangleExclamation } from 'react-icons/fa6';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { FormProvider, useForm, SubmitHandler } from 'react-hook-form';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { FaTriangleExclamation } from "react-icons/fa6";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   BtnDialog,
   Button,
   ButtonIconTooltipDialog,
-} from '@/components/ui/button';
+} from "@/components/ui/button";
 
-import { ProjectFormSchemaType } from '@/lib/form-constants/project-constants';
-import StepperIndicator from './stepper';
-import ProjectDetails from './project-details';
-import { toast } from '@/hooks/use-toast';
-import { useProjectActions } from '@/hooks/general/use-project';
+import { ProjectFormSchemaType } from "@/lib/form-constants/project-constants";
+import StepperIndicator from "./stepper";
+import ProjectDetails from "./project-details";
+import { toast } from "@/hooks/use-toast";
+import { useProjectActions } from "@/hooks/general/use-project";
 
 const defaultValues = {
   client_id: undefined,
   client_name: undefined,
-  project_title: '',
-  region: '',
-  province: '',
-  city_town: '',
-  barangay: '',
-  street: '',
-  block: '',
-  lot: '',
+  project_title: "",
+  region: "",
+  province: "",
+  city_town: "",
+  barangay: "",
+  street: "",
+  block: "",
+  lot: "",
   zip_code: undefined,
-  status: 'ongoing',
+  status: "ongoing",
   image_url:
-    'https://scontent.fcrk1-5.fna.fbcdn.net/v/t39.30808-6/422698331_877393341058901_3120897789009871049_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=qOLzxf2J41MQ7kNvgEn7eAO&_nc_zt=23&_nc_ht=scontent.fcrk1-5.fna&_nc_gid=AIJFexT1K0_qCR78m0kJimG&oh=00_AYDWysoIAWi2w9PjRNRWoRzsLvd4CkFpYMLta3efL1j_qg&oe=6715A93A',
+    "https://scontent.fcrk1-5.fna.fbcdn.net/v/t39.30808-6/422698331_877393341058901_3120897789009871049_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=qOLzxf2J41MQ7kNvgEn7eAO&_nc_zt=23&_nc_ht=scontent.fcrk1-5.fna&_nc_gid=AIJFexT1K0_qCR78m0kJimG&oh=00_AYDWysoIAWi2w9PjRNRWoRzsLvd4CkFpYMLta3efL1j_qg&oe=6715A93A",
   start_date: undefined,
   end_date: undefined,
-  project_description: '',
+  project_description: "",
 };
 
 const steps = [
   {
-    id: 'Step 1',
-    name: 'Project Details',
+    id: "Step 1",
+    name: "Project Details",
     fields: [
-      'client_id',
-      'project_title',
-      'region',
-      'province',
-      'city_town',
-      'barangay',
-      'street',
-      'block',
-      'lot',
-      'zip_code',
-      'start_date',
-      'end_date',
-      'project_description',
+      "client_id",
+      "project_title",
+      "region",
+      "province",
+      "city_town",
+      "barangay",
+      "street",
+      "block",
+      "lot",
+      "zip_code",
+      "start_date",
+      "end_date",
+      "project_description",
     ],
   },
 ];
@@ -63,7 +63,7 @@ function getStepContent(step: number) {
   if (step === 0) {
     return <ProjectDetails />;
   }
-  return 'Unknown step';
+  return "Unknown step";
 }
 
 export default function HookMultiStepForm() {
@@ -71,7 +71,7 @@ export default function HookMultiStepForm() {
   const constRouter = useRouter();
 
   const methods = useForm<ProjectFormSchemaType>({
-    mode: 'onBlur',
+    mode: "onBlur",
     defaultValues,
   });
 
@@ -83,10 +83,10 @@ export default function HookMultiStepForm() {
   } = methods;
 
   const resetForm = () => {
-    constRouter.push('/admin/projects');
+    constRouter.push("/admin/projects");
     toast({
-      title: 'Notification',
-      description: 'New Project Added.',
+      title: "Notification",
+      description: "New Project Added.",
     });
   };
 
@@ -98,27 +98,27 @@ export default function HookMultiStepForm() {
     const formData = new FormData();
 
     // append ProjectDetails (step 1) fields
-    formData.append('client_id', data.client_id?.toString() || '');
-    formData.append('client_name', data.client_name);
-    formData.append('project_title', data.project_title);
-    formData.append('state', data.state);
-    formData.append('city_town', data.city_town);
-    formData.append('street', data.street);
-    formData.append('zip_code', data.zip_code?.toString() || '');
-    formData.append('start_date', data.start_date?.toISOString() || '');
-    formData.append('end_date', data.end_date?.toISOString() || '');
-    formData.append('status', data.status);
-    formData.append('image_url', data.image_url);
-    formData.append('project_description', data.project_description || '');
+    formData.append("client_id", data.client_id?.toString() || "");
+    formData.append("client_name", data.client_name);
+    formData.append("project_title", data.project_title);
+    formData.append("state", data.state);
+    formData.append("city_town", data.city_town);
+    formData.append("street", data.street);
+    formData.append("zip_code", data.zip_code?.toString() || "");
+    formData.append("start_date", data.start_date?.toISOString() || "");
+    formData.append("end_date", data.end_date?.toISOString() || "");
+    formData.append("status", data.status);
+    formData.append("image_url", data.image_url);
+    formData.append("project_description", data.project_description || "");
 
-    console.log('Formatted data:', Array.from(formData.entries()));
+    console.log("Formatted data:", Array.from(formData.entries()));
 
     mutate(formData, {
       onSuccess: () => {
         resetForm();
       },
       onError: (error: any) => {
-        console.error('Error adding project', error);
+        console.error("Error adding project", error);
       },
     });
   };
@@ -130,18 +130,18 @@ export default function HookMultiStepForm() {
     // determine fields to validate for the current step
     const fields: FieldPath[] = steps[currentStep].fields as FieldPath[];
     const values = methods.getValues(fields);
-    console.log('Field Values:', values);
+    console.log("Field Values:", values);
 
     const output = await trigger(fields, { shouldFocus: true });
-    console.log('Validation Output:', output);
-    console.log('Validation Errors:', methods.formState.errors);
+    console.log("Validation Output:", output);
+    console.log("Validation Errors:", methods.formState.errors);
 
     if (!output) return;
 
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      console.log('Submitting Form');
+      console.log("Submitting Form");
       handleSubmit(processSubmit)();
     }
   };
@@ -152,22 +152,19 @@ export default function HookMultiStepForm() {
     }
   };
 
-  const stepLabels = ['Project Details'];
-  const projectName = watch('project_title');
+  const stepLabels = ["Project Details"];
+  const projectName = watch("project_title");
 
   return (
     <FormProvider {...methods}>
-      <div className='system-padding bg-white-primary rounded-lg shadow-md flex-grow'>
+      <div className="system-padding bg-white-primary rounded-lg shadow-md flex-grow">
         <StepperIndicator
           stepLabels={stepLabels}
           activeStep={currentStep + 1}
         />
         {errors.root?.formError && (
-          <Alert
-            variant='destructive'
-            className='mt-[28px]'
-          >
-            <FaTriangleExclamation className='h-4 w-4' />
+          <Alert variant="destructive" className="mt-[28px]">
+            <FaTriangleExclamation className="h-4 w-4" />
             <AlertTitle>Form Error</AlertTitle>
             <AlertDescription>
               {errors.root?.formError?.message}
@@ -177,12 +174,12 @@ export default function HookMultiStepForm() {
 
         <form onSubmit={handleSubmit(processSubmit)}>
           {getStepContent(currentStep)}
-          <div className='flex-row-end-center'>
+          <div className="flex-row-end-center">
             {currentStep !== 0 && (
               <Button
-                type='button'
-                className='w-[100px]'
-                variant='secondary'
+                type="button"
+                className="w-[100px]"
+                variant="secondary"
                 onClick={prev}
               >
                 Back
@@ -190,25 +187,25 @@ export default function HookMultiStepForm() {
             )}
             {currentStep === steps.length - 1 ? (
               <BtnDialog
-                btnTitle={'Submit'}
+                btnTitle={"Submit"}
                 isLoading={isLoading}
-                alt={'Submit Button'}
-                dialogTitle={'Add Project'}
+                alt={"Submit Button"}
+                dialogTitle={"Add Project"}
                 dialogDescription={
-                  'Are you sure you want to create this project?'
+                  "Are you sure you want to create this project?"
                 }
                 dialogContent={
-                  <div className='w-full'>Project Name: {projectName}</div>
+                  <div className="w-full">Project Name: {projectName}</div>
                 }
                 onClick={() => next()}
                 disabled={!isValid}
-                submitType={'submit'}
-                submitTitle='Confirm'
+                submitType={"submit"}
+                submitTitle="Confirm"
               />
             ) : (
               <Button
-                type='button'
-                className='w-[100px] bg-gray-800 hover:bg-primary text-white-primary hover:text-white-primary'
+                type="button"
+                className="w-[100px] bg-gray-800 hover:bg-primary text-white-primary hover:text-white-primary"
                 onClick={next}
               >
                 Next

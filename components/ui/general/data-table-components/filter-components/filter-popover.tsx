@@ -51,7 +51,7 @@ export default function FilterPopOver({
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="flex gap-2 p-2 md:p-4">
+        <Button variant="outline" className="flex gap-2 p-2 md:p-4 shadow-sm">
           {icon}
           <p className="text-xs md:text-sm">{popoverName}</p>
         </Button>

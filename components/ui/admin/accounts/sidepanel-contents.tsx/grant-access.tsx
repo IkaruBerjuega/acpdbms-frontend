@@ -19,17 +19,16 @@ import {
   employeesToAssign,
   grantProjectAccess,
 } from "@/lib/form-constants/form-constants";
-import { cn, requireError } from "@/lib/utils";
+import { requireError } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { SubmitHandler } from "react-hook-form";
 import { useCheckboxStore } from "@/hooks/states/create-store";
-import { CiCircleMinus } from "react-icons/ci";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 
-export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
+export default function GrantProjectAccess({ isOpen }: { isOpen: boolean }) {
   const {
     register,
     reset,
@@ -41,8 +40,8 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
     formState: { errors },
   } = useForm<grantProjectAccess>({
     defaultValues: {
-      project_id: undefined,
-      project_name: undefined,
+      project_id: "",
+      project_name: "",
       team: [],
     },
   });
@@ -67,6 +66,14 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
   const selectedProjectId = watch("project_id");
   const { data: TeamDetails } = useTeamDetails(selectedProjectId);
 
+  const projectManager = TeamDetails?.managers?.find(
+    (manager) => manager.role === "Project Manager"
+  );
+
+  const viceManager = TeamDetails?.managers?.find(
+    (manager) => manager.role === "Vice Manager"
+  );
+
   const { data, setData, resetData } = useCheckboxStore();
 
   const selectedMembers = data as AccountsTableType[];
@@ -80,22 +87,33 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
   const queryClient = useQueryClient();
 
   //api call to add project
-  const projectId = watch("project_id");
+  const [projectId, setProjectId] = useState<string>("");
   const projectName = watch("project_name");
   const { addTeamToProjects } = useProjectActions(projectId);
 
   const { mutate, isLoading } = addTeamToProjects;
 
   const processSubmit: SubmitHandler<grantProjectAccess> = async (data) => {
+    console.log("data submitted");
+
     const transformedSelectedMembers: employeesToAssign[] =
-      selectedMembers.map((emp) => ({
-        employee_id: String(emp.id), // Ensure this is cast to a string
-        employee_name: emp.full_name,
-        role: "Member" as const, // Explicitly type the role as "Member"
-      })) || [];
+      selectedMembers
+        .filter((emp) => Boolean(emp.id)) // Ensure only valid employees are mapped
+        .map((emp) => ({
+          employee_id: String(emp.id), // Ensure this is cast to a string
+          employee_name: emp.full_name,
+          role: "Member" as const, // Explicitly type the role as "Member"
+        })) || [];
+
+    const managers = data.team.filter(
+      (emp) =>
+        emp.employee_id !== undefined ||
+        emp.employee_name !== undefined ||
+        emp.role !== undefined
+    );
 
     const body = {
-      team: [...data.team, ...transformedSelectedMembers],
+      team: [...managers, ...transformedSelectedMembers],
     };
 
     //send the form
@@ -110,8 +128,6 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
           });
           queryClient.invalidateQueries({ queryKey: ["employees"] });
           setStep(1);
-          reset(); // Reset form fields
-          resetData();
         },
         onError: (error: { message?: string }) => {
           toast({
@@ -120,38 +136,87 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
             description:
               error.message || "There was an error submitting the form",
           });
-          reset(); // Reset form fields
         },
       }
     );
+    reset({
+      project_id: undefined,
+      project_name: undefined,
+      team: [],
+    });
+    resetData();
   };
 
-  const checkIfValidToStep2 = async (step: number) => {
-    const isValid = await trigger("project_id");
+  const setEmployeeOptionsForStep2 = (
+    projectManagerId: string,
+    viceManagerId: string
+  ) => {
+    let employeesToSet = TeamDetails?.activated_accounts.filter(
+      (employee) =>
+        employee.id !== Number(projectManagerId) &&
+        employee.id !== Number(viceManagerId)
+    );
+    queryClient.setQueryData(["employees"], employeesToSet);
+  };
 
-    if (!isValid) {
-      console.log("Validation failed:", errors); // Log validation errors
-      return;
+  let projectManagerId = watch(`team.${0}.employee_id`);
+  let viceManagerId = watch(`team.${1}.employee_id`);
+
+  useEffect(() => {
+    setEmployeeOptionsForStep2(projectManagerId, viceManagerId);
+  }, [projectManagerId, viceManagerId]);
+
+  const next = async (step: number) => {
+    if (step === 1) {
+      const isValid = await trigger("project_id");
+
+      if (!isValid) {
+        return;
+      }
+
+      setProjectId(watch("project_id"));
+
+      setValue(`team.${0}.employee_id`, String(projectManager?.id));
+      setValue(`team.${0}.employee_name`, projectManager?.name ?? "");
+      setValue(`team.${0}.role`, projectManager?.role);
+
+      setValue(`team.${1}.employee_id`, String(viceManager?.id));
+      setValue(`team.${1}.employee_name`, viceManager?.name ?? "");
+      setValue(`team.${1}.role`, viceManager?.role);
+
+      setStep(step + 1);
+    } else if (step === 2) {
+      const isValid = await trigger("team");
+      console.log(projectId);
+      if (!isValid) {
+        return;
+      }
+
+      let employeesToSet = TeamDetails?.other_employees.filter(
+        (employee) =>
+          employee.id !== Number(projectManagerId) &&
+          employee.id !== Number(viceManagerId)
+      );
+
+      queryClient.setQueryData(["employees"], employeesToSet);
+      setStep(step + 1);
     }
-
-    queryClient.setQueryData(["employees"], TeamDetails?.other_employees);
-    setStep(step + 1);
   };
 
   const prev = async (step: number) => {
+    resetData();
     if (step - 1 === 1) {
       queryClient.invalidateQueries({ queryKey: ["employees"] });
-      reset();
-      resetData();
+      reset({
+        project_id: undefined,
+        project_name: undefined,
+        team: [],
+      });
       setStep(1);
+    } else if (step - 1 === 2) {
+      setEmployeeOptionsForStep2(projectManagerId, viceManagerId);
+      setStep(2);
     }
-  };
-
-  const excludeExstMembersFromTable = (idToExclude: string) => {
-    const employees = TeamDetails?.other_employees.filter(
-      (emp) => String(emp.id) !== idToExclude
-    );
-    queryClient.setQueryData(["employees"], employees);
   };
 
   const projects: ItemInterface[] =
@@ -178,7 +243,7 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
     (team) => team.role === "Project Manager"
   );
 
-  let canSubmit = isProjectManagerPopulated || selectedMembers.length > 0;
+  let canSubmit = isProjectManagerPopulated;
 
   return (
     <form
@@ -202,7 +267,7 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
             }}
             onSelect={(item) => {
               setValue("project_name", item.label);
-              setValue("project_id", item.value);
+              setValue("project_id", item.value as string);
             }}
             clearFn={() => {
               setValue("project_name", "");
@@ -210,7 +275,7 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
             }}
           />
           <div className="flex-row-end-start mt-4 ">
-            <Button onClick={() => checkIfValidToStep2(step)} type="button">
+            <Button onClick={() => next(step)} type="button">
               Next
             </Button>
           </div>
@@ -222,7 +287,6 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
             name={`team.${0}.employee_name`}
             label="Project Manager"
             placeholder={""}
-            register={register}
             required
             inputType={"search"}
             errorMessage={errors?.team?.[0]?.employee_name?.message}
@@ -233,59 +297,32 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
             }}
             onSelect={(item) => {
               setValue(`team.${0}.employee_name`, item.label);
-              setValue(`team.${0}.employee_id`, item.value);
+              setValue(`team.${0}.employee_id`, item.value as string);
               setValue(`team.${0}.role`, "Project Manager");
-              excludeExstMembersFromTable(item.value);
             }}
             clearFn={() => {
               remove(0);
             }}
           />
-          {canSubmit && (
-            <div className="flex-col-start mt-4">
-              <h1 className="text-xs font-bold">
-                Members<span className="text-red-500">*</span>
-              </h1>
-              <h2 className="text-xs">(Select employees from the table)</h2>
-              <div className="w-full flex-col-center-start text-sm mt-4 space-y-2 flex-grow">
-                {selectedMembers.map((employee, index) => {
-                  const number = index + 1;
-                  const initials = `${employee.first_name[0]} ${employee.last_name[0]}`;
-                  return (
-                    <div
-                      key={index}
-                      className="text-sm flex-row-between-center w-full"
-                    >
-                      <div className="flex-row-start-center gap-2">
-                        <span> {number}. </span>
-                        <Avatar>
-                          <AvatarImage
-                            src={employee.profile_picture_url}
-                            alt="@shadcn"
-                          />
-                          <AvatarFallback>{initials}</AvatarFallback>
-                        </Avatar>
-                        <span>{employee.full_name}</span>
-                      </div>
-                      <Button
-                        variant={"ghost"}
-                        type="button"
-                        className="p-2 h-9"
-                        onClick={() => removeMember(employee.id)}
-                      >
-                        <Image
-                          src={"/button-svgs/table-action-remove.svg"}
-                          alt={`Remove Selected Employee: ${employee.full_name}`}
-                          width={20}
-                          height={20}
-                        />
-                      </Button>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+
+          <FormInput<grantProjectAccess>
+            name={`team.${1}.employee_name`}
+            label="Vice Manager"
+            placeholder={""}
+            required={false}
+            inputType={"search"}
+            control={control}
+            items={availableEmployees}
+            onSelect={(item) => {
+              setValue(`team.${1}.employee_name`, item.label);
+              setValue(`team.${1}.employee_id`, item.value as string);
+              setValue(`team.${1}.role`, "Vice Manager");
+            }}
+            clearFn={() => {
+              remove(1);
+            }}
+          />
+
           <div className="flex-row-end-start mt-10 gap-2">
             <BtnDialog
               btnTitle={"Go Back"}
@@ -300,6 +337,67 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
               submitTitle="Yes"
               variant={"ghost"}
             />
+            <Button onClick={() => next(step)} type="button">
+              Next
+            </Button>
+          </div>
+        </>
+      )}
+
+      {step === 3 && (
+        <div className="flex-col-start w-full">
+          <h1 className="text-xs font-bold">
+            Members<span className="text-red-500">*</span>
+          </h1>
+          <h2 className="text-xs">(Select employees from the table)</h2>
+          <div className="w-full flex-col-center-start text-sm mt-4 space-y-2 flex-grow">
+            {selectedMembers.map((employee, index) => {
+              const number = index + 1;
+              const initials = `${employee.first_name[0]} ${employee.last_name[0]}`;
+
+              return (
+                <div
+                  key={index}
+                  className="text-sm flex-row-between-center w-full"
+                >
+                  <div className="flex-row-start-center gap-2">
+                    <span> {number}. </span>
+                    <Avatar>
+                      <AvatarImage
+                        src={employee.profile_picture_url}
+                        alt="@shadcn"
+                      />
+                      <AvatarFallback>{initials}</AvatarFallback>
+                    </Avatar>
+                    <span>{employee.full_name}</span>
+                  </div>
+                  <Button
+                    variant={"ghost"}
+                    type="button"
+                    className="p-2 h-9"
+                    onClick={() => removeMember(employee.id)}
+                  >
+                    <Image
+                      src={"/button-svgs/table-action-remove.svg"}
+                      alt={`Remove Selected Employee: ${employee.full_name}`}
+                      width={20}
+                      height={20}
+                    />
+                  </Button>
+                </div>
+              );
+            })}
+          </div>
+          <div className="flex-row-end-start mt-10 gap-2">
+            <Button
+              variant={"ghost"}
+              onClick={() => {
+                prev(step);
+              }}
+              type="button"
+            >
+              Prev
+            </Button>
             <BtnDialog
               btnTitle={"Submit"}
               isLoading={isLoading}
@@ -317,7 +415,7 @@ export default function AddEmployee({ isOpen }: { isOpen: boolean }) {
               submitTitle="Confirm"
             />
           </div>
-        </>
+        </div>
       )}
     </form>
   );

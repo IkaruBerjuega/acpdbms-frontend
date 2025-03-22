@@ -33,9 +33,8 @@ export default function AccountsTableHeaderActions<T>() {
         params.delete("grant_access");
       }
 
-      const newParams = new URLSearchParams(params.toString());
-      newParams.set(parameter, value);
-      replace(`${pathname}?${newParams.toString()}`);
+      params.set(parameter, value);
+      replace(`${pathname}?${params.toString()}`);
     },
     [pathname, params, replace]
   );

@@ -1,9 +1,9 @@
-import { useFormContext } from 'react-hook-form';
-import { useAccounts } from '@/hooks/api-calls/admin/use-account';
-import FormInput from '../../../general/form-components/form-input';
-import { ProjectFormSchemaType } from '@/lib/form-constants/project-constants';
-import { ClientInterface } from '@/lib/definitions'; // Adjust the path if needed
-import { requireError } from '@/lib/utils';
+import { useFormContext } from "react-hook-form";
+import { useAccounts } from "@/hooks/api-calls/admin/use-account";
+import FormInput from "../../../general/form-components/form-input";
+import { ProjectFormSchemaType } from "@/lib/form-constants/project-constants";
+import { ClientInterface } from "@/lib/definitions"; // Adjust the path if needed
+import { requireError } from "@/lib/utils";
 
 type StepInputs = ProjectFormSchemaType;
 
@@ -23,7 +23,7 @@ export default function ProjectDetails() {
   } = useFormContext<StepInputs>();
 
   const { data } = useAccounts<ClientInterface>({
-    role: 'client',
+    role: "client",
     isArchived: false,
   });
 
@@ -35,38 +35,38 @@ export default function ProjectDetails() {
     })) || [];
 
   return (
-    <main className='flex flex-col gap-8 mb-5 w-full'>
+    <main className="flex flex-col gap-8 mb-5 w-full">
       {/* Client Details */}
-      <div className='w-full'>
-        <div className='flex flex-col gap-4 w-full'>
+      <div className="w-full">
+        <div className="flex flex-col gap-4 w-full">
           <div>
-            <p className='font-semibold text-md text-maroon-600'>
+            <p className="font-semibold text-md text-maroon-600">
               Client Details
             </p>
           </div>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full'>
-            <div className='flex flex-col col-span-1 md:col-span-2'>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+            <div className="flex flex-col col-span-1 md:col-span-2">
               <FormInput
                 control={control}
-                name={'client_name'}
-                label={'Client Name'}
-                inputType={'search'}
+                name={"client_name"}
+                label={"Client Name"}
+                inputType={"search"}
                 register={register}
                 items={clientItems}
-                placeholder='Ex. John Doe'
+                placeholder="Ex. John Doe"
                 onSelect={(item: ClientItem) => {
-                  console.log('Selected item:', item);
-                  console.log('Setting client_id:', Number(item.value));
+                  console.log("Selected item:", item);
+                  console.log("Setting client_id:", Number(item.value));
                   // Convert the string id to a number for client_id
-                  setValue('client_id', Number(item.value));
-                  setValue('client_name', item.label);
+                  setValue("client_id", Number(item.value));
+                  setValue("client_name", item.label);
                 }}
                 clearFn={() => {
                   // Convert the string id to a number for client_id
-                  setValue('client_id', undefined);
-                  setValue('client_name', '');
+                  setValue("client_id", undefined);
+                  setValue("client_name", "");
                 }}
-                validationRules={{ required: requireError('Client') }}
+                validationRules={{ required: requireError("Client") }}
                 errorMessage={errors.client_id?.message}
               />
             </div>
@@ -75,23 +75,23 @@ export default function ProjectDetails() {
       </div>
 
       {/* Project Title */}
-      <div className='w-full'>
-        <div className='flex flex-col gap-4 w-full'>
+      <div className="w-full">
+        <div className="flex flex-col gap-4 w-full">
           <div>
-            <p className='font-semibold text-md text-maroon-600'>
+            <p className="font-semibold text-md text-maroon-600">
               Project Title
             </p>
           </div>
-          <div className='w-full'>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full'>
-              <div className='flex flex-col col-span-1 md:col-span-2'>
+          <div className="w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+              <div className="flex flex-col col-span-1 md:col-span-2">
                 <FormInput
-                  name={'project_title'}
-                  label={'Project Title'}
-                  inputType={'default'}
+                  name={"project_title"}
+                  label={"Project Title"}
+                  inputType={"default"}
                   register={register}
-                  placeholder='Ex. Dela Rosa House'
-                  validationRules={{ required: requireError('Project Title') }}
+                  placeholder="Ex. Dela Rosa House"
+                  validationRules={{ required: requireError("Project Title") }}
                   errorMessage={errors.project_title?.message}
                 />
               </div>
@@ -100,24 +100,24 @@ export default function ProjectDetails() {
         </div>
       </div>
       {/* Project Description */}
-      <div className='w-full'>
-        <div className='flex flex-col gap-4 w-full'>
+      <div className="w-full">
+        <div className="flex flex-col gap-4 w-full">
           <div>
-            <p className='font-semibold text-md text-maroon-600'>
+            <p className="font-semibold text-md text-maroon-600">
               Project Description
             </p>
           </div>
-          <div className='w-full'>
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full'>
-              <div className='flex flex-col col-span-1 md:col-span-2'>
+          <div className="w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
+              <div className="flex flex-col col-span-1 md:col-span-2">
                 <FormInput
-                  name={'project_description'}
-                  label={'Project Description'}
-                  inputType={'textArea'}
+                  name={"project_description"}
+                  label={"Project Description"}
+                  inputType={"textArea"}
                   register={register}
-                  placeholder='This project...'
+                  placeholder="This project..."
                   validationRules={{
-                    required: requireError('Project Description'),
+                    required: requireError("Project Description"),
                   }}
                   errorMessage={errors.project_description?.message}
                 />
@@ -127,55 +127,55 @@ export default function ProjectDetails() {
         </div>
       </div>
       {/* Project Location */}
-      <div className='w-full'>
-        <div className='flex flex-col gap-4'>
+      <div className="w-full">
+        <div className="flex flex-col gap-4">
           <div>
-            <p className='font-semibold text-md text-maroon-600'>
+            <p className="font-semibold text-md text-maroon-600">
               Project Location
             </p>
           </div>
-          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full'>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
             {/* State */}
             <FormInput
-              name={'state'}
-              label={'State'}
-              inputType={'default'}
-              placeholder='Ex. California'
+              name={"state"}
+              label={"State"}
+              inputType={"default"}
+              placeholder="Ex. California"
               register={register}
-              validationRules={{ required: requireError('State') }}
+              validationRules={{ required: requireError("State") }}
               required={true}
             />
             {/* City/Town */}
             <FormInput
-              name={'city_town'}
-              label={'City/Town'}
-              inputType={'default'}
+              name={"city_town"}
+              label={"City/Town"}
+              inputType={"default"}
               register={register}
-              placeholder='Ex. Los Angeles'
-              validationRules={{ required: requireError('City/Town') }}
+              placeholder="Ex. Los Angeles"
+              validationRules={{ required: requireError("City/Town") }}
               required={true}
             />
             {/* Street */}
             <FormInput
-              name={'street'}
-              label={'Street'}
-              inputType={'default'}
+              name={"street"}
+              label={"Street"}
+              inputType={"default"}
               register={register}
-              placeholder='Ex. 123 Sunset Blvd'
-              validationRules={{ required: requireError('Streets') }}
+              placeholder="Ex. 123 Sunset Blvd"
+              validationRules={{ required: requireError("Streets") }}
               required={true}
             />
             {/* Zip Code */}
             <FormInput
-              name={'zip_code'}
-              label={'Zip Code'}
-              inputType={'default'}
+              name={"zip_code"}
+              label={"Zip Code"}
+              inputType={"default"}
               register={register}
               errorMessage={errors.zip_code?.message}
-              placeholder='90028'
+              placeholder="90028"
               validationRules={{
                 valueAsNumber: true,
-                required: requireError('Zip Code'),
+                required: requireError("Zip Code"),
               }}
             />
           </div>
@@ -183,66 +183,66 @@ export default function ProjectDetails() {
       </div>
 
       {/* Project Date */}
-      <div className='w-full'>
-        <div className='flex flex-col gap-4'>
+      <div className="w-full">
+        <div className="flex flex-col gap-4">
           <div>
-            <p className='font-semibold text-md text-maroon-600'>
+            <p className="font-semibold text-md text-maroon-600">
               Project Date
             </p>
           </div>
-          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full'>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
             {/* Start Date */}
             <FormInput
-              name='start_date'
-              label='Start Date'
+              name="start_date"
+              label="Start Date"
               register={register}
               control={control}
               errorMessage={errors.start_date?.message}
               validationRules={{
-                required: requireError('Start Date is required'),
+                required: requireError("Start Date is required"),
                 validate: (value: string | number | Date) => {
                   const startDate = new Date(value);
-                  const endDate = new Date(String(watch('end_date')));
+                  const endDate = new Date(String(watch("end_date")));
 
                   if (startDate < new Date()) {
-                    return 'Start Date must be in the future';
+                    return "Start Date must be in the future";
                   }
 
-                  if (watch('end_date') && startDate >= endDate) {
-                    return 'Start Date must be before End Date';
+                  if (watch("end_date") && startDate >= endDate) {
+                    return "Start Date must be before End Date";
                   }
 
                   return true;
                 },
               }}
-              inputType='date'
+              inputType="date"
             />
 
             {/* End Date */}
             <FormInput
-              name='end_date'
-              label='End Date'
+              name="end_date"
+              label="End Date"
               register={register}
               control={control}
               errorMessage={errors.end_date?.message}
               validationRules={{
-                required: requireError('End Date is required'),
+                required: requireError("End Date is required"),
                 validate: (value: string | number | Date) => {
-                  const startDate = new Date(String(watch('start_date')));
+                  const startDate = new Date(String(watch("start_date")));
                   const endDate = new Date(value);
 
                   if (endDate < new Date()) {
-                    return 'End Date must be in the future';
+                    return "End Date must be in the future";
                   }
 
                   if (startDate && startDate >= endDate) {
-                    return 'End Date must be after Start Date';
+                    return "End Date must be after Start Date";
                   }
 
                   return true;
                 },
               }}
-              inputType='date'
+              inputType="date"
             />
           </div>
         </div>
