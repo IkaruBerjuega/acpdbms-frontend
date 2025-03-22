@@ -67,15 +67,27 @@ export interface grantProjectAccess {
 }
 
 export interface editAccountDetails {
-  email?: string;
-  first_name?: string;
+  email: string;
+  first_name: string;
   middle_name?: string;
-  last_name?: string;
-  phoneNumber: string;
+  last_name: string;
+  phoneNumber?: string;
   street?: string;
   city_town?: string;
   state?: string;
   zip_code?: string;
   profile_picture_url?: string;
   position?: string;
+}
+
+export interface firstLogin {
+  email: string;
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
+  phone_number?: string;
+  state?: string;
+  city_town?: string;
+  street?: string;
+  zip_code?: string;
 }

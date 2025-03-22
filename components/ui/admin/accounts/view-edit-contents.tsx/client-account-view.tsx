@@ -10,6 +10,7 @@ import {
   FileText,
   ListChecks,
   CheckCircle2,
+  Phone,
 } from 'lucide-react';
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { useEffect, useState } from 'react';
@@ -17,7 +18,7 @@ import { useEffect, useState } from 'react';
 import FormInput from '@/components/ui/general/form-components/form-input';
 import { Card, CardContent } from '@/components/ui/card';
 import { toast } from '@/hooks/use-toast';
-import { useProfile } from '@/hooks/api-calls/admin/use-profile';
+import { useProfile } from '@/hooks/general/use-profile';
 import { ViewEditCard } from './project-view-card';
 
 export interface editAccountDetails {
@@ -44,7 +45,7 @@ export default function ClientAccView({
   const [editAccDetails, setEditAccDetails] = useState<boolean>(false);
 
   const methods = useForm<editAccountDetails>({
-    mode: 'onBlur',
+    mode: 'onSubmit',
   });
 
   const {
@@ -66,6 +67,7 @@ export default function ClientAccView({
   } = useProfile(id);
 
   useEffect(() => {
+    console.log('Updated profileDetails:', profileDetails); // Debugging
     if (profileDetails && profileDetails.client) {
       reset({
         first_name: profileDetails.client.first_name,
@@ -97,12 +99,20 @@ export default function ClientAccView({
       email: data.email,
     };
 
-    await updateProfileFromAdmin(formattedData, id);
-    toast({
-      variant: 'default',
-      title: 'Notification',
-      description: 'You successfully updated the account details',
-    });
+    try {
+      const response = await updateProfileFromAdmin(formattedData, id);
+      toast({
+        variant: 'default',
+        title: 'Notification',
+        description: 'You successfully updated the account details',
+      });
+    } catch (error: any) {
+      toast({
+        variant: 'destructive',
+        title: 'Error!',
+        description: error.message || 'Update failed. Please try again.',
+      });
+    }
 
     setEditAccDetails(false);
   };
@@ -164,14 +174,20 @@ export default function ClientAccView({
                         } ${profileDetails?.client?.last_name || 'Last Name'}`}
                       </h1>
                       <div className='text-slate-600 text-sm space-y-1'>
-                        <p>Phone Number: {phoneNumber || 'Not Set'}</p>
-                        <p>Address: {address}</p>
+                        <div className='flex items-center'>
+                          <Phone className='h-3 w-3 text-primary mr-2' />
+                          <p>Phone Number: {phoneNumber || 'Not Set'}</p>
+                        </div>
+                        <div className='flex items-center'>
+                          <MapPin className='h-3 w-3 text-primary mr-2' />
+                          <p>Address: {address}</p>
+                        </div>
                       </div>
                     </div>
                   </div>
                   {!editAccDetails && (
                     <Button
-                      className='bg-maroon-600 hover:bg-maroon-700 text-white self-start'
+                      className='self-start'
                       onClick={() => setEditAccDetails(!editAccDetails)}
                       size='sm'
                     >
@@ -234,8 +250,8 @@ export default function ClientAccView({
                       <Separator className='my-4' />
                       {/* Address Heading */}
                       <div className='flex items-center mb-4'>
-                        <MapPin className='h-5 w-5 text-maroon-600 mr-2' />
-                        <h2 className='font-semibold text-lg text-maroon-600'>
+                        <MapPin className='h-5 w-5 text-primary mr-2' />
+                        <h2 className='font-semibold text-lg text-primary'>
                           Address
                         </h2>
                       </div>
@@ -279,8 +295,8 @@ export default function ClientAccView({
                       <Separator className='my-4' />
 
                       <div className='flex items-center mb-4'>
-                        <FileText className='h-5 w-5 text-maroon-600 mr-2' />
-                        <h2 className='font-semibold text-lg text-maroon-600'>
+                        <FileText className='h-5 w-5 text-primary mr-2' />
+                        <h2 className='font-semibold text-lg text-primary'>
                           Other Details
                         </h2>
                       </div>
@@ -380,8 +396,8 @@ export default function ClientAccView({
                 {/* Ongoing Projects */}
                 {editAccDetails ? (
                   <div className='flex items-center mb-4'>
-                    <ListChecks className='h-5 w-5 text-maroon-600 mr-2' />
-                    <h2 className='font-semibold text-lg text-maroon-600'>
+                    <ListChecks className='h-5 w-5 text-primary mr-2' />
+                    <h2 className='font-semibold text-lg text-primary'>
                       Ongoing Projects
                     </h2>
                   </div>
@@ -419,8 +435,8 @@ export default function ClientAccView({
                 {/* finished projects */}
                 {editAccDetails ? (
                   <div className='flex items-center mb-4'>
-                    <CheckCircle2 className='h-5 w-5 text-maroon-600 mr-2' />
-                    <h2 className='font-semibold text-lg text-maroon-600'>
+                    <CheckCircle2 className='h-5 w-5 text-primary mr-2' />
+                    <h2 className='font-semibold text-lg text-primary'>
                       Finished Projects
                     </h2>
                   </div>

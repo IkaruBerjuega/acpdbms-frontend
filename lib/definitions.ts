@@ -191,3 +191,20 @@ export interface UserDetailsResponse {
   employee: EmployeeViewInterface | null;
   client: ClientViewInterface | null;
 }
+
+export type TaskCountIntervalTypes = 'daily' | 'weekly' | 'monthly' | 'yearly';
+export type TaskCountByInterval = {
+  period: string; // The time period (e.g., "2023-01" for monthly intervals)
+  ongoing_tasks: number; // The count of ongoing tasks in the given period
+  completed_tasks: number; // The count of completed tasks in the given period
+};
+
+export type TicketData = {
+  ticket_id: number;
+  user_name: string;
+  project_id: number;
+  category: string;
+  content: string;
+  date: string;
+  status: string;
+};

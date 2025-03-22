@@ -64,10 +64,15 @@ export const useProfile = (userId?: string) => {
   });
 
   const updateProfile = async (data: any) => {
-    return await updateProfileMutation.mutate(data);
+    return new Promise((resolve, reject) => {
+      updateProfileMutation.mutate(data, {
+        onSuccess: (responseData) => resolve(responseData),
+        onError: (error) => reject(error),
+      });
+    });
   };
 
-  // update profile from admin
+  // update profile from admin (updated to behave like the non-admin version)
   const updateProfileFromAdminMutation = useApiMutation<any>({
     url: `/users/${userId}/update`,
     method: 'PUT',
@@ -76,12 +81,17 @@ export const useProfile = (userId?: string) => {
   });
 
   const updateProfileFromAdmin = async (data: any, id?: string) => {
-    return await updateProfileFromAdminMutation.mutate(data);
+    return new Promise((resolve, reject) => {
+      updateProfileFromAdminMutation.mutate(data, {
+        onSuccess: (responseData) => resolve(responseData),
+        onError: (error) => reject(error),
+      });
+    });
   };
 
   // toggle notifications
   const toggleNotifsMutation = useApiMutation<any>({
-    url: `/${userId}/notifications`,
+    url: `/profile/notifications/${userId}`,
     method: 'PUT',
     contentType: 'application/json',
     auth: true,
@@ -96,14 +106,19 @@ export const useProfile = (userId?: string) => {
 
   // upload profile picture
   const uploadPhotoMutation = useApiMutation<any>({
-    url: `/user/profile-picture`,
+    url: `/profile/update-picture`,
     method: 'POST',
     contentType: 'multipart/form-data',
     auth: true,
   });
 
-  const uploadPhoto = async (data: FormData) => {
-    return await uploadPhotoMutation.mutate(data);
+  const uploadPhoto = async (data: FormData): Promise<any> => {
+    return new Promise((resolve, reject) => {
+      uploadPhotoMutation.mutate(data, {
+        onSuccess: (response) => resolve(response),
+        onError: (error) => reject(error),
+      });
+    });
   };
 
   // deactivate employee from project
@@ -112,6 +127,15 @@ export const useProfile = (userId?: string) => {
       url: `/teams/${teamId}/deactivate`,
       method: 'POST',
       body: null,
+      contentType: 'application/json',
+      auth: true,
+    });
+  };
+
+  const getAuthenticatedUser = async () => {
+    return await requestAPI({
+      url: `/user`,
+      method: 'GET',
       contentType: 'application/json',
       auth: true,
     });
@@ -126,6 +150,7 @@ export const useProfile = (userId?: string) => {
     updateProfileFromAdmin,
     toggleNotifs,
     deactivateEmployeeFromProject,
+    getAuthenticatedUser,
     error,
   };
 };
