@@ -36,16 +36,6 @@ export default function Table<T>({
       filterFn: true,
     },
     {
-      accessorKey: 'project_description',
-      header: 'Project Description',
-      meta: {
-        filter_name: 'Project Description',
-        filter_type: 'text',
-        filter_columnAccessor: 'project_description',
-      },
-      filterFn: true,
-    },
-    {
       accessorKey: 'location',
       header: 'Location',
       meta: {
