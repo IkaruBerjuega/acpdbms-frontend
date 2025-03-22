@@ -11,11 +11,6 @@ import { Notifications } from "./notifications";
 
 // Menu items.
 const data = {
-  user: {
-    name: "Larry",
-    email: "larry@example.com",
-    avatar: "/boy.png",
-  },
   info: {
     name: "Larry's Home Designs",
     logo: "/logo.svg",
@@ -23,18 +18,22 @@ const data = {
   },
 };
 
-export function AppSidebar() {
+export function AppSidebar({
+  role,
+}: {
+  role: "admin" | "employee" | "client";
+}) {
   return (
     <Sidebar collapsible="icon">
       <SidebarContent>
         <SidebarHeader>
           <TeamHeader info={data.info} />
         </SidebarHeader>
-        <NavMain role="admin" />
+        <NavMain role={role} />
       </SidebarContent>
       <SidebarFooter>
         <Notifications />
-        <NavUser role="admin" />
+        <NavUser role={role} />
       </SidebarFooter>
     </Sidebar>
   );

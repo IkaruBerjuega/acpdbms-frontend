@@ -71,12 +71,12 @@ export default function DataTableHeader({
     );
 
   return (
-    <div className="system-padding bg-white-primary w-full lg:w-full flex-row-between-center rounded-t-lg shadow-md">
+    <div className="system-padding bg-white-primary w-full lg:w-full flex-col-start lg:flex-row-between-center  rounded-t-lg shadow-md gap-2 ">
       <Search
-        className={"w-full xl:w-1/2"}
+        className={"w-full lg:w-1/2"}
         placeholder={`Search ${tableName}`}
       />
-      <div className="flex-grow flex justify-end h-full gap-2">
+      <div className="  flex-1  min-w-0 overflow-x-auto lg:flex-grow h-full flex justify-end gap-2">
         {onArchive && (
           <ButtonIconTooltipDialog
             iconSrc={archiveUnarchiveImgSrc}
@@ -88,7 +88,7 @@ export default function DataTableHeader({
             submitType={"button"}
             submitTitle="Confirm"
             onClick={() => onArchive.fn()}
-            className={` ${
+            className={`${
               isArchived
                 ? "bg-green-600 hover:!bg-green-900"
                 : "bg-black-primary hover:!bg-black-secondary"
@@ -98,7 +98,7 @@ export default function DataTableHeader({
         )}
         {onShowArchive && (
           <ButtonTooltip
-            tooltip={`Show Archived ${tableName}s`}
+            tooltip={`Show Archived ${tableName}`}
             className={`${isArchived && "bg-green-200 hover:!bg-green-300"}`}
             iconSrc="/button-svgs/table-header-show-archive.svg"
             onClick={toggleArchived}
@@ -106,7 +106,7 @@ export default function DataTableHeader({
         )}
         {onGenerateReport && (
           <ButtonTooltip
-            tooltip={`Generate ${tableName}s Report`}
+            tooltip={`Generate ${tableName} Report`}
             iconSrc="/button-svgs/table-header-generate-report.svg"
           />
         )}

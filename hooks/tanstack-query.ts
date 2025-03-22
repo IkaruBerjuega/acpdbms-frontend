@@ -1,7 +1,12 @@
 "use client";
 
-import { Enabled, useMutation, useQuery } from "@tanstack/react-query";
-import { useToken } from "./api-calls/use-token";
+import {
+  Enabled,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useToken } from "./general/use-token";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
@@ -35,6 +40,7 @@ export const requestAPI = async ({
 
   const res = await fetch(`${API_URL}${url}`, {
     method,
+    credentials: "include",
     headers,
     // If body is FormData, send it as is. Otherwise, stringify it.
     body: body ? (isFormData ? body : JSON.stringify(body)) : undefined,
@@ -64,7 +70,7 @@ export function useApiMutation<T>({
   method?: "POST" | "PUT" | "PATCH" | "DELETE";
   contentType: string;
   auth: boolean;
-  additionalHeaders?: any;
+  additionalHeaders?: Record<string, string>;
 }) {
   const mutation = useMutation({
     mutationFn: (body?: T) =>
@@ -94,12 +100,14 @@ export function useApiQuery<T>({
   additionalHeaders,
   initialData,
   enabled,
+  auth = true,
 }: {
-  key: string;
+  key: string | string[];
   url: string;
   additionalHeaders?: Record<string, string>;
   initialData?: T;
   enabled?: Enabled<T, Error, T, string[]> | undefined;
+  auth?: boolean;
 }) {
   const { getToken } = useToken();
 
@@ -110,9 +118,7 @@ export function useApiQuery<T>({
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(userData?.token
-          ? { Authorization: `Bearer ${userData?.token}` }
-          : {}),
+        ...(auth ? { Authorization: `Bearer ${userData?.token}` } : {}),
         ...(additionalHeaders || {}),
       },
     });
@@ -123,9 +129,10 @@ export function useApiQuery<T>({
 
     return response.json();
   };
+  const queryKey = typeof key === "string" ? [key] : key;
 
   const { data, isLoading, isPending, error } = useQuery({
-    queryKey: [key],
+    queryKey: queryKey,
     queryFn: () => fetchApiData(),
     initialData: initialData,
     enabled: enabled,
@@ -138,3 +145,17 @@ export function useApiQuery<T>({
     error,
   };
 }
+
+export const useInvalidateQuery = ({
+  queryKey,
+}: {
+  queryKey: string[] | string;
+}) => {
+  const queryClient = useQueryClient();
+
+  function refetch() {
+    queryClient.invalidateQueries({ queryKey: queryKey });
+  }
+
+  return { refetch };
+};

@@ -6,7 +6,7 @@ import { ContactFormSchemaType } from "@/lib/form-constants/form-constants";
 import FormInput from "../general/form-components/form-input";
 import { Button } from "../button";
 import { emailPattern } from "@/lib/utils";
-import { useSendContactForm } from "@/hooks/api-calls/use-contact-form";
+import { useSendContactForm } from "@/hooks/general/use-contact-form";
 import { toast } from "@/hooks/use-toast";
 import { Fragment } from "react";
 import { LoadingCircle } from "../general/loading-circle";

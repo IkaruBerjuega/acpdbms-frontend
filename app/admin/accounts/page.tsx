@@ -73,8 +73,8 @@ export default async function Page({
       <SidebarTrigger breadcrumbs={breadcrumbs} />
       <AccountsTableHeaderActions<AccountsTableType> />
 
-      <div className="flex-grow flex-row-start gap-2 relative">
-        <div className="flex-grow rounded-bl-lg bg-white-primary shadow-md system-padding ">
+      <div className="flex-grow flex-row-start gap-2 relative min-w-0">
+        <div className="flex-grow rounded-bl-lg bg-white-primary shadow-md system-padding min-w-0">
           <Table<AccountsTableType>
             initialData={initialData}
             role={role}

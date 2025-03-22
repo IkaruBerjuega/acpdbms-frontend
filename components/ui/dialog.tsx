@@ -5,6 +5,7 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Button } from "./button";
 
 const Dialog = DialogPrimitive.Root;
 
@@ -109,6 +110,44 @@ const DialogDescription = React.forwardRef<
 ));
 DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
+interface DialogNoBtn {
+  title: string;
+  description: string;
+  content: JSX.Element;
+  onClick: () => void;
+  onOpen: boolean;
+  onClose: () => void;
+}
+
+const DialogNoBtn = ({
+  onOpen,
+  onClose,
+  title,
+  description,
+  content,
+  onClick,
+}: DialogNoBtn) => {
+  return (
+    <Dialog open={onOpen} onOpenChange={onClose}>
+      <DialogTrigger className="hidden" asChild>
+        <Button variant="outline">{title}</Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>{description}</DialogDescription>
+        </DialogHeader>
+        {content}
+        <DialogFooter>
+          <Button type="button" onClick={onClick}>
+            Confirm
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
 export {
   Dialog,
   DialogPortal,
@@ -120,4 +159,5 @@ export {
   DialogFooter,
   DialogTitle,
   DialogDescription,
+  DialogNoBtn,
 };

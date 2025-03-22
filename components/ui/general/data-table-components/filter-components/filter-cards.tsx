@@ -41,7 +41,7 @@ export default function FilterUi({
   };
 
   return (
-    <div className="flex flex-row border-2 rounded-lg overflow-hidden p-0">
+    <div className="flex flex-row border-2 rounded-lg overflow-hidden p-0 bg-white-primary">
       <div className="flex px-4">
         <p className="w-full h-full flex items-center justify-center text-sm">
           <span className="mr-1 font-semibold">{formattedColumnName}</span> is{" "}

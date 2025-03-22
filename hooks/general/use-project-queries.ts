@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useToken } from "../api-calls/use-token";
+import { useToken } from "./use-token";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 

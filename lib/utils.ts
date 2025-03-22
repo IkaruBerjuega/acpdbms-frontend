@@ -130,7 +130,6 @@ export const getFileExtension = (mimeType: string): string => {
 
     // JavaScript Files
     case "application/javascript":
-      return "js";
     case "text/javascript":
       return "js";
 
@@ -140,7 +139,6 @@ export const getFileExtension = (mimeType: string): string => {
 
     // Zip Files
     case "application/zip":
-      return "zip";
     case "application/x-zip-compressed":
       return "zip";
 
@@ -148,13 +146,40 @@ export const getFileExtension = (mimeType: string): string => {
     case "application/ld+json":
       return "json-ld";
 
+    // 🏗️ CAD Files
+    case "application/acad":
+    case "application/x-dwg":
+    case "image/vnd.dwg":
+      return "dwg";
+
+    case "application/dxf":
+    case "image/vnd.dxf":
+    case "application/x-dxf":
+      return "dxf";
+
+    case "model/vnd.dwf":
+    case "application/x-dwf":
+      return "dwf";
+
+    case "model/iges":
+      return "iges";
+
+    case "model/step":
+    case "model/stp":
+      return "step";
+
+    case "model/stl":
+    case "application/sla":
+      return "stl";
+
     // Default Fallback
     default:
       return "file";
   }
 };
 
-export function titleCase(str: string) {
+export function titleCase(str: string | null) {
+  if (!str) return;
   return str
     .toLowerCase()
     .split(" ")
@@ -162,6 +187,89 @@ export function titleCase(str: string) {
       return word.charAt(0).toUpperCase() + word.slice(1);
     })
     .join(" ");
+}
+
+// Task phase badge colors
+export const tailwindColors = [
+  "slate",
+  "gray",
+  "stone",
+  "red",
+  "orange",
+  "amber",
+  "yellow",
+  "lime",
+  "green",
+  "emerald",
+  "teal",
+  "cyan",
+  "sky",
+  "blue",
+  "indigo",
+  "violet",
+  "purple",
+  "fuchsia",
+  "pink",
+  "rose",
+];
+
+// Generate safelist patterns for bg-[color]-200 and text-[color]-600
+export const safelist = tailwindColors.flatMap((color) => [
+  `bg-${color}-50`, // For light background
+  `text-${color}-600`, // For dark text
+]);
+
+export const getPhaseBadgeColor = (phases: string[]) => {
+  const usedColors = new Set<string>();
+
+  return phases.reduce((acc, phase) => {
+    let color;
+    do {
+      color = tailwindColors[Math.floor(Math.random() * tailwindColors.length)];
+    } while (usedColors.has(color)); // Ensure uniqueness
+
+    usedColors.add(color);
+
+    acc[phase] = {
+      light: `bg-${color}-50`,
+      dark: `text-${color}-600`,
+    };
+
+    console.log(acc);
+
+    return acc;
+  }, {} as Record<string, { light: string; dark: string }>);
+};
+
+//for avatar fallback
+export function getInitialsFallback(name: string) {
+  const initialsAsProfileSrcFallback =
+    name !== "Admin"
+      ? name
+          ?.split(" ")
+          .map((part, index, arr) =>
+            index === 0 || index === arr.length - 1 ? part[0] : null
+          )
+          .filter(Boolean)
+          .join("")
+      : "A";
+  return initialsAsProfileSrcFallback;
+}
+
+export function bytesToMb(
+  bytes: number,
+  decimals: number = 2,
+  base10: boolean = false
+): number {
+  if (typeof bytes !== "number" || isNaN(bytes)) {
+    throw new Error("Input must be a valid number");
+  }
+  if (bytes < 0) {
+    throw new Error("Input cannot be negative");
+  }
+  const divisor = base10 ? 1000 * 1000 : 1024 * 1024; // Bytes to MB directly
+  const mb = bytes / divisor;
+  return Number(mb.toFixed(decimals));
 }
 
 //REGEX PATTERNS

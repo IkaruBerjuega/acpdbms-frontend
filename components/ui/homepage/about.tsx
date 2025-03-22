@@ -24,13 +24,13 @@ const AboutSection = () => {
                 About Us
               </h1>
               <p className="lg:max-w-lg text-wrap mt-6 md:text-2xl font-light text-justify lg:text-justify text-white-100 text-white-secondary">
-                G.L. Designs + Architects is a design and build firm that
-                concentrates on creating a structure based on the client&apos;s
-                needs, ideas, and preferences with the collaboration of our
-                team&apos;s expertise in design. Taking clients&apos; budget
-                into consideration, we assure to value and provide significance
-                to the quality and outcome without affecting the buildings&apos;
-                structural and aesthetic aspects.
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+                enim ad minim veniam, quis nostrud exercitation ullamco laboris
+                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
+                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
+                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
+                sunt in culpa qui officia deserunt mollit anim id est laborum.
               </p>
             </div>
           </div>

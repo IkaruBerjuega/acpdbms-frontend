@@ -94,7 +94,7 @@ export default function FormInput<T extends FieldValues>({
           control={control}
           name={name}
           render={({ field: { onChange, value, onBlur } }) => (
-            <div className="w-full">
+            <div className="w-full mt-1">
               <Combobox
                 items={items}
                 onSelect={(item) =>
@@ -112,19 +112,50 @@ export default function FormInput<T extends FieldValues>({
           )}
         />
       ) : isDefault ? (
-        <Input
-          type={dataType}
-          id={name}
-          placeholder={placeholder || ""}
-          value={value}
-          min={min}
-          onChangeCapture={onChangeCapture}
-          readOnly={readOnly}
-          className={`text-xs sm:text-sm mt-1 ${fieldBg} ${
-            borderNone ? "border-none" : ""
-          }`}
-          {...(register && register(name, validationRules))}
-        />
+        <>
+          {control ? (
+            <Controller
+              rules={finalRules} // Validation rules go here
+              control={control} // Required for Controller to manage state
+              name={name} // Field name in the form
+              render={({
+                field: { onChange, value, onBlur },
+                fieldState: { error },
+              }) => (
+                <div className="w-full">
+                  <Input
+                    type={dataType}
+                    id={name}
+                    placeholder={placeholder || ""}
+                    value={value} // Controlled value from Controller
+                    onChange={onChange} // Controlled onChange from Controller
+                    onBlur={onBlur} // Optional: for blur validation
+                    min={min}
+                    onChangeCapture={onChangeCapture} // Custom prop (if needed)
+                    readOnly={readOnly}
+                    className={`text-xs sm:text-sm mt-1 ${fieldBg} ${
+                      borderNone ? "border-none" : ""
+                    }`}
+                  />
+                </div>
+              )}
+            />
+          ) : (
+            <Input
+              type={dataType}
+              id={name}
+              placeholder={placeholder || ""}
+              value={value}
+              min={min}
+              onChangeCapture={onChangeCapture}
+              readOnly={readOnly}
+              className={`text-xs sm:text-sm mt-1 ${fieldBg} ${
+                borderNone ? "border-none" : ""
+              }`}
+              {...(register && register(name, validationRules))}
+            />
+          )}
+        </>
       ) : isDate ? (
         <Controller
           rules={finalRules}
