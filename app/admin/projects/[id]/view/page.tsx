@@ -3,12 +3,9 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import serverRequestAPI from "@/hooks/server-request";
 import {
   ProjectDetailsInterface,
-  TeamMemberDashboard,
   TeamMemberDashboardResponse,
 } from "@/lib/definitions";
 import { z } from "zod";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -22,13 +19,13 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
   const initialData: ProjectDetailsInterface = await serverRequestAPI({
-    url: `${API_URL}/projects/${id}`,
+    url: `/projects/${id}`,
     auth: true,
   });
 
   //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
   const teamMembers: TeamMemberDashboardResponse = await serverRequestAPI({
-    url: `${API_URL}/projects/${id}`,
+    url: `/projects/${id}`,
     auth: true,
   });
 

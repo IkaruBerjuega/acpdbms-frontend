@@ -62,9 +62,7 @@ export default function SidepanelDrawerComponent({
                 )}
                 <div className={`flex-col-start ${tabs && "mt-4"}`}>
                   <h1 className="text-base font-bold">{title}</h1>
-                  <h2 className="text-sm text-black-secondary">
-                    {description}
-                  </h2>
+                  <h2 className="text-sm text-slate-500">{description}</h2>
                 </div>
               </div>
               <Button

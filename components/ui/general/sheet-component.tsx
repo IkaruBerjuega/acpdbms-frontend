@@ -22,8 +22,10 @@ interface ReusableSheetProps {
   description: string;
   content: JSX.Element;
   paramKey: string;
+  paramsKeyToDelete: string[];
   toCompare: string;
   tabs: CustomTabsProps | null;
+  closeDrawerAdditionalFn?: () => void;
 }
 
 export default function ReusableSheet({
@@ -31,15 +33,20 @@ export default function ReusableSheet({
   description,
   content,
   paramKey,
+  paramsKeyToDelete,
   toCompare,
   tabs,
+  closeDrawerAdditionalFn,
 }: ReusableSheetProps) {
   const { paramsKey, params } = useQueryParams();
   const canOpen = paramsKey[paramKey] === toCompare;
 
   const closeDrawer = () => {
-    params.delete(paramKey);
+    paramsKeyToDelete.map((key) => params.delete(key));
     window.history.replaceState(null, "", `?${params.toString()}`);
+    if (closeDrawerAdditionalFn) {
+      closeDrawerAdditionalFn();
+    } // additional function when closing, will use for refetching main display
   };
 
   const isDesktop = useIsDesktop();
@@ -53,7 +60,7 @@ export default function ReusableSheet({
       <SheetContent
         side={isDesktop ? "right" : "bottom"}
         className={`flex-col-start gap-4   ${
-          isDesktop ? "w-[40vw]" : "min-w-full min-h-[90vh]"
+          isDesktop ? "w-[40vw]" : "min-w-full h-[90%]"
         }`}
       >
         <div className="flex-row-between-start">
@@ -80,10 +87,8 @@ export default function ReusableSheet({
             />
           </Button>
         </div>
-        {/* Ensure content fills space and allows scrolling */}
-        <div className="flex-1 w-full overflow-y-auto min-h-0 pb-4">
-          {content}
-        </div>
+
+        {content}
         <SheetFooter className="hidden">
           <SheetClose className="hidden" asChild>
             <Button type="submit">Save changes</Button>

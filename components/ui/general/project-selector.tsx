@@ -16,6 +16,12 @@ import Card from "../project-card";
 import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import {
+  ProjectListResponseInterface,
+  ProjectSelector as ProjectSelectorProps,
+} from "@/lib/definitions";
+import { useEffect, useState } from "react";
+import { useCheckViceManagerPermission } from "@/hooks/general/use-project";
 
 export function ProjectSelector({
   dynamicPage,
@@ -29,6 +35,39 @@ export function ProjectSelector({
   let isSelected = !!projectSelected[0];
 
   const router = useRouter();
+
+  const [projectId, setProjectId] = useState<string>("");
+  const { data } = useCheckViceManagerPermission(projectId);
+  const hasVicePermission = data?.vice_manager_permission === true;
+
+  const [selectedProject, setSelectedProject] =
+    useState<ProjectSelectorProps>();
+
+  function onSelect(
+    projectId?: string,
+    projectSelected?: string,
+    userRole?: ProjectListResponseInterface["user_role"]
+  ) {
+    if (projectId && projectSelected) {
+      setProjectId(projectId); // Updates asynchronously
+      setSelectedProject({
+        projectId,
+        projectName: projectSelected,
+        userRole,
+        hasVicePermission,
+      });
+    }
+
+    if (projectId && dynamicPage === "project-details") {
+      router.push(`/employee/project-details/${projectId}/view`);
+    }
+  }
+
+  useEffect(() => {
+    if (selectedProject) {
+      setData([{ ...selectedProject, hasVicePermission }]);
+    }
+  }, [hasVicePermission, selectedProject]);
 
   return (
     <Sheet
@@ -44,7 +83,7 @@ export function ProjectSelector({
           {btnText}
           <MdOutlineKeyboardArrowUp
             className={`${
-              isSelected ? "rotate-180" : "rotate-0"
+              isSelected ? "-rotate-180" : "rotate-0"
             } transition-all duration-500`}
           />
         </Button>
@@ -61,26 +100,7 @@ export function ProjectSelector({
 
         <div className="grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-4 gap-2 mt-10">
           {projects?.map((project, index) => {
-            return (
-              <Card
-                key={index}
-                data={project}
-                fn={(projectId, projectSelected) => {
-                  if (projectId && projectSelected)
-                    setData([
-                      { projectId: projectId, projectName: projectSelected },
-                    ]);
-
-                  if (projectId) {
-                    if (dynamicPage === "project-details") {
-                      router.push(
-                        `/employee/project-details/${projectId}/view`
-                      );
-                    }
-                  }
-                }}
-              />
-            );
+            return <Card key={index} data={project} fn={onSelect} />;
           })}
         </div>
 

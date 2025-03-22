@@ -9,22 +9,49 @@ import { BiNews } from "react-icons/bi";
 import { usePathname } from "next/navigation";
 
 const isActive = (pathname: string, navUrl: string) => {
-  // Remove leading/trailing slashes and split into segments
-  const pathSegments = pathname.split("/").filter(Boolean);
-  const navSegments = navUrl.split("/").filter(Boolean);
+  // Split pathname and navUrl into path and query parts
+  const [pathPart, pathQuery] = pathname.split("?");
+  const [navPathPart, navQuery] = navUrl.split("?");
 
-  // If navUrl has fewer segments than pathname, it could still be a parent route
+  if (pathPart.startsWith(navPathPart)) {
+    return true;
+  }
+
+  // Remove leading/trailing slashes and split into segments
+  const pathSegments = pathPart.split("/").filter(Boolean);
+  const navSegments = navPathPart.split("/").filter(Boolean);
+
+  // If navUrl has more segments than pathname, it can't be active
   if (navSegments.length > pathSegments.length) return false;
 
-  // Compare segments
-  return navSegments.every((segment, index) => {
+  // Compare path segments
+  const isPathMatch = navSegments.every((segment, index) => {
     // If the segment is dynamic (e.g., [id]), it matches any value in pathname
     if (segment.startsWith("[") && segment.endsWith("]")) {
-      return true; // Dynamic param, so this segment is a match
+      return true;
     }
     // Otherwise, segments must match exactly
     return segment === pathSegments[index];
   });
+
+  // If there's no query in navUrl, don't check query parameters
+  if (!navQuery) return isPathMatch;
+
+  // Compare query parameters if they exist in navUrl
+  if (!pathQuery) return false;
+
+  // Parse query parameters into key-value pairs
+  const pathParams = new URLSearchParams(pathQuery);
+  const navParams = new URLSearchParams(navQuery);
+
+  // Check if all navUrl params exist in pathname with same values
+  for (const [key, value] of navParams) {
+    if (pathParams.get(key) !== value) {
+      return false;
+    }
+  }
+
+  return isPathMatch;
 };
 
 import {
@@ -83,7 +110,7 @@ export function NavMain({ role }: { role: string }) {
     },
     {
       title: "Tasks",
-      url: "/employee/tasks",
+      url: "/employee/tasks?view=assigned",
       icon: AiOutlineProject,
     },
     {

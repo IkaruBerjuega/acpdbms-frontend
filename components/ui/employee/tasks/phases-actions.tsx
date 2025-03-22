@@ -30,7 +30,7 @@ const RenderPhasesByStatus = ({
 }) => {
   function getStatusBgColor(status: string) {
     if (status === "to do") return "bg-orange-100 text-orange-600";
-    if (status === "ongoing") return "bg-yellow-100 text-yellow-600";
+    if (status === "in progress") return "bg-yellow-100 text-yellow-600";
     if (status === "paused") return "bg-gray-100 text-gray-600";
     if (status === "archived") return "bg-black-secondary text-white-primary";
     if (status === "finished") return "bg-green-100 text-green-600";
@@ -49,7 +49,7 @@ const RenderPhasesByStatus = ({
   if (!status) return;
 
   return (
-    <div className="w-full flex-col-start gap-2">
+    <div className="w-full flex-col-start gap-2 ">
       <div className="text-sm flex-col-start">
         <div>
           <Badge className={`${getStatusBgColor(status)}`}>{status}</Badge>
@@ -73,6 +73,8 @@ const RenderPhasesByStatus = ({
         const isCancelled = status == "cancelled";
         const isFinished = status == "finished";
         const canArchive = !isCancelled && !isFinished && !isArchived;
+        const canCancel = status === "to do";
+        const canFinish = status === "in progress";
 
         return (
           <div
@@ -92,38 +94,46 @@ const RenderPhasesByStatus = ({
               <div className="flex-row-center gap-1">
                 {canArchive ? (
                   <>
-                    <ButtonIconTooltipDialog
-                      iconSrc={"/button-svgs/table-action-cancel-black.svg"}
-                      alt={"cancel phase button"}
-                      tooltipContent={"Cancel Phase"}
-                      dialogTitle={"Cancel Phase"}
-                      dialogDescription={"Do you confirm to cancel this phase?"}
-                      dialogContent={<DialogContent />}
-                      submitType={"button"}
-                      submitTitle="Confirm"
-                      className="border-none"
-                      onClick={() =>
-                        handleAction({ id: phase.id, action: "cancel" })
-                      }
-                    />
-                    <ButtonIconTooltipDialog
-                      iconSrc={"/button-svgs/table-action-finish.svg"}
-                      alt={"finish phase button"}
-                      tooltipContent={"Finish Phase"}
-                      dialogTitle={"Finish Phase"}
-                      dialogDescription={"Do you confirm to finish this phase?"}
-                      dialogContent={<DialogContent />}
-                      submitType={"button"}
-                      submitTitle="Confirm"
-                      className="border-none"
-                      onClick={() =>
-                        handleAction({ id: phase.id, action: "finish" })
-                      }
-                    />
+                    {canCancel && (
+                      <ButtonIconTooltipDialog
+                        iconSrc={"/button-svgs/table-action-cancel-black.svg"}
+                        alt={"cancel phase button"}
+                        tooltipContent={"Cancel Phase"}
+                        dialogTitle={"Cancel Phase"}
+                        dialogDescription={
+                          "Do you confirm to cancel this phase?"
+                        }
+                        dialogContent={<DialogContent />}
+                        submitType={"button"}
+                        submitTitle="Confirm"
+                        className="border-none"
+                        onClick={() =>
+                          handleAction({ id: phase.id, action: "cancel" })
+                        }
+                      />
+                    )}
+                    {canFinish && (
+                      <ButtonIconTooltipDialog
+                        iconSrc={"/button-svgs/table-action-finish.svg"}
+                        alt={"finish phase button"}
+                        tooltipContent={"Finish Phase"}
+                        dialogTitle={"Finish Phase"}
+                        dialogDescription={
+                          "Do you confirm to finish this phase?"
+                        }
+                        dialogContent={<DialogContent />}
+                        submitType={"button"}
+                        submitTitle="Confirm"
+                        className="border-none"
+                        onClick={() =>
+                          handleAction({ id: phase.id, action: "finish" })
+                        }
+                      />
+                    )}
                   </>
                 ) : !isArchived ? (
                   <ButtonIconTooltipDialog
-                    iconSrc={"/button-svgs/table-header-archive.svg"}
+                    iconSrc={"/button-svgs/table-action-archive-black.svg"}
                     alt={"archive phase button"}
                     tooltipContent={"Archive Phase"}
                     dialogTitle={"Archive Phase"}
@@ -131,7 +141,7 @@ const RenderPhasesByStatus = ({
                     dialogContent={<DialogContent />}
                     submitType={"button"}
                     submitTitle="Confirm"
-                    className="border-none bg-black-primary text-white-secondary hover:!bg-black-secondary hover:!text-white-primary"
+                    className="border-none"
                     onClick={() =>
                       handleAction({ id: phase.id, action: "archive" })
                     }
@@ -213,7 +223,9 @@ export function PhasesActive() {
 
   //by status
   const toDo = filteredPhases?.filter((phase) => phase.status === "to do");
-  const ongoing = filteredPhases?.filter((phase) => phase.status === "ongoing");
+  const inProgress = filteredPhases?.filter(
+    (phase) => phase.status === "in progress"
+  );
   const cancelled = filteredPhases?.filter(
     (phase) => phase.status === "cancelled"
   );
@@ -286,7 +298,7 @@ export function PhasesActive() {
   }
 
   return (
-    <div className="flex-grow flex-col-start gap-4 w-full">
+    <div className="flex-grow flex-col-start gap-4 w-full overflow-y-auto">
       <SearchInput
         onChange={(e) => {
           let value = e.currentTarget.value;
@@ -302,8 +314,8 @@ export function PhasesActive() {
           handleAction={handleAction}
         />
         <RenderPhasesByStatus
-          status={"ongoing"}
-          phases={ongoing}
+          status={"in progress"}
+          phases={inProgress}
           handleAction={handleAction}
         />
         <RenderPhasesByStatus

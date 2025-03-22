@@ -76,7 +76,7 @@ export interface ProjectListResponseInterface {
   location: string;
   image_url?: string | null;
   project_manager: string;
-  user_role?: string;
+  user_role?: "Project Manager" | "Vice Manager" | "Member";
 }
 
 export interface ProjectDetailsInterface {
@@ -148,62 +148,14 @@ export interface Breadcrumbs {
 export interface ProjectSelector {
   projectId: string;
   projectName: string;
+  userRole?: ProjectListResponseInterface["user_role"];
+  hasVicePermission: boolean;
 }
 
 //tasks
 export const ItemTypes = {
   TASK: "task" as const, // 'as const' ensures literal type inference
 };
-
-export interface TaskVersion {
-  id: number;
-  version: number;
-  start_data: string;
-  finish_date: string;
-  task_files_count: number;
-  remaining_duration: number;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface TeamMember {
-  full_name: string;
-  profile_picture_url: string;
-}
-
-export const TASK_STATUSES = [
-  "to do",
-  "in progress",
-  "cancelled",
-  "paused",
-  "needs review",
-  "done",
-] as const;
-
-export type TaskStatuses = (typeof TASK_STATUSES)[number];
-
-export interface TaskItem {
-  id: number;
-  phase_category: string;
-  task_name: string;
-  task_description: string;
-  status: TaskStatuses;
-  total_duration: number;
-  assigned_team_members: TeamMember[];
-  task_comments_count: number;
-  versions: TaskVersion[];
-}
-
-export interface TaskItemProps extends TaskItem {
-  phaseColor: {
-    light: string;
-    dark: string;
-  };
-}
-
-export interface Tasks {
-  tasks: TaskItem[];
-}
 
 export interface TeamMemberDashboard {
   teammember_id: number;
@@ -242,7 +194,7 @@ export interface Phase {
   project_id?: string;
   status?:
     | "to do"
-    | "ongoing"
+    | "in progress"
     | "cancelled"
     | "paused"
     | "archived"

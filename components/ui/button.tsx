@@ -135,7 +135,7 @@ const ButtonTooltip = ({
       <Tooltip delayDuration={1}>
         <TooltipTrigger
           onClick={onClick}
-          className={`px-2 py-1 border-[1px] rounded-md  hover:bg-white-secondary ${className}`}
+          className={`px-2 py-1 border-[1px] rounded-md min-w-10 flex-row-center hover:bg-white-secondary ${className}`}
         >
           {iconSrc ? (
             <Image
@@ -158,6 +158,7 @@ const ButtonTooltip = ({
 
 import { useState } from "react";
 import { LoadingCircle } from "./general/loading-circle";
+import { LuFileText } from "react-icons/lu";
 
 interface ButtonIconTooltipDialog {
   iconSrc: string;
@@ -197,26 +198,35 @@ const ButtonIconTooltipDialog = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         asChild
-        className={`${disabled ? "pointer-events-none opacity-50" : ""}`}
+        className={`${
+          disabled ? "pointer-events-none opacity-50" : "min-w-10"
+        }`}
       >
-        <button
-          className={`border-[1px] px-2 py-1 ${className} rounded-md hover:bg-white-secondary cursor-pointer flex-col-center ${
+        <Button
+          className={`border-[1px] px-2 py-1 ${className} rounded-md w-fit hover:bg-white-secondary cursor-pointer flex-col-center ${
             disabled ? "cursor-not-allowed" : ""
           }`}
           onClick={() => setOpen(true)}
           disabled={disabled}
+          variant={"ghost"}
         >
           <TooltipProvider>
             <Tooltip delayDuration={1}>
               <TooltipTrigger asChild>
-                <Image src={iconSrc} alt={alt} width={18} height={18} />
+                <Image
+                  src={iconSrc}
+                  alt={alt}
+                  width={18}
+                  height={18}
+                  className=""
+                />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{tooltipContent}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-        </button>
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

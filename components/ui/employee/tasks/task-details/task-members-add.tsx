@@ -9,22 +9,24 @@ import {
 } from "@/hooks/api-calls/employee/use-tasks";
 import { SearchInput } from "../../../input";
 import { IoSearch } from "react-icons/io5";
-import { BtnDialog, ButtonIconTooltipDialog } from "../../../button";
+import { BtnDialog } from "../../../button";
 import { Avatar, AvatarFallback, AvatarImage } from "../../../avatar";
 import { getInitialsFallback } from "@/lib/utils";
 import { FaCheck } from "react-icons/fa6";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
-export default function AssignMembers({ taskId }: { taskId: string }) {
-  let { data: projectSelected } = useProjectSelectStore();
-  let projectId = projectSelected[0]?.projectId;
+export default function AssignMembers({ taskId }: { taskId?: string }) {
+  if (!taskId) return null;
+
+  const { data: projectSelected } = useProjectSelectStore();
+  const projectId = projectSelected[0]?.projectId;
 
   //api calls setup
   const { data: teamMembers } = useTeamDetailsForDashboard(projectId);
   const { data: taskMembers } = useGetTaskAssignedMembers({ taskId: taskId });
 
-  let projectMembers = teamMembers?.team_members;
+  const projectMembers = teamMembers?.team_members;
 
   const availableMembers = projectMembers?.filter((member) => {
     return !taskMembers?.some(
@@ -38,7 +40,7 @@ export default function AssignMembers({ taskId }: { taskId: string }) {
   });
 
   const { mutate, isLoading } = assignMultipleEmployeesToTask;
-  const [selectedTeamMemberIds, setSelectedTeamMemberIds] = useState<number[]>(
+  const [selectedTeamMemberIds, setSelectedTeamMemberIds] = useState<string[]>(
     []
   );
 
@@ -51,13 +53,21 @@ export default function AssignMembers({ taskId }: { taskId: string }) {
     mutate(
       { team_member_ids: selectedTeamMemberIds }, // Actual request body
       {
-        onSuccess: (response: { message?: string }) => {
+        onSuccess: async (response: { message?: string }) => {
           toast({
             variant: "default",
             title: "Assign Task",
             description: response.message || "Members Assigned Successfully",
           });
-          queryClient.invalidateQueries({ queryKey: ["task-members", taskId] });
+
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: ["task-members", taskId],
+            }),
+            queryClient.invalidateQueries({
+              queryKey: ["tasks", projectId],
+            }),
+          ]);
         },
         onError: (error: { message?: string }) => {
           toast({
@@ -81,7 +91,7 @@ export default function AssignMembers({ taskId }: { taskId: string }) {
     );
   }, [nameFilter, availableMembers]);
 
-  const handleSelectTeamMember = (isSelected: boolean, memberId: number) => {
+  const handleSelectTeamMember = (isSelected: boolean, memberId: string) => {
     setSelectedTeamMemberIds((prev) => {
       if (!isSelected) {
         return [...prev, memberId]; // Add member to selection
@@ -92,10 +102,10 @@ export default function AssignMembers({ taskId }: { taskId: string }) {
   };
 
   return (
-    <div className="w-full h-full space-y-4">
+    <div className="w-full h-full space-y-4  min-h-0 overflow-y-auto">
       <SearchInput
         onChange={(e) => {
-          let value = e.currentTarget.value;
+          const value = e.currentTarget.value;
           setNameFilter(value);
         }}
         icon={<IoSearch />}
@@ -103,12 +113,13 @@ export default function AssignMembers({ taskId }: { taskId: string }) {
       />
       <div className="w-full space-y-2">
         {filteredMembers?.map((member, index) => {
-          let selected = selectedTeamMemberIds.includes(member.teammember_id);
+          const memberId = String(member.teammember_id);
+          const selected = selectedTeamMemberIds.includes(memberId);
           return (
             <div
               key={index}
               onClick={() => {
-                handleSelectTeamMember(selected, member.teammember_id);
+                handleSelectTeamMember(selected, memberId);
               }}
               className="py-2 px-4 flex-row-start-center rounded-md border-[1px] hover:bg-white-secondary cursor-pointer gap-4 transition-all duration-300"
             >

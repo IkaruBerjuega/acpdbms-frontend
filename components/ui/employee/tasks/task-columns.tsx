@@ -1,14 +1,10 @@
 "use client";
-import {
-  ItemTypes,
-  TaskItem,
-  TaskItemProps,
-  TaskStatuses,
-} from "@/lib/definitions";
+import { ItemTypes } from "@/lib/definitions";
 import { titleCase } from "@/lib/utils";
 import { useDrop } from "react-dnd";
 import TaskCard from "./task-card";
 import { useState } from "react";
+import { TaskItemProps, TaskStatuses } from "@/lib/tasks-definitions";
 
 export default function TaskColumn({
   columnStatus,
@@ -20,9 +16,11 @@ export default function TaskColumn({
   moveTask: ({
     id,
     droppedStatus,
+    recentStatus,
   }: {
     id: number;
-    droppedStatus: string;
+    droppedStatus: TaskStatuses;
+    recentStatus: TaskStatuses;
   }) => void;
 }) {
   const [{ isOver, draggedTask }, drop] = useDrop<
@@ -51,7 +49,7 @@ export default function TaskColumn({
 
   return (
     <div
-      className={`w-1/5 flex-col-start gap-1 overflow-y-auto  `}
+      className={`min-w-[250px] xl:min-w-0 xl:w-1/5 flex-col-start gap-1 overflow-y-auto  `}
       ref={drop as unknown as React.RefObject<HTMLDivElement>}
     >
       <div className="flex-row-start-center gap-2 px-2">
@@ -67,7 +65,7 @@ export default function TaskColumn({
           isOver ? "bg-black-secondary bg-opacity-50" : "border-none"
         }`}
       >
-        {tasks?.map((task, index) => {
+        {tasks?.map((task) => {
           let className = isOver && draggedTask ? "opacity-60" : "opacity-100";
           return (
             <TaskCard

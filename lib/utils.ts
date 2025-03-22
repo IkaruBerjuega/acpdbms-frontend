@@ -130,7 +130,6 @@ export const getFileExtension = (mimeType: string): string => {
 
     // JavaScript Files
     case "application/javascript":
-      return "js";
     case "text/javascript":
       return "js";
 
@@ -140,13 +139,38 @@ export const getFileExtension = (mimeType: string): string => {
 
     // Zip Files
     case "application/zip":
-      return "zip";
     case "application/x-zip-compressed":
       return "zip";
 
     // JSON-LD Files
     case "application/ld+json":
       return "json-ld";
+
+    // 🏗️ CAD Files
+    case "application/acad":
+    case "application/x-dwg":
+    case "image/vnd.dwg":
+      return "dwg";
+
+    case "application/dxf":
+    case "image/vnd.dxf":
+    case "application/x-dxf":
+      return "dxf";
+
+    case "model/vnd.dwf":
+    case "application/x-dwf":
+      return "dwf";
+
+    case "model/iges":
+      return "iges";
+
+    case "model/step":
+    case "model/stp":
+      return "step";
+
+    case "model/stl":
+    case "application/sla":
+      return "stl";
 
     // Default Fallback
     default:
@@ -230,6 +254,22 @@ export function getInitialsFallback(name: string) {
           .join("")
       : "A";
   return initialsAsProfileSrcFallback;
+}
+
+export function bytesToMb(
+  bytes: number,
+  decimals: number = 2,
+  base10: boolean = false
+): number {
+  if (typeof bytes !== "number" || isNaN(bytes)) {
+    throw new Error("Input must be a valid number");
+  }
+  if (bytes < 0) {
+    throw new Error("Input cannot be negative");
+  }
+  const divisor = base10 ? 1000 * 1000 : 1024 * 1024; // Bytes to MB directly
+  const mb = bytes / divisor;
+  return Number(mb.toFixed(decimals));
 }
 
 //REGEX PATTERNS

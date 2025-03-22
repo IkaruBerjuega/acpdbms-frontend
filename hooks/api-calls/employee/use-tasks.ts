@@ -1,26 +1,40 @@
 import { useApiMutation, useApiQuery } from "@/hooks/tanstack-query";
-import { TaskItem, Tasks } from "@/lib/definitions";
 import { StoreTaskRequest } from "@/lib/form-constants/form-constants";
 import {
   AssignTaskRequest,
   CancelTaskAssignmentRequest,
+  ReviewTaskRequest,
   TaskAssignmentDetailsResponse,
+  TaskCommentRequest,
   TaskCommentsResponse,
   TaskDetails,
+  TasksResponse,
   TaskVersionsResponse,
+  UploadFilesRequest,
 } from "@/lib/tasks-definitions";
 
 export const useGetTasks = ({
   projectId,
   initialData,
+  isGeneral,
 }: {
   projectId: string; // Allow undefined
-  initialData?: Tasks;
+  initialData?: TasksResponse;
+  isGeneral: boolean;
 }) => {
-  return useApiQuery<Tasks>({
-    key: ["tasks", projectId],
-    url: `/projects/${projectId}/tasks`,
-    initialData: initialData,
+  if (isGeneral) {
+    return useApiQuery<TasksResponse>({
+      key: ["tasks", projectId],
+      url: `/projects/${projectId}/tasks`,
+      initialData: { tasks: [] },
+      enabled: Boolean(projectId),
+    });
+  }
+
+  return useApiQuery<TasksResponse>({
+    key: ["my-tasks", projectId],
+    url: `/projects/${projectId}/assigned-tasks`,
+    initialData: { tasks: [] },
     enabled: Boolean(projectId),
   });
 };
@@ -33,11 +47,18 @@ export const useGetSpecificTask = ({ taskId }: { taskId: string }) => {
   });
 };
 
-export const useGetSpecificTaskVersions = ({ taskId }: { taskId: string }) => {
+export const useGetSpecificTaskVersions = ({
+  taskId,
+  initialData,
+}: {
+  taskId: string;
+  initialData?: TaskVersionsResponse;
+}) => {
   return useApiQuery<TaskVersionsResponse>({
     key: ["task-versions", taskId],
     url: `/tasks/${taskId}/versions`,
     enabled: Boolean(taskId),
+    initialData: initialData,
   });
 };
 
@@ -61,10 +82,12 @@ export const useTaskActions = ({
   projectId,
   phaseId,
   taskId,
+  taskVersionId,
 }: {
   projectId?: string;
   phaseId?: string;
   taskId?: string;
+  taskVersionId?: number;
 }) => {
   const addTasks = useApiMutation<StoreTaskRequest>({
     url: `/tasks/${projectId}`,
@@ -74,7 +97,7 @@ export const useTaskActions = ({
   });
 
   //additional headers
-  let additionalHeaders: Record<string, string> = {
+  const additionalHeaders: Record<string, string> = {
     "X-Project-ID": projectId ?? "",
   };
 
@@ -118,6 +141,70 @@ export const useTaskActions = ({
     additionalHeaders,
   });
 
+  const uploadDeliverables = useApiMutation<UploadFilesRequest>({
+    url: `/tasks/${taskVersionId}/files/deliverable`,
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+    additionalHeaders,
+  });
+
+  const uploadReferences = useApiMutation<UploadFilesRequest>({
+    url: `/tasks/${taskVersionId}/files/reference`,
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+    additionalHeaders,
+  });
+
+  const storeComment = useApiMutation<TaskCommentRequest>({
+    url: `/tasks/${taskId}/comments`,
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+    additionalHeaders,
+  });
+
+  const startTask = useApiMutation<null>({
+    url: `/tasks/${taskId}/start`,
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+    additionalHeaders,
+  });
+
+  const pauseTask = useApiMutation<null>({
+    url: `/tasks/${taskId}/pause`,
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+    additionalHeaders,
+  });
+
+  const setTaskToNeedsReview = useApiMutation<null>({
+    url: `/tasks/${taskId}/needs-review`,
+    method: "PATCH",
+    contentType: "application/json",
+    auth: true,
+    additionalHeaders,
+  });
+
+  const cancelTask = useApiMutation<null>({
+    url: `/tasks/${taskId}/cancel`,
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+    additionalHeaders,
+  });
+
+  const reviewTask = useApiMutation<ReviewTaskRequest>({
+    url: `/tasks/${taskId}/review`,
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+    additionalHeaders,
+  });
+
   return {
     addTasks,
     assignMultipleEmployeesToTask,
@@ -125,5 +212,13 @@ export const useTaskActions = ({
     archivePhase,
     cancelPhase,
     cancelTaskAssignment,
+    uploadDeliverables,
+    uploadReferences,
+    storeComment,
+    startTask,
+    pauseTask,
+    setTaskToNeedsReview,
+    cancelTask,
+    reviewTask,
   };
 };

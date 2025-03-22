@@ -12,13 +12,15 @@ import { SearchInput } from "@/components/ui/input";
 import { IoSearch } from "react-icons/io5";
 import { useMemo, useState } from "react";
 
-export default function Members({ taskId }: { taskId: string }) {
+export default function Members({ taskId }: { taskId?: string }) {
+  if (!taskId) return;
+
   const { data: membersAssigned } = useGetTaskAssignedMembers({
     taskId: taskId,
   });
 
-  let { data: projectSelected } = useProjectSelectStore();
-  let projectId = projectSelected[0]?.projectId;
+  const { data: projectSelected } = useProjectSelectStore();
+  const projectId = projectSelected[0]?.projectId;
 
   const queryClient = useQueryClient();
 
@@ -33,14 +35,21 @@ export default function Members({ taskId }: { taskId: string }) {
         assignment_id: assignment_id,
       },
       {
-        onSuccess: (response: { message?: string }) => {
+        onSuccess: async (response: { message?: string }) => {
           toast({
             variant: "default",
             title: "Cancel Task Assigment",
             description:
               response.message || "Successfully cancelled task assignment",
           });
-          queryClient.invalidateQueries({ queryKey: ["task-members", taskId] });
+          await Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: ["task-members", taskId],
+            }),
+            queryClient.invalidateQueries({
+              queryKey: ["tasks", projectId],
+            }),
+          ]);
         },
         onError: (error: { message?: string }) => {
           toast({
@@ -65,11 +74,19 @@ export default function Members({ taskId }: { taskId: string }) {
     );
   }, [nameFilter, membersAssigned]);
 
+  if (filteredMembers?.length === 0 || !filteredMembers) {
+    return (
+      <div className="flex-grow  flex-col-center text-sm text-slate-500">
+        No assigned members
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full flex-col-start gap-4">
+    <div className="w-full flex-grow flex-col-start gap-4 min-h-0 overflow-y-auto">
       <SearchInput
         onChange={(e) => {
-          let value = e.currentTarget.value;
+          const value = e.currentTarget.value;
           setNameFilter(value);
         }}
         icon={<IoSearch />}

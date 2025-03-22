@@ -13,28 +13,37 @@ import { IoTimer } from "react-icons/io5";
 import { IoIosTimer } from "react-icons/io";
 import { SlPaperClip } from "react-icons/sl";
 import { GrNext } from "react-icons/gr";
+import { useSelectedTaskStatus } from "@/hooks/states/create-store";
 
-export default function TaskDetailsVersions({
-  taskId,
-  paramKey,
-}: {
-  taskId: string;
-  paramKey: "members" | "assign_members";
-}) {
+export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
   // setup for adding params when the button for viewing  the phases is the one used
   const { paramsKey, params } = useQueryParams();
   const { replace } = useRouter();
 
-  const isOpen = paramsKey[paramKey] === "true";
   const pathname = usePathname();
 
+  const { data: taskDetails } = useGetSpecificTask({ taskId: taskId });
+  const { data: taskVersions, isLoading } = useGetSpecificTaskVersions({
+    taskId: taskId,
+  });
+
+  const displayRemaining =
+    taskDetails?.status === "to do" || taskDetails?.status === "done";
+
+  const { setData } = useSelectedTaskStatus();
+
+  const versions = taskVersions?.versions;
+  const lastVersionIndex = versions ? versions?.length - 1 : 1;
+
   const openMember = () => {
-    params.set(paramKey, "true");
+    params.set("sheet", "members");
     replace(`${pathname}?${params.toString()}`);
   };
 
   const openFiles = () => {
     params.set("sheet", "files");
+    params.set("version", String(lastVersionIndex));
+    setData([taskDetails?.status]);
     replace(`${pathname}?${params.toString()}`);
   };
 
@@ -42,14 +51,6 @@ export default function TaskDetailsVersions({
     params.set("sheet", "comments");
     replace(`${pathname}?${params.toString()}`);
   };
-
-  const { data: taskDetails } = useGetSpecificTask({ taskId: taskId });
-  const { data: taskVersions, isLoading } = useGetSpecificTaskVersions({
-    taskId: taskId,
-  });
-
-  let versions = taskVersions?.versions;
-  let indexOfLastVersion = versions ? versions?.length - 1 : null;
 
   if (isLoading) {
     return (
@@ -107,7 +108,7 @@ export default function TaskDetailsVersions({
 
       <div className="flex-col-start w-full">
         {versions?.map((version, index) => {
-          const isLastIndex = indexOfLastVersion === index;
+          const isLastIndex = lastVersionIndex === index;
           const isFirstIndex = index === 0;
           const startDate = new Date(version.start_date)
             .toISOString()
@@ -116,7 +117,7 @@ export default function TaskDetailsVersions({
             ? new Date(version.finish_date).toISOString().slice(0, 10)
             : undefined;
           const duration = version.duration;
-          const remainingDuration = version.remaining_duration[0];
+          const remainingDuration = version.remaining_duration;
           const fileCount = version.task_files.length;
 
           return (
@@ -132,7 +133,6 @@ export default function TaskDetailsVersions({
                 />
 
                 {/* render tail when not first version */}
-
                 {!isFirstIndex && (
                   <div
                     className={`border-[1px] h-full absolute ${
@@ -166,20 +166,21 @@ export default function TaskDetailsVersions({
                     </p>
                   </div>
 
-                  <div className="text-sm flex-row-start gap-2 text-slate-500 ">
-                    <div className="flex-row-start-center  gap-2 ">
+                  <div className="text-sm flex-row-start gap-4 text-slate-500 ">
+                    <div className="flex-row-start-center  gap-1">
                       <IoIosTimer className="text-lg" />
                       <span>{duration} days total</span>
                     </div>
-                    <div className="flex-row-start-center  gap-2 ">
-                      <IoTimer className="text-lg" />
-                      <span>{remainingDuration} days remaining</span>
-                    </div>
-                    <div className="flex-row-start-center  gap-2 ">
+                    {!displayRemaining && (
+                      <div className="flex-row-start-center  gap-1 ">
+                        <IoTimer className="text-lg" />
+                        <span>{remainingDuration} day(s) remaining</span>
+                      </div>
+                    )}
+                    <div className="flex-row-start-center  gap-1 ">
                       <SlPaperClip className="text-lg" />
                       <span>{fileCount} files </span>
                     </div>
-
                     <GrNext
                       className="cursor-pointer hover:text-black-primary text-lg"
                       onClick={openFiles}

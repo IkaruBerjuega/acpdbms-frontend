@@ -66,7 +66,7 @@ export default function DataTable<T>({
         </div>
 
         <div className="flex flex-wrap flex-row gap-2 w-full h-auto">
-          a{filterComponents}
+          {filterComponents}
         </div>
       </div>
       <div className="rounded-lg border min-w-0">

@@ -184,7 +184,7 @@ DropdownMenuShortcut.displayName = "DropdownMenuShortcut";
 
 interface ItemProps {
   label: string;
-  onClick: () => void;
+  onClick?: () => void;
   iconSrc: string;
   className?: string;
   alt: string;
@@ -212,7 +212,7 @@ import Link from "next/link";
 interface CustomDropdownMenuProps {
   btnLabel?: string;
   btnSrc?: string;
-  btnSrcAlt?: string;
+  btnSrcAlt: string;
   menuLabel: string;
   items: ItemProps[];
   btnVariant: "ghost" | "outline" | "default";
@@ -222,6 +222,7 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
   const [selectedDialog, setSelectedDialog] = useState<string | null>(null);
 
   const onClick = (item: ItemProps) => {
+    if (!item.onClick) return;
     item.onClick(); // Execute the action
     setSelectedDialog(null); // Close the dialog
   };

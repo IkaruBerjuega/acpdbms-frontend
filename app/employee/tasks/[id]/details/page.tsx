@@ -10,18 +10,12 @@ export default async function Page({
   params: Promise<{ id: string }>;
   searchParams: Promise<{
     sheet: "files" | "comments" | undefined;
-    add_members: "true" | null;
-    members: "true" | null;
+
+    version: string | undefined;
   }>;
 }) {
   const { id: taskId } = await params;
-  const { sheet, add_members, members } = await searchParams;
-
-  let isAddMembers = add_members === "true";
-  let isMembers = members === "true";
-
-  let activeTab: "Assign Members" | "Members" =
-    isMembers && !isAddMembers ? "Members" : "Assign Members";
+  const { sheet, version } = await searchParams;
 
   const breadcrumbs: Breadcrumbs[] = [
     {
@@ -42,7 +36,7 @@ export default async function Page({
           <SidebarTrigger breadcrumbs={breadcrumbs} />
           <ProjectSelector />
         </div>
-        <Tasks taskId={taskId} activeTab={activeTab} activeSheet={sheet} />
+        <Tasks taskId={taskId} activeSheet={sheet} version={version} />
       </div>
     </main>
   );

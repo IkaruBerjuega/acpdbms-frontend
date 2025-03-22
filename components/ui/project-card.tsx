@@ -18,7 +18,11 @@ export default function Card({
   data?: ProjectListResponseInterface;
   row?: any;
   isClient?: boolean;
-  fn?: (projectId?: string, projectName?: string) => void;
+  fn?: (
+    projectId?: string,
+    projectName?: string,
+    userRole?: "Project Manager" | "Vice Manager" | "Member"
+  ) => void;
 }) {
   let actionsCell;
 
@@ -30,10 +34,7 @@ export default function Card({
 
   const id = data?.id ?? row?.getValue("id");
   const projectTitle = data?.project_title ?? row?.getValue("project_title");
-  const projectImgSrc =
-    // data?.image_url ??
-    // row?.getValue("image_url") ??
-    "/system-component-images/project-src-placeholder.webp";
+  const projectImgSrc = "/system-component-images/project-src-placeholder.webp";
 
   const status = data?.status ?? row?.getValue("status");
   const clientName = data?.client_name ?? row?.getValue("client_name");
@@ -49,7 +50,7 @@ export default function Card({
       className="group flex flex-col h-full bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md cursor-pointer transition-all duration-200"
       onClick={() => {
         if (fn) {
-          fn(id, projectTitle);
+          fn(id, projectTitle, role);
         }
       }}
     >

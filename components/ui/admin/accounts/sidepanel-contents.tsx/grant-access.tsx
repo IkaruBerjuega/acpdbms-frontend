@@ -87,7 +87,7 @@ export default function GrantProjectAccess({ isOpen }: { isOpen: boolean }) {
   const queryClient = useQueryClient();
 
   //api call to add project
-  const projectId = watch("project_id");
+  const [projectId, setProjectId] = useState<string>("");
   const projectName = watch("project_name");
   const { addTeamToProjects } = useProjectActions(projectId);
 
@@ -174,36 +174,20 @@ export default function GrantProjectAccess({ isOpen }: { isOpen: boolean }) {
         return;
       }
 
-      reset({
-        project_id: watch("project_id"),
-        project_name: watch("project_name"),
-        team: [
-          ...(projectManager?.id
-            ? [
-                {
-                  employee_id: String(projectManager?.id),
-                  employee_name: projectManager?.name,
-                  role: projectManager?.role,
-                },
-              ]
-            : []),
-          ...(viceManager?.id
-            ? [
-                {
-                  employee_id: String(viceManager?.id),
-                  employee_name: viceManager?.name,
-                  role: viceManager?.role,
-                },
-              ]
-            : []),
-          ...watch("team"),
-        ],
-      });
+      setProjectId(watch("project_id"));
+
+      setValue(`team.${0}.employee_id`, String(projectManager?.id));
+      setValue(`team.${0}.employee_name`, projectManager?.name ?? "");
+      setValue(`team.${0}.role`, projectManager?.role);
+
+      setValue(`team.${1}.employee_id`, String(viceManager?.id));
+      setValue(`team.${1}.employee_name`, viceManager?.name ?? "");
+      setValue(`team.${1}.role`, viceManager?.role);
 
       setStep(step + 1);
     } else if (step === 2) {
       const isValid = await trigger("team");
-
+      console.log(projectId);
       if (!isValid) {
         return;
       }

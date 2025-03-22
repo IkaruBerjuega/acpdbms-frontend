@@ -6,14 +6,18 @@ import { usePathname, useRouter } from "next/navigation";
 import { useQueryParams } from "@/hooks/use-query-params";
 import { useQueryClient } from "@tanstack/react-query";
 import { AddBtn, Button } from "../../button";
+import Image from "next/image";
+import { useProjectSelectStore } from "@/hooks/states/create-store";
+import Tabs from "../../general/tabs";
 
 export default function TasksHeaderActions() {
   const { paramsKey, params } = useQueryParams();
   const pathname = usePathname();
   const { replace } = useRouter();
-  const queryClient = useQueryClient();
 
+  const queryClient = useQueryClient();
   const isArchived = paramsKey["archived"] === "true";
+  const activeTab = paramsKey["view"] === "assigned" ? "My Tasks" : "All Tasks";
 
   // Function to update query parameters without modifying params directly
   const createQueryString = useCallback(
@@ -27,23 +31,66 @@ export default function TasksHeaderActions() {
   //dnd name
   const dndName = "Tasks";
 
+  const btnPhasesSrc = "/button-svgs/tasks-header-phases.svg";
+
+  //check from project select store if the user is manager, if not, phases and add task/phases button will not be rendered
+
+  const { data: projectSelected } = useProjectSelectStore();
+
+  const role = projectSelected[0]?.userRole;
+  const hasVicePermission =
+    projectSelected[0]?.hasVicePermission && role === "Vice Manager";
+  const hasManagerPermission = role === "Project Manager" || hasVicePermission;
+
   return (
     <DataTableHeader
       tableName={dndName}
       onGenerateReport={true}
       additionalElement={
         <>
-          <Button
-            variant={"outline"}
-            onClick={() => createQueryString("sheet", "phases")}
-          >
-            Phases
-          </Button>
-          <AddBtn
-            label="Add Task"
-            href="/employee/tasks/add?show_phases=true"
-            dark={true}
-          />
+          {hasManagerPermission && (
+            <>
+              <Button
+                variant={"outline"}
+                onClick={() => createQueryString("sheet", "phases")}
+                className="h-full"
+              >
+                <Image
+                  src={btnPhasesSrc}
+                  alt={"phases button image"}
+                  width={16}
+                  height={16}
+                />
+                Phases
+              </Button>
+              <AddBtn
+                label="Add Task/Phases"
+                href="/employee/tasks/add?show_phases=true"
+                dark={true}
+                className="h-full"
+              />
+
+              <div className="w-full sm:w-fit flex-row-end">
+                <Tabs
+                  activeTab={activeTab}
+                  tabItems={[
+                    {
+                      item: "All Tasks",
+                      action: () => {
+                        createQueryString("view", "general");
+                      },
+                    },
+                    {
+                      item: "My Tasks",
+                      action: () => {
+                        createQueryString("view", "assigned");
+                      },
+                    },
+                  ]}
+                />
+              </div>
+            </>
+          )}
         </>
       }
     />

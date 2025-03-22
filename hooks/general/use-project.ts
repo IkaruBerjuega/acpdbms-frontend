@@ -47,6 +47,7 @@ export const useCheckViceManagerPermission = (id: string) => {
   const hasPermission = useApiQuery<ViceManagerPermissionResponse>({
     key: ["project-vice-permission", id],
     url: `/projects/${id}/vice-permission`,
+    enabled: Boolean(id),
   });
   return hasPermission;
 };
@@ -94,7 +95,7 @@ export const useTeamDetailsForDashboard = (projectId: string) => {
 // Hook for fetching team details for project manager dashboard
 export const usePhases = (projectId: string) => {
   return useApiQuery<Phase[]>({
-    key: `phases-${projectId}`,
+    key: ["phases-to-add", projectId],
     url: `/phase-list/${projectId}`,
     enabled: !!projectId, // Prevent fetching if no projectId
   });
