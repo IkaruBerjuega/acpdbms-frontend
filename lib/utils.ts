@@ -304,3 +304,27 @@ export const statusNoticeConfig = {
 
 // Reusable email validation regex
 export const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+// Format date to a more readable format
+export const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+};
+
+// Format file type to show only the extension
+export const formatFileType = (type: string) => {
+  return type.includes("/")
+    ? type.split("/")[1].toUpperCase()
+    : type.toUpperCase();
+};
+
+// Format file size to a human-readable format (e.g., KB, MB)
+export const formatFileSize = (size: number) => {
+  if (size < 1024) return `${size} B`;
+  if (size < 1024 * 1024) return `${(size / 1024).toFixed(1)} KB`;
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+};

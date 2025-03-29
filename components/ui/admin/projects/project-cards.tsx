@@ -20,9 +20,7 @@ export default function ProjectCards<T>({
   initialData: T[];
 }) {
   const searchParams = useSearchParams();
-
-  // Extract the query from searchParams
-  const query = searchParams.get("query") || ""; // Replace 'query' with your actual query parameter name
+  const query = searchParams.get("query") || "";
 
   const transformedColumns = useCreateTableColumns<T>(columns, "Projects");
 

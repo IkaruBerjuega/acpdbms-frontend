@@ -359,24 +359,6 @@ export interface UploadData {
   images?: UploadImage[];
 }
 
-// //File Management
-// export interface File {
-//   task_version_id: number;
-//   name: string;
-//   path: string;
-//   size: number;
-//   type: string;
-//   category: string;
-//   uploaded_by: string;
-//   uploaded_at: string;
-//   is_archived: boolean;
-//   phase_id: number | null;
-//   phase_category: string | null;
-//   task_id: number | null;
-//   task_name: string | null;
-//   task_version_number: number;
-// }
-
 interface Filters {
   projectId: number;
   phaseId: number | null;
@@ -387,13 +369,19 @@ interface Filters {
 }
 
 export interface FileListResponseInterface {
+  id: number;
+  phase_id: number | null;
+  phase_category: string | null;
+  task_id: number | null;
+  task_name: string | null;
   task_version_id: number;
-  task_id: number;
-  phase_id: number;
-  id: string;
+  task_version_number: number;
   name: string;
+  path: string;
+  size: number;
+  type: string;
   category: string;
-  task_name: string;
-  task_version: string;
+  uploaded_by: string;
   uploaded_at: string;
+  is_archived: boolean;
 }
