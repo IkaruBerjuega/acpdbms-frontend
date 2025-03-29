@@ -93,6 +93,7 @@ export interface ProjectDetailsInterface {
   end_date: string;
   finish_date?: string | null;
   status: "finished" | "on-hold" | "ongoing" | "cancelled" | "archived";
+
   street: string;
   city_town: string;
   state: string;
@@ -136,6 +137,7 @@ export type AccountActions =
 
 export type ProjectActions =
   | "archive"
+  //| "unarchive"
   | "cancel"
   | "remove"
   | "onhold"
@@ -215,9 +217,6 @@ export type SupportedTableTypes =
   | ClientInterface
   | EmployeeInterface
   | ProjectListResponseInterface;
-
-export type SupportedTableName = "Accounts" | "Projects";
-export type AccountsTableType = ClientInterface | EmployeeInterface;
 
 export interface ClientViewInterface {
   id: number;
@@ -301,4 +300,60 @@ export interface TaskRequest {
 // Interface for the full request body
 export interface StoreTaskRequest {
   tasks: TaskRequest[]; // Required array of TaskRequest objects
+}
+
+export type SupportedTableName = "Accounts" | "Projects";
+export type AccountsTableType = ClientInterface | EmployeeInterface;
+
+export interface RecentProject {
+  id?: number | null;
+  project_title: string;
+  image_url: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LogoResponse {
+  message: string;
+  logo_url?: string;
+}
+
+export interface RecentProjectsResponse {
+  message: string;
+  recent_project_images?: RecentProject[] | null;
+}
+
+export interface MaintenanceModeResponse {
+  message: string;
+  maintenance_mode: boolean;
+}
+
+export interface ContactDetails {
+  id?: number;
+  type: string;
+  value: string;
+}
+
+export interface DynamicContactSchema {
+  contact_details: ContactDetails[];
+}
+
+// Type for logo upload
+export interface UploadLogoType {
+  logo: FileList;
+}
+
+// Type for recent projects upload
+export interface UploadRecentProjectsType {
+  project_titles: string[];
+  project_images: File[];
+}
+
+export interface UploadImage {
+  file?: File | string;
+}
+
+export interface UploadData {
+  content: string;
+  images?: UploadImage[];
 }
