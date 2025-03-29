@@ -39,9 +39,9 @@ export default function LoginForm() {
       if (role === "admin") {
         router.push("/admin/dashboard");
       } else if (role === "employee") {
-        router.push("/employee/tasks");
+        router.push("/employee/tasks?view=assigned");
       } else {
-        router.push("/client/tasks");
+        router.push("/client/approval?view=to review");
       }
     }
   };

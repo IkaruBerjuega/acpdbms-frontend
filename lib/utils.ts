@@ -150,6 +150,7 @@ export const getFileExtension = (mimeType: string): string => {
     case "application/acad":
     case "application/x-dwg":
     case "image/vnd.dwg":
+    case "application/octet-stream":
       return "dwg";
 
     case "application/dxf":
@@ -271,6 +272,33 @@ export function bytesToMb(
   const mb = bytes / divisor;
   return Number(mb.toFixed(decimals));
 }
+
+export const statusNoticeConfig = {
+  "to do": {
+    noticeColor: "bg-orange-400",
+    content: "To do",
+  },
+  "in progress": {
+    noticeColor: "bg-yellow-400",
+    content: "Ongoing",
+  },
+  paused: {
+    noticeColor: "bg-gray-400",
+    content: "Paused",
+  },
+  cancelled: {
+    noticeColor: "bg-red-400",
+    content: "Cancelled",
+  },
+  archived: {
+    noticeColor: "bg-gray-600",
+    content: "Archived",
+  },
+  finished: {
+    noticeColor: "bg-green-400",
+    content: "Finished",
+  },
+};
 
 //REGEX PATTERNS
 

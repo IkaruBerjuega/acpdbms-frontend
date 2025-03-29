@@ -30,11 +30,11 @@ export default async function Page({
     },
   ];
   return (
-    <main className="relative h-full w-full ">
+    <main className="relative min-h-full w-full ">
       <div className="absolute inset-0 flex flex-col space-y-2">
         <div className="flex-row-between-center w-full">
           <SidebarTrigger breadcrumbs={breadcrumbs} />
-          <ProjectSelector />
+          <ProjectSelector role="employee" />
         </div>
         <Tasks taskId={taskId} activeSheet={sheet} version={version} />
       </div>

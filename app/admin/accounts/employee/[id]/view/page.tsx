@@ -1,5 +1,5 @@
-import EmpAccView from '@/components/ui/admin/accounts/view-edit-contents.tsx/employee-account-view';
-import { SidebarTrigger } from '@/components/ui/sidebar';
+import EmpAccView from "@/components/ui/admin/accounts/view-edit-contents.tsx/employee-account-view";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 
 export default async function Page({
   params,
@@ -10,28 +10,27 @@ export default async function Page({
 }) {
   // await the route parameters before using them
   const { id } = await params;
-  const { edit = '' } = (await Promise.resolve(searchParams)) || { edit: '' };
+  const { edit = "" } = (await Promise.resolve(searchParams)) || { edit: "" };
 
   return (
-    <main className='w-full h-auto flex justify-center flex-col'>
+    <>
       <SidebarTrigger
         breadcrumbs={[
           {
-            pageName: 'Accounts',
-            href: '/admin/accounts?tab=Employee',
+            pageName: "Accounts",
+            href: "/admin/accounts?tab=Employee",
             active: false,
           },
           {
-            pageName: 'View Account Details',
+            pageName: "View Account Details",
             href: `/admin/accounts/employee/${id}/view`,
             active: true,
           },
         ]}
       />
-      <EmpAccView
-        id={id}
-        edit={edit}
-      />
-    </main>
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <EmpAccView id={id} edit={edit} />
+      </div>
+    </>
   );
 }

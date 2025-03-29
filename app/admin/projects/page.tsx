@@ -34,9 +34,9 @@ export default async function Page({
   ];
 
   return (
-    <main className="w-full h-full flex-col-start gap-2">
+    <>
       <SidebarTrigger breadcrumbs={breadCrumbs} />
       <ProjectList isArchived={isArchived} initialData={initialData} />
-    </main>
+    </>
   );
 }

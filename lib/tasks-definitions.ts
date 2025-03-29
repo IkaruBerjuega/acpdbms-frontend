@@ -1,14 +1,3 @@
-// export interface TaskVersion {
-//   id: number;
-//   version: number;
-//   start_data: string;
-//   finish_date: string;
-//   task_files_count: number;
-//   remaining_duration: number;
-//   created_at: string;
-//   updated_at: string;
-// }
-
 import { TaskFile } from "./files-definitions";
 
 export interface TeamMember {

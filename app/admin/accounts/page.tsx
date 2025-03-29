@@ -69,17 +69,19 @@ export default async function Page({
   const isOpen = isAddOpen || isGrant;
 
   return (
-    <main className="w-full h-full flex-col-start gap-2">
+    <>
       <SidebarTrigger breadcrumbs={breadcrumbs} />
       <AccountsTableHeaderActions<AccountsTableType> />
 
-      <div className="flex-grow flex-row-start gap-2 relative min-w-0">
-        <div className="flex-grow rounded-bl-lg bg-white-primary shadow-md system-padding min-w-0">
-          <Table<AccountsTableType>
-            initialData={initialData}
-            role={role}
-            isArchived={isArchived}
-          />
+      <div className="flex-grow flex-row-start gap-2 relative flex-1  min-h-0  min-w-0">
+        <div className="rounded-bl-lg bg-white-primary shadow-md  h-full w-full overflow-hidden min-w-0">
+          <div className="overflow-y-auto h-full system-padding">
+            <Table
+              initialData={initialData}
+              role={role}
+              isArchived={isArchived}
+            />
+          </div>
         </div>
         <Sidepanel
           activeKey={activeKey}
@@ -87,6 +89,6 @@ export default async function Page({
           isOpen={isOpen}
         />
       </div>
-    </main>
+    </>
   );
 }

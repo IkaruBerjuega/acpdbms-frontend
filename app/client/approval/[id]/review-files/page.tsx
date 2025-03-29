@@ -5,6 +5,8 @@ import serverRequestAPI from "@/hooks/server-request";
 import { Breadcrumbs } from "@/lib/definitions";
 import { TaskVersionsResponse } from "@/lib/tasks-definitions";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 export default async function Page({
   params,
 }: {
@@ -25,7 +27,7 @@ export default async function Page({
       active: false,
     },
     {
-      href: `/employee/tasks/${taskId}/review-files?view_files=true`,
+      href: `/client/approval/${taskId}/review-files?view_files=true`,
       pageName: "Files Review",
       active: true,
     },
@@ -42,7 +44,7 @@ export default async function Page({
       <FileReview
         taskId={taskId}
         initialData={initialData}
-        role="manager"
+        role="client"
         reviewMode={true}
       />
     </div>

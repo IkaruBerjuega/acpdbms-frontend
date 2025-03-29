@@ -136,13 +136,17 @@ function Message({ comment, onClick }: MessageInterfaceProps) {
             </Button>
           </div>
         </div>
-        <div>
+        <div className="space-y-2">
           {!!comment.children &&
             comment.children.map((comment) => (
               <Message key={comment.id} comment={comment} onClick={onClick} />
             ))}
         </div>
       </div>
+      <Separator
+        className="h-full absolute -z-50 left-3.5"
+        orientation="vertical"
+      />
     </div>
   );
 }

@@ -11,10 +11,10 @@ export default function AdminLayout({
 }) {
   return (
     <SidebarProvider>
-      <div className="flex min-h-screen w-full bg-white-secondary">
+      <div className="flex h-screen w-full bg-white-secondary">
         <AppSidebar role={"admin"} />
-        <main className="flex-grow flex-col-start m-4 gap-2">
-          <div className="flex-1">{children}</div>
+        <main className="flex-1 flex-col-start m-4 gap-2 min-w-0">
+          {children}
         </main>
       </div>
     </SidebarProvider>

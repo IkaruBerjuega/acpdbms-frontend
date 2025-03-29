@@ -13,7 +13,7 @@ export interface TaskFile {
   client_approval: boolean | undefined;
 }
 
-interface TaskFilesApproval {
+export interface TaskFilesApproval {
   task_file_id: number;
   approval: boolean | null;
 }

@@ -29,7 +29,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   });
 
   return (
-    <main className="w-full h-auto flex justify-center flex-col">
+    <>
       <SidebarTrigger
         breadcrumbs={[
           {
@@ -50,6 +50,6 @@ export default async function Page({ params, searchParams }: PageProps) {
         projectDetailsInitialData={initialData}
         teamInitialData={teamMembers}
       />
-    </main>
+    </>
   );
 }

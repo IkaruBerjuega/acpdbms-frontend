@@ -25,7 +25,7 @@ export default async function Page({
       active: false,
     },
     {
-      href: `/employee/tasks/${taskId}/review-files?view_files=true`,
+      href: `/client/approval/${taskId}/review-files?view_files=true`,
       pageName: "Files Review",
       active: true,
     },
@@ -42,8 +42,8 @@ export default async function Page({
       <FileReview
         taskId={taskId}
         initialData={initialData}
-        role="manager"
-        reviewMode={true}
+        role="client"
+        reviewMode={false}
       />
     </div>
   );

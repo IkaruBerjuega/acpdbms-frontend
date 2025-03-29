@@ -12,7 +12,7 @@ import {
 import { useCreateTableColumns } from "../../general/data-table-components/create-table-columns";
 import { useSearchParams } from "next/navigation";
 import { useCustomTable } from "../../general/data-table-components/custom-tanstack";
-import { getPhaseBadgeColor } from "@/lib/utils";
+import { getPhaseBadgeColor, requireError } from "@/lib/utils";
 import FilterPopOver from "../../general/data-table-components/filter-components/filter-popover";
 import { LuFilter } from "react-icons/lu";
 import { DialogNoBtn } from "../../dialog";
@@ -20,12 +20,24 @@ import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { ColumnInterfaceProp } from "@/lib/definitions";
 import {
+  ReviewTaskRequest,
   TASK_STATUSES,
   TaskItem,
   TaskItemProps,
   TaskStatuses,
 } from "@/lib/tasks-definitions";
 import { useQueryParams } from "@/hooks/use-query-params";
+import { SubmitHandler, useForm } from "react-hook-form";
+import FormInput from "../../general/form-components/form-input";
+
+const isReviewTaskRequest = (obj: any): obj is ReviewTaskRequest => {
+  return (
+    obj &&
+    "approved" in obj &&
+    "new_task_description" in obj &&
+    "new_duration" in obj
+  );
+};
 
 export default function TasksDND() {
   //get selected project id
@@ -33,7 +45,7 @@ export default function TasksDND() {
 
   const { params, paramsKey } = useQueryParams();
 
-  const isGeneral = paramsKey["view"] !== "assigned";
+  const isGeneral = paramsKey["view"] === "general";
 
   //tasks
   const { data: taskList, isLoading } = useGetTasks({
@@ -145,15 +157,56 @@ export default function TasksDND() {
   }));
 
   //actions
-
   const [open, setOpen] = useState<boolean>(false);
   const [taskId, setTaskId] = useState<number>();
   const [droppedStatus, setDroppedByStatus] = useState<TaskStatuses>("to do");
   const [recentStatus, setRecentStatus] = useState<TaskStatuses>("to do");
-  const { startTask, pauseTask, setTaskToNeedsReview } = useTaskActions({
-    taskId: String(taskId),
-    projectId: projectSelected[0]?.projectId,
+  const { startTask, pauseTask, setTaskToNeedsReview, reviewTask } =
+    useTaskActions<ReviewTaskRequest | null>({
+      taskId: String(taskId),
+      projectId: projectSelected[0]?.projectId,
+    });
+
+  //for making a new version when the recent status is in needs review
+  const {
+    register,
+    reset,
+    handleSubmit,
+    watch,
+    control,
+    trigger,
+    setValue,
+    formState: { errors },
+  } = useForm<ReviewTaskRequest>({
+    defaultValues: {
+      approved: undefined,
+      new_task_description: undefined,
+      new_duration: undefined,
+    },
   });
+
+  //ui for setting new task description and duration
+  const CreateNewVersion = () => {
+    return (
+      <form>
+        <FormInput
+          name={"new_task_description"}
+          label={"New Task Description"}
+          inputType={"textArea"}
+          validationRules={{ required: requireError("New Task Description") }}
+          register={register}
+        />
+        <FormInput
+          name={"new_duration"}
+          label={"New Task Duration"}
+          dataType="number"
+          inputType={"default"}
+          validationRules={{ required: requireError("New Duration") }}
+          register={register}
+        />
+      </form>
+    );
+  };
 
   const fromPausedOrReview =
     recentStatus === "paused" || recentStatus === "needs review";
@@ -168,72 +221,98 @@ export default function TasksDND() {
       successMessagePlaceholder: fromPausedOrReview
         ? "taskContinuedSuccessfully"
         : "Task started successfully",
+      content: <></>,
     },
     paused: {
       action: pauseTask,
       title: "Pause Task",
       desc: "Do you confirm on pausing the selected/dragged task?",
       successMessagePlaceholder: "Task paused successfully",
+      content: <></>,
     },
     "needs review": {
       action: setTaskToNeedsReview,
       title: "Set to Needs Review",
       desc: "Do you confirm on setting to needs review the selecteqd/dragged task?",
       successMessagePlaceholder: "Task is now set to needs review",
+      content: <></>,
     },
     "to do": {
-      action: setTaskToNeedsReview,
-      title: "Set to Needs Review",
-      desc: "Do you confirm on setting to needs review the selected/dragged task?",
+      action: reviewTask,
+      title: "Create New Version",
+      desc: "Enter the new Task Description and Duration",
       successMessagePlaceholder: "Task is now set to needs review",
+      content: <CreateNewVersion />,
     },
     done: {
-      action: setTaskToNeedsReview,
+      action: reviewTask,
       title: "Finish Task",
       desc: "Do you confirm on finishing the selected/dragged task?",
       successMessagePlaceholder: "Task is now finished",
+      content: <></>,
     },
     cancelled: {
       action: setTaskToNeedsReview,
       title: "Set to Needs Review",
       desc: "Do you confirm on setting to needs review the selected/dragged task?",
       successMessagePlaceholder: "Task is now set to needs review",
+      content: <></>,
     },
   };
 
   const queryClient = useQueryClient();
 
+  const getFormData = (): ReviewTaskRequest => {
+    return {
+      approved: watch("approved"),
+      new_task_description: watch("new_task_description"),
+      new_duration: watch("new_duration"),
+    };
+  };
+
   const action = (droppedStatus: TaskStatuses) => {
-    const actionFn = dialogConfig[droppedStatus].action.mutate;
+    const actionFn = dialogConfig[droppedStatus]?.action?.mutate;
+    if (!actionFn) {
+      console.error(`Mutation function not found for status: ${droppedStatus}`);
+      return;
+    }
+
     const title = dialogConfig[droppedStatus].title;
     const successMessagePlaceholder =
       dialogConfig[droppedStatus].successMessagePlaceholder;
+    const body =
+      droppedStatus === "to do" || droppedStatus === "done"
+        ? getFormData()
+        : null;
 
-    //send the form
-    actionFn(
-      null, // Actual request body
-      {
-        onSuccess: async (response: { message?: string }) => {
-          toast({
-            variant: "default",
-            title: title,
-            description: response.message || successMessagePlaceholder,
-          });
+    // Execute the mutation
+    actionFn(body, {
+      onSuccess: async (response: { message?: string }) => {
+        toast({
+          variant: "default",
+          title,
+          description: response.message || successMessagePlaceholder,
+        });
 
+        const projectId = projectSelected[0]?.projectId;
+        if (projectId) {
           queryClient.invalidateQueries({
-            queryKey: ["tasks", projectSelected[0]?.projectId],
+            queryKey: isGeneral
+              ? ["tasks", projectId]
+              : ["my-tasks", projectId],
           });
-        },
-        onError: (error: { message?: string }) => {
-          toast({
-            variant: "destructive",
-            title: title,
-            description:
-              error.message || "There was an error submitting the form",
-          });
-        },
-      }
-    );
+        }
+      },
+      onError: (error: { message?: string }) => {
+        toast({
+          variant: "destructive",
+          title,
+          description:
+            error.message || "There was an error submitting the form",
+        });
+      },
+    });
+
     setOpen(false);
   };
 
@@ -246,11 +325,12 @@ export default function TasksDND() {
     droppedStatus: TaskStatuses;
     recentStatus: TaskStatuses;
   }) => {
+    if (droppedStatus === recentStatus) return;
     if (droppedStatus === "in progress" && recentStatus === "needs review") {
       toast({
         title: "Warning",
         description:
-          "Tasks that are being reviewed cannot be directly set to in progress, wait for the approval of project manager",
+          "Tasks that are being reviewed cannot be set to in progress",
         variant: "destructive",
       });
 
@@ -260,17 +340,7 @@ export default function TasksDND() {
     if (droppedStatus === "to do" && recentStatus === "done") {
       toast({
         title: "Warning",
-        description: "Tasks that are finished cannot be reversed",
-        variant: "destructive",
-      });
-
-      return;
-    }
-
-    if (droppedStatus === "to do" && recentStatus === "needs review") {
-      toast({
-        title: "Warning",
-        description: "Tasks that are being reviewed cannot be set to do",
+        description: "Tasks that are finished cannot be moved",
         variant: "destructive",
       });
 
@@ -280,8 +350,7 @@ export default function TasksDND() {
     if (droppedStatus === "paused" && recentStatus === "needs review") {
       toast({
         title: "Warning",
-        description:
-          "Tasks that are being reviewed cannot be directly paused, wait for the approval of project manager",
+        description: "Tasks that are being reviewed cannot be directly paused",
         variant: "destructive",
       });
 
@@ -302,10 +371,17 @@ export default function TasksDND() {
       toast({
         title: "Warning",
         description:
-          "Tasks to do cannot be finished without being reviewed and manager approval",
+          "Tasks to do cannot be finished without being manager approval",
         variant: "destructive",
       });
       return;
+    }
+
+    if (droppedStatus === "to do" && recentStatus === "needs review") {
+      setValue("approved", false);
+    }
+    if (droppedStatus === "done" && recentStatus === "needs review") {
+      setValue("approved", true);
     }
 
     setTaskId(id);
@@ -326,7 +402,7 @@ export default function TasksDND() {
     <DndProvider backend={HTML5Backend}>
       <div className="w-full flex-col-start overflow-x-auto min-h-0 ">
         <div className="flex flex-wrap flex-col w-full h-auto gap-2">
-          <div>
+          <div className="w-full flex-row-between-center">
             <FilterPopOver
               width="w-auto"
               content={filters}
@@ -359,7 +435,7 @@ export default function TasksDND() {
         <DialogNoBtn
           title={dialogConfig[droppedStatus].title}
           description={dialogConfig[droppedStatus].desc}
-          content={<></>}
+          content={dialogConfig[droppedStatus].content}
           onClick={() => action(droppedStatus)}
           onOpen={open}
           onClose={() => setOpen(false)}

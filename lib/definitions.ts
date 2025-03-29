@@ -77,7 +77,7 @@ export interface ProjectListResponseInterface {
     | "archived"
     | "pending";
   location: string;
-  image_url?: string | null;
+  image_url: string | null;
   project_manager: string;
   project_description: string;
   user_role?: "Project Manager" | "Vice Manager" | "Member";
@@ -193,7 +193,7 @@ export interface Phase {
   created_at?: Date;
   finish_date?: Date;
   project_id?: string;
-  status?:
+  status:
     | "to do"
     | "in progress"
     | "cancelled"
@@ -280,3 +280,25 @@ export type TicketData = {
   date: string;
   status: string;
 };
+
+export interface CustomTabsProps {
+  activeTab: string | null;
+  tabItems: {
+    item: string;
+    action: () => void;
+  }[];
+}
+
+// Interface for a single task in the request
+export interface TaskRequest {
+  phase_id: string; // Required, must exist in phases table
+  phase_name: string;
+  task_name: string; // Required string
+  task_description?: string; // Optional (nullable) string
+  duration?: string; // Optional (nullable) integer
+}
+
+// Interface for the full request body
+export interface StoreTaskRequest {
+  tasks: TaskRequest[]; // Required array of TaskRequest objects
+}

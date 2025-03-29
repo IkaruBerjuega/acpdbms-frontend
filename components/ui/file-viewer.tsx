@@ -2,15 +2,39 @@
 import { TaskFile } from "@/lib/files-definitions";
 import { getFileExtension } from "@/lib/utils";
 import Image from "next/image";
-import { Button } from "./button";
+import { Button, ButtonLink } from "./button";
 import Link from "next/link";
 import { useState } from "react";
 import { MdOutlineZoomIn, MdOutlineZoomOut } from "react-icons/md";
+import { FILE } from "dns";
+import { Download } from "lucide-react";
 
 interface FileViewerProps {
   file: TaskFile | undefined;
 }
 
+const DownloadFileOption = ({
+  fileUrl,
+  fileName,
+}: {
+  fileUrl: string;
+  fileName: string;
+}) => {
+  return (
+    <div className="flex-col-center gap-4 relative flex-grow w-full">
+      <div className="absolute top-4 left-4 text-sm">{fileName}</div>
+      <div>Cannot View. Download File Instead </div>
+      <ButtonLink
+        variant={"default"}
+        size={"sm"}
+        href={fileUrl}
+        target="_blank"
+      >
+        <Download /> Download
+      </ButtonLink>
+    </div>
+  );
+};
 //dwg, dxf, dwf, iges, step, and stl. - cad files
 
 export default function FileViewer({ file }: FileViewerProps) {
@@ -23,44 +47,13 @@ export default function FileViewer({ file }: FileViewerProps) {
   const fileType = getFileExtension(file.type);
   const imageFormats = ["jpg", "png", "webp", "gif"];
   const isImage = imageFormats.includes(fileType);
+  const isPdf = fileType === "pdf";
   const cadFormats = ["dwg", "dxf", "dwf", "iges", "step", "stl"];
   const isCad = cadFormats.includes(fileType);
 
-  const isDocx = fileType === "docx" || fileType === "doc";
+  const isNotViewable = !isPdf && !isImage;
 
-  const fileUrl = isCad
-    ? `http://sharecad.org/cadframe/load?url=${file.path}`
-    : file.path;
-
-  if (isDocx) {
-    return (
-      <div className="flex-col-center gap-4">
-        <span>Can't view docx files. Download the file instead</span>
-        <Link
-          href={file.path}
-          className="bg-black-primary text-white-primary text-sm hover:!bg-black-secondary rounded-md p-2"
-        >
-          Download File
-        </Link>
-      </div>
-    );
-  }
-
-  if (isCad) {
-    return (
-      <>
-        {" "}
-        <div className="w-full h-full flex-col-center ">
-          <iframe
-            src={`https://sharecad.org/cadframe/load?url=${file.path}`}
-            className="w-full h-full"
-          >
-            asdsadas
-          </iframe>
-        </div>
-      </>
-    );
-  }
+  const fileUrl = file.path;
 
   const handleZoom = ({ mode }: { mode: "out" | "in" }) => {
     const interval = 25;
@@ -76,6 +69,10 @@ export default function FileViewer({ file }: FileViewerProps) {
     }
     setZoom((prev) => prev - interval);
   };
+
+  if (isNotViewable) {
+    return <DownloadFileOption fileName={file.name} fileUrl={file.path} />;
+  }
 
   if (isImage) {
     return (

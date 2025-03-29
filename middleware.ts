@@ -37,8 +37,6 @@ export async function middleware(req: NextRequest) {
     const parsedData = JSON.parse(decodedToken) as LoginResponseInterface;
     token = parsedData.token;
     user = parsedData.user;
-
-    console.log(token);
   } catch (error) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
@@ -60,9 +58,9 @@ export async function middleware(req: NextRequest) {
       },
     });
 
-    // if (!laravelResponse.ok) {
-    //   return NextResponse.redirect(new URL("/login", req.url));
-    // }
+    if (!laravelResponse.ok) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
 
     // Allow users to stay on the login page if they are NOT logged in
     if (isLoginPage) {
@@ -85,8 +83,8 @@ const getRoleRedirect = (role: string) => {
   return (
     {
       admin: "/admin/dashboard",
-      employee: "/employee/project/tasks",
-      client: "/client",
+      employee: "/employee/tasks?view=assigned",
+      client: "/client/approval?view=to review",
     }[role] || "/login"
   );
 };

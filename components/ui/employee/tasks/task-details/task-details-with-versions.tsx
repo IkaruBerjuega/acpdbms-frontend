@@ -27,22 +27,27 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
     taskId: taskId,
   });
 
-  const displayRemaining =
-    taskDetails?.status === "to do" || taskDetails?.status === "done";
+  const displayRemaining = taskDetails?.status === "to do";
 
   const { setData } = useSelectedTaskStatus();
 
-  const versions = taskVersions?.versions;
-  const lastVersionIndex = versions ? versions?.length - 1 : 1;
+  const versions = taskVersions?.versions.sort((a, b) => b.version - a.version);
+  const lastVersionNumber =
+    versions && versions.length > 0
+      ? versions.reduce(
+          (max, version) => Math.max(max, version.version),
+          versions[0].version
+        )
+      : 1;
 
   const openMember = () => {
     params.set("sheet", "members");
     replace(`${pathname}?${params.toString()}`);
   };
 
-  const openFiles = () => {
+  const openFiles = ({ version }: { version: string }) => {
     params.set("sheet", "files");
-    params.set("version", String(lastVersionIndex));
+    params.set("version", version);
     setData([taskDetails?.status]);
     replace(`${pathname}?${params.toString()}`);
   };
@@ -108,8 +113,8 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
 
       <div className="flex-col-start w-full">
         {versions?.map((version, index) => {
-          const isLastIndex = lastVersionIndex === index;
-          const isFirstIndex = index === 0;
+          const isLastIndex = lastVersionNumber === version.version;
+          const isFirstVersion = version.version === 1;
           const startDate = new Date(version.start_date)
             .toISOString()
             .slice(0, 10);
@@ -125,24 +130,28 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
               key={index}
               className="w-full flex flex-row  min-h-[100px] px-2 gap-4 "
             >
-              <div className="flex-row-center-start relative ">
+              <div className="relative flex flex-col items-center pt-1">
+                {/* Dot */}
                 <div
-                  className={`h-2.5 w-2.5 rounded-full  absolute mt-1 ${
-                    isLastIndex ? "bg-gray-300" : "bg-black-secondary"
+                  className={`h-2.5 w-2.5 rounded-full  ${
+                    !isLastIndex ? "bg-gray-300" : "bg-black-secondary"
                   }`}
                 />
 
-                {/* render tail when not first version */}
-                {!isFirstIndex && (
+                {/* Tail (Render when not first version) */}
+                {!isFirstVersion && (
                   <div
-                    className={`border-[1px] h-full absolute ${
-                      isLastIndex ? "border-gray-300" : "border-black-secondary"
+                    className={`border-l border-[1px] h-full ${
+                      !isLastIndex
+                        ? "border-gray-300"
+                        : "border-black-secondary"
                     }`}
                   />
                 )}
               </div>
-              <div className="flex-grow flex-col-start gap-2 text-sm ">
-                <div className="w-full flex-row-start gap-1 text-slate-500  ">
+
+              <div className="flex-grow flex-col-start gap-2 text-sm  ">
+                <div className="w-full flex-row-start gap-1 text-slate-500  leading-tight">
                   {startDate && (
                     <>
                       <span>Started in</span>
@@ -156,7 +165,7 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
                     </>
                   )}
                 </div>
-                <div className="flex-grow flex-row-between-center border-b-[1px]  p-6 ">
+                <div className="flex-grow flex-row-between-center   p-6 ">
                   <div>
                     <h1 className="text-lg font-semibold">
                       {version.task_description}
@@ -171,7 +180,7 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
                       <IoIosTimer className="text-lg" />
                       <span>{duration} days total</span>
                     </div>
-                    {!displayRemaining && (
+                    {displayRemaining && (
                       <div className="flex-row-start-center  gap-1 ">
                         <IoTimer className="text-lg" />
                         <span>{remainingDuration} day(s) remaining</span>
@@ -183,7 +192,9 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
                     </div>
                     <GrNext
                       className="cursor-pointer hover:text-black-primary text-lg"
-                      onClick={openFiles}
+                      onClick={() => {
+                        openFiles({ version: String(version.version) });
+                      }}
                     />
                   </div>
                 </div>

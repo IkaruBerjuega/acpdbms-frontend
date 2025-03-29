@@ -30,8 +30,6 @@ const defaultValues = {
   lot: "",
   zip_code: undefined,
   status: "ongoing",
-  image_url:
-    "https://scontent.fcrk1-5.fna.fbcdn.net/v/t39.30808-6/422698331_877393341058901_3120897789009871049_n.jpg?_nc_cat=103&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=qOLzxf2J41MQ7kNvgEn7eAO&_nc_zt=23&_nc_ht=scontent.fcrk1-5.fna&_nc_gid=AIJFexT1K0_qCR78m0kJimG&oh=00_AYDWysoIAWi2w9PjRNRWoRzsLvd4CkFpYMLta3efL1j_qg&oe=6715A93A",
   start_date: undefined,
   end_date: undefined,
   project_description: "",
@@ -44,17 +42,13 @@ const steps = [
     fields: [
       "client_id",
       "project_title",
-      "region",
-      "province",
+      "project_description",
+      "state",
       "city_town",
-      "barangay",
       "street",
-      "block",
-      "lot",
       "zip_code",
       "start_date",
       "end_date",
-      "project_description",
     ],
   },
 ];
@@ -99,18 +93,18 @@ export default function HookMultiStepForm() {
 
     // append ProjectDetails (step 1) fields
     formData.append("client_id", data.client_id?.toString() || "");
-    formData.append("client_name", data.client_name);
     formData.append("project_title", data.project_title);
-    formData.append("state", data.state);
-    formData.append("city_town", data.city_town);
-    formData.append("street", data.street);
-    formData.append("zip_code", data.zip_code?.toString() || "");
-    formData.append("start_date", data.start_date?.toISOString() || "");
-    formData.append("end_date", data.end_date?.toISOString() || "");
-    formData.append("status", data.status);
-    formData.append("image_url", data.image_url);
     formData.append("project_description", data.project_description || "");
-
+    formData.append(
+      "start_date",
+      new Date(data.start_date || "").toISOString()
+    );
+    formData.append("end_date", new Date(data.end_date || "").toISOString());
+    formData.append("street", data.street);
+    formData.append("city_town", data.city_town);
+    formData.append("state", data.state);
+    formData.append("zip_code", data.zip_code?.toString() || "");
+    formData.append("image_url", "");
     console.log("Formatted data:", Array.from(formData.entries()));
 
     mutate(formData, {
@@ -141,7 +135,6 @@ export default function HookMultiStepForm() {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
-      console.log("Submitting Form");
       handleSubmit(processSubmit)();
     }
   };

@@ -32,6 +32,7 @@ import { toast } from "@/hooks/use-toast";
 import { useQueryParams } from "@/hooks/use-query-params";
 import { usePathname, useRouter } from "next/navigation";
 import {
+  Phase,
   ProjectDetailsInterface,
   TeamMemberDashboard,
   TeamMemberDashboardResponse,
@@ -39,13 +40,20 @@ import {
 import {
   useCheckViceManagerPermission,
   useEditProject,
+  useGetActivePhases,
+  useGetArchivedPhases,
   useProjectActions,
   useTeamDetailsForDashboard,
   useViewProject,
 } from "@/hooks/general/use-project";
 import { AiOutlineMail, AiOutlineTeam } from "react-icons/ai";
 import { Avatar, AvatarFallback, AvatarImage } from "../avatar";
-import { getInitialsFallback, requireError } from "@/lib/utils";
+import {
+  getInitialsFallback,
+  requireError,
+  statusNoticeConfig,
+  titleCase,
+} from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { error } from "console";
 import {
@@ -64,6 +72,13 @@ import { IoPhonePortraitOutline } from "react-icons/io5";
 import { LiaTasksSolid } from "react-icons/lia";
 import { FaCrown } from "react-icons/fa6";
 import { Checkbox } from "../checkbox";
+import Profile from "./profile";
+import {
+  LuCalendarCheck,
+  LuCalendarMinus,
+  LuCalendarPlus,
+} from "react-icons/lu";
+import { StatusNotice } from "../hover-card";
 
 interface ProjectDetails {
   id: string;
@@ -212,9 +227,11 @@ function ProjectDetails<T>({
     }
   };
 
+  const phasesIconSrc = "/button-svgs/tasks-header-phases.svg";
+
   return (
-    <Card className="border-none shadow-md w-[75%] h-fit sticky top-5 ">
-      <CardContent className="p-6">
+    <Card className="border-none shadow-md  h-fit ">
+      <CardContent className="system-padding">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between gap-4 mb-6">
           <div className="flex flex-col md:flex-row items-start gap-6">
@@ -612,36 +629,28 @@ function Member({
   return (
     <Card className="">
       <CardContent className="p-6 min-h-[200px] shadow-md border-none flex-col-between-start">
-        {props.has_task && (
-          <div className="flex-row-start w-full mb-4">
-            <Badge
-              className={`py-1 text-xs font-medium hover:bg-white w-fit bg-yellow-200 text-yellow-700`}
-            >
-              Has Ongoing Tasks
-            </Badge>
-          </div>
-        )}
         <div className="mb-5 w-full">
           <div>
-            <div className="flex-row-start-center gap-2">
-              <div className="relative">
-                <Avatar className="h-10 w-10 rounded-full">
-                  <AvatarImage src={props?.profile_picture_url} />
-                  <AvatarFallback>
-                    {getInitialsFallback(props.full_name)}
-                  </AvatarFallback>
-                </Avatar>
-                {isManager && (
-                  <FaCrown
-                    className={`absolute top-[-15px] left-1/2 -translate-x-1/2 text-2xl ${
-                      isProjectManager ? "text-orange-300" : "text-gray-500"
-                    }`}
-                  />
-                )}
-              </div>
-
+            <div className="flex-row-start-center gap-2 ">
+              <Profile
+                profileName={props.full_name}
+                profileSrc={props.profile_picture_url}
+                isProjectManager={isProjectManager}
+                isViceManager={isViceManager}
+                variant="base"
+              />
               <div className="flex-col-start">
-                <p className="text-sm">{props.full_name}</p>
+                <div className="flex-row-start-center gap-2">
+                  <p className="text-sm">{props.full_name}</p>
+                  {props.has_task && (
+                    <StatusNotice
+                      noticeColor={
+                        statusNoticeConfig["in progress"].noticeColor
+                      }
+                      content={"Has Ongoing Tasks"}
+                    />
+                  )}
+                </div>
 
                 <p className="text-xs text-slate-500">{props.role}</p>
               </div>
@@ -824,6 +833,119 @@ function TeamMembers({
   );
 }
 
+function PhasesMapping({
+  phases,
+  phasesIconSrc,
+  isActive,
+}: {
+  phases: Phase[] | undefined;
+  phasesIconSrc: string;
+  isActive: boolean;
+}) {
+  const title = isActive ? "Active Phases" : "Archived Phases";
+
+  return (
+    <div className="flex-col-start  mx-6 ">
+      <div className="flex-col-start  gap-4">
+        <Badge
+          className={`flex items-center w-fit text-xs ${
+            isActive
+              ? "bg-green-100 text-green-600"
+              : "bg-gray-100 text-gray-600"
+          } `}
+        >
+          {title}
+        </Badge>
+
+        {phases && (
+          <div className="grid grid-cols-2 w-full gap-4">
+            {phases?.map((phase) => {
+              return (
+                <div
+                  key={phase.id}
+                  className="system-padding border-[1px] col-span-1 rounded-md"
+                >
+                  <div className="flex-row-start-center gap-2">
+                    <Image
+                      width={16}
+                      height={16}
+                      alt="phases-icon"
+                      src={phasesIconSrc}
+                    />
+                    <span className="text-base font-medium text-slate-700">
+                      {titleCase(phase.category)}
+                    </span>
+
+                    <StatusNotice {...statusNoticeConfig[phase.status]} />
+                  </div>
+                  <div className="ml-6 mt-2 text-sm text-slate-500">
+                    <div className="flex-row-start-center gap-2">
+                      <LuCalendarPlus className="text-base" />
+                      <span>{phase?.created_at?.toString().slice(0, 10)}</span>
+                    </div>
+                    {phase.finish_date && (
+                      <div className="flex-row-start-center gap-2">
+                        <LuCalendarCheck className="text-base" />
+                        <span>
+                          {phase?.finish_date?.toString().slice(0, 10)}
+                        </span>
+                      </div>
+                    )}
+                    {phase.status === "archived" && (
+                      <div className="flex-row-start-center gap-2">
+                        <LuCalendarMinus className="text-base" />
+                        <span>
+                          {phase?.updated_at?.toString().slice(0, 10)}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {phases?.length === 0 && (
+          <div className="text-sm ml-6 text-slate-500">No {title}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function Phases({ id }: { id: string }) {
+  const phasesIconSrc = "/button-svgs/tasks-header-phases.svg";
+
+  const { data: activePhases } = useGetActivePhases(id);
+  const { data: archivedPhases } = useGetArchivedPhases(id);
+
+  return (
+    <Card className="shadow-md h-fit border-none ">
+      <CardContent className="p-6 flex-col-start gap-4">
+        <div className="flex-row-start-center gap-2">
+          <Image width={20} height={20} alt="phases-icon" src={phasesIconSrc} />
+          <h2 className="font-semibold text-lg text-maroon-600">
+            Project Phases
+          </h2>
+        </div>
+        <div className="w-full flex-col-start gap-8">
+          <PhasesMapping
+            phases={activePhases}
+            phasesIconSrc={phasesIconSrc}
+            isActive={true}
+          />
+          <PhasesMapping
+            phases={archivedPhases}
+            phasesIconSrc={phasesIconSrc}
+            isActive={false}
+          />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function ProjectView({
   id,
   edit,
@@ -838,15 +960,17 @@ export default function ProjectView({
   isAdmin?: boolean;
 }) {
   return (
-    <div className="flex flex-row-center-start gap-2 h-full relative transition-all duration-200">
-      <ProjectDetails
-        id={id}
-        edit={edit}
-        projectDetailsInitialData={projectDetailsInitialData}
-        isAdmin={isAdmin}
-      />
-      {/* <div className="w-1/2 h-fit bg-green-200 sticky top-5">asdadadas</div> */}
-      <div className="flex-grow h-full">
+    <div className="flex flex-row-start gap-2  min-h-0 overflow-y-auto relative transition-all duration-200 overflow-visible ">
+      <div className="w-[75%] space-y-2  h-full overflow-visible ">
+        <ProjectDetails
+          id={id}
+          edit={edit}
+          projectDetailsInitialData={projectDetailsInitialData}
+          isAdmin={isAdmin}
+        />
+        <Phases id={id} />
+      </div>
+      <div className="flex-grow h-full ">
         <TeamMembers id={id} teamInitialData={teamInitialData} />
       </div>
     </div>

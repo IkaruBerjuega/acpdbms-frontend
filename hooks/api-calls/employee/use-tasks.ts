@@ -1,5 +1,5 @@
 import { useApiMutation, useApiQuery } from "@/hooks/tanstack-query";
-import { StoreTaskRequest } from "@/lib/form-constants/form-constants";
+import { StoreTaskRequest } from "@/lib/definitions";
 import {
   AssignTaskRequest,
   CancelTaskAssignmentRequest,
@@ -18,22 +18,15 @@ export const useGetTasks = ({
   initialData,
   isGeneral,
 }: {
-  projectId: string; // Allow undefined
+  projectId: string; // Allow undefine
   initialData?: TasksResponse;
   isGeneral: boolean;
 }) => {
-  if (isGeneral) {
-    return useApiQuery<TasksResponse>({
-      key: ["tasks", projectId],
-      url: `/projects/${projectId}/tasks`,
-      initialData: { tasks: [] },
-      enabled: Boolean(projectId),
-    });
-  }
-
   return useApiQuery<TasksResponse>({
-    key: ["my-tasks", projectId],
-    url: `/projects/${projectId}/assigned-tasks`,
+    key: isGeneral ? ["tasks", projectId] : ["my-tasks", projectId],
+    url: isGeneral
+      ? `/projects/${projectId}/tasks `
+      : `/projects/${projectId}/assigned-tasks`,
     initialData: { tasks: [] },
     enabled: Boolean(projectId),
   });
@@ -51,11 +44,11 @@ export const useGetSpecificTaskVersions = ({
   taskId,
   initialData,
 }: {
-  taskId: string;
+  taskId: string | undefined;
   initialData?: TaskVersionsResponse;
 }) => {
   return useApiQuery<TaskVersionsResponse>({
-    key: ["task-versions", taskId],
+    key: ["task-versions", taskId ?? ""],
     url: `/tasks/${taskId}/versions`,
     enabled: Boolean(taskId),
     initialData: initialData,
@@ -70,7 +63,11 @@ export const useGetSpecificTaskComments = ({ taskId }: { taskId: string }) => {
   });
 };
 
-export const useGetTaskAssignedMembers = ({ taskId }: { taskId: string }) => {
+export const useGetTaskAssignedMembers = <T>({
+  taskId,
+}: {
+  taskId: string;
+}) => {
   return useApiQuery<TaskAssignmentDetailsResponse[]>({
     key: ["task-members", taskId],
     url: `/tasks/${taskId}/team-members`,
@@ -78,7 +75,7 @@ export const useGetTaskAssignedMembers = ({ taskId }: { taskId: string }) => {
   });
 };
 
-export const useTaskActions = ({
+export const useTaskActions = <T>({
   projectId,
   phaseId,
   taskId,
@@ -165,7 +162,7 @@ export const useTaskActions = ({
     additionalHeaders,
   });
 
-  const startTask = useApiMutation<null>({
+  const startTask = useApiMutation<T>({
     url: `/tasks/${taskId}/start`,
     method: "POST",
     contentType: "application/json",
@@ -173,7 +170,7 @@ export const useTaskActions = ({
     additionalHeaders,
   });
 
-  const pauseTask = useApiMutation<null>({
+  const pauseTask = useApiMutation<T>({
     url: `/tasks/${taskId}/pause`,
     method: "POST",
     contentType: "application/json",
@@ -181,7 +178,7 @@ export const useTaskActions = ({
     additionalHeaders,
   });
 
-  const setTaskToNeedsReview = useApiMutation<null>({
+  const setTaskToNeedsReview = useApiMutation<T>({
     url: `/tasks/${taskId}/needs-review`,
     method: "PATCH",
     contentType: "application/json",
@@ -189,7 +186,7 @@ export const useTaskActions = ({
     additionalHeaders,
   });
 
-  const cancelTask = useApiMutation<null>({
+  const cancelTask = useApiMutation<T>({
     url: `/tasks/${taskId}/cancel`,
     method: "POST",
     contentType: "application/json",
@@ -197,7 +194,7 @@ export const useTaskActions = ({
     additionalHeaders,
   });
 
-  const reviewTask = useApiMutation<ReviewTaskRequest>({
+  const reviewTask = useApiMutation<T>({
     url: `/tasks/${taskId}/review`,
     method: "POST",
     contentType: "application/json",
