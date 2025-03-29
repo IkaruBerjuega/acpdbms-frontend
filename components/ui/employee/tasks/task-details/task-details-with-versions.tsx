@@ -150,7 +150,7 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
                 )}
               </div>
 
-              <div className="flex-grow flex-col-start gap-2 text-sm  ">
+              <div className="flex-grow flex-col-start gap-2 text-sm mb-4 rounded-md">
                 <div className="w-full flex-row-start gap-1 text-slate-500  leading-tight">
                   {startDate && (
                     <>
@@ -165,7 +165,7 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
                     </>
                   )}
                 </div>
-                <div className="flex-grow flex-row-between-center   p-6 ">
+                <div className="flex-grow flex-row-between-center  p-6  border-[1px] rounded-md">
                   <div>
                     <h1 className="text-lg font-semibold">
                       {version.task_description}

@@ -112,7 +112,7 @@ export default function TaskCard(props: TaskCardProps) {
       return;
     }
     goTo(`/client/approval/${id}/view-files?view_files=true`);
-    setStatus([status]);
+    localStorage.setItem("selectedTaskStatus", status);
   }
 
   const isInNeedsReview = status === "needs review";

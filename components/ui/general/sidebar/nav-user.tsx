@@ -99,10 +99,10 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <Link href="/admin/settings/account-settings">
+              <Link href="/admin/settings">
                 <DropdownMenuItem>
                   <IoSettings />
-                  Account Settings
+                  Admin Settings
                 </DropdownMenuItem>
               </Link>
             </DropdownMenuGroup>
