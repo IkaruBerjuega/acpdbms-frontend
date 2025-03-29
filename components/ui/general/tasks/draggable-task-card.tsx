@@ -174,7 +174,7 @@ export default function TaskCard(props: TaskCardProps) {
       return;
     }
     goTo(`/employee/tasks/${id}/view-files?view_files=true`);
-    setStatus([status]);
+    localStorage.setItem("selectedTaskStatus", status);
   }
 
   function onMessagesClick() {

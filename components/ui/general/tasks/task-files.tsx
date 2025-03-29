@@ -19,7 +19,7 @@ import {
   TaskFilesApproval,
   TaskFilesApprovalRequest,
 } from "@/lib/files-definitions";
-import { TaskVersionsResponse } from "@/lib/tasks-definitions";
+import { TaskStatuses, TaskVersionsResponse } from "@/lib/tasks-definitions";
 import { Check, X } from "lucide-react";
 import useFileActions from "@/hooks/api-calls/employee/use-files";
 import { Badge } from "../../badge";
@@ -212,8 +212,7 @@ export default function TaskFiles({
   review?: TaskFilesApproval[];
   setReview?: Dispatch<SetStateAction<TaskFilesApproval[] | undefined>>;
 }) {
-  const { data: selectedStatus } = useSelectedTaskStatus();
-  const taskStatus = selectedStatus?.[0];
+  const taskStatus = localStorage.getItem("selectedTaskStatus") as TaskStatuses;
 
   const [selectedfile, setSelectedfile] = useState<TaskFile>();
 
@@ -517,11 +516,7 @@ export default function TaskFiles({
 
   return (
     <div className="h-full flex-col-start min-h-0 ">
-      <div
-        className={`${
-          isLastVersion && !reviewMode ? "h-1/2" : "h-full"
-        } w-full flex-col-start gap-4 min-h-0`}
-      >
+      <div className={`w-full flex-col-start gap-4 min-h-0`}>
         <div className="h-full w-full flex-col-start  min-h-0">
           <div className="flex-row-start-center">
             {isValidToUploadDeliverables &&

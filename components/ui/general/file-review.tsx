@@ -55,7 +55,7 @@ export default function FileReview({
       <div className="h-full flex-grow rounded-md shadow-md flex-col-center bg-white-primary  relative">
         {!filePanelIsOpen && (
           <Button
-            className="text-sm absolute right-4 top-4 z-50"
+            className="text-sm absolute bottom-4 right-4 z-50"
             variant={"outline"}
             size={"sm"}
             onClick={openFiles}
