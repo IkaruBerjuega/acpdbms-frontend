@@ -6,6 +6,7 @@ import {
   SupportedTableName,
   AccountsTableType,
   ProjectListResponseInterface,
+  FileListResponseInterface,
 } from '@/lib/definitions';
 import { multiFilter } from '@/lib/utils';
 import { ColumnDef, Row, Table } from '@tanstack/react-table';
@@ -37,6 +38,12 @@ const TableActions = <T extends SupportedTableTypes>({
       />
     );
   }
+
+  // if (tableName === 'Files') {
+  //   return (
+  //     <FileActions<FileListResponseInterface> attrs={attrs as FileListResponseInterface} />
+  //   );
+  // }
   return <div>There is no table {tableName}</div>;
 };
 

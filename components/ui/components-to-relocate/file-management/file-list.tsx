@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
 import FileFilters from './file-filters';
@@ -10,73 +10,72 @@ import { VscListSelection } from 'react-icons/vsc';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../tabs';
 import type { FileListResponseInterface } from '@/lib/definitions';
 import FilesTable from './file-table';
-import { useProjectList } from '@/hooks/general/use-project';
-import { useFilesList } from '@/hooks/general/use-files';
-import { cn } from '@/lib/utils';
+import { cn, formatFileSize, formatFileType, formatDate } from '@/lib/utils';
 import { Skeleton } from '@/components/ui/skeleton';
+import FileTileView from './file-cards';
+import { useState } from 'react';
+
+interface Project {
+  id: number;
+  project_title: string;
+}
 
 export default function FileList<T extends FileListResponseInterface>({
   isArchived,
   initialData,
+  projects,
 }: {
   isArchived: boolean;
-  initialData: T[];
+  initialData?: T[];
+  projects: Project[];
 }) {
-  const [filters, setFilters] = useState<{
-    projectId: number | null;
-    project_title: string | null;
-  }>({
-    projectId: null,
-    project_title: null,
-  });
-  const [filtersPanelOpen, setFiltersPanelOpen] = useState(true);
-
-  const selectedProjectId = filters.projectId;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  // Get projectId from query params, default to null if not present
+  const selectedProjectId = searchParams.get('projectId')
+    ? Number(searchParams.get('projectId'))
+    : null;
   const projectId = selectedProjectId ? selectedProjectId.toString() : '';
 
-  const {
-    data: projects = [],
-    isLoading: projectsLoading,
-    error: projectsError,
-  } = useProjectList({
-    isArchived,
-    initialData: [],
-  });
+  const files = initialData || [];
 
-  const {
-    data: files = [],
-    isLoading: filesLoading,
-    error: filesError,
-  } = useFilesList({
-    projectId,
-    isArchived,
-    initialData,
-    enabled: Boolean(selectedProjectId),
-  });
+  // Format the files data before passing to child components
+  const formattedFiles = files.map((file) => ({
+    ...file,
+    uploaded_at: formatDate(file.uploaded_at),
+    type: formatFileType(file.type),
+    size: formatFileSize(file.size),
+  }));
 
-  const handleFilterChange = (newFilters: {
-    projectId: number | null;
-    project_title: string | null;
-  }) => {
-    setFilters(newFilters);
+  const handleFilterChange = (newFilters: { projectId: number | null }) => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (newFilters.projectId) {
+      params.set('projectId', newFilters.projectId.toString());
+    } else {
+      params.delete('projectId');
+    }
+
+    router.push(`?${params.toString()}`);
   };
 
-  const isLoading = projectsLoading || (selectedProjectId && filesLoading);
-  const hasError = projectsError || filesError;
+  const [filtersPanelOpen, setFiltersPanelOpen] = useState(true);
 
-  if (hasError) {
+  const isLoading = false;
+  const hasCriticalError = false;
+  const isFilesNotFound = selectedProjectId && files.length === 0;
+
+  if (hasCriticalError) {
     return (
       <div className='p-8 text-center'>
-        <p className='text-red-500'>
-          Error loading data: {(projectsError || filesError)?.toString()}
-        </p>
+        <p className='text-red-500'>Error loading data</p>
       </div>
     );
   }
 
   return (
-    <div className='flex lg:flex-row w-full h-full gap-4'>
-      <Tabs defaultValue='list' className='flex flex-col flex-grow gap-2'>
+    <div className='flex flex-col lg:flex-row w-full h-full gap-4'>
+      <Tabs defaultValue='list' className='flex flex-col flex-1 w-full gap-2'>
         <FilesTableHeaderActions
           components={
             <TabsList className='flex h-full'>
@@ -89,31 +88,37 @@ export default function FileList<T extends FileListResponseInterface>({
             </TabsList>
           }
         />
-        <main className='w-full h-full flex-col-start gap-2 bg-white-primary rounded-b-lg shadow-md system-padding'>
+        <main className='w-full flex-1 flex flex-col gap-2 bg-white-primary rounded-b-lg shadow-md system-padding'>
           {isLoading ? (
-            <Skeleton className='h-[600px] w-full' />
+            <div className='flex-grow'>
+              <Skeleton className='h-[600px] w-full' />
+            </div>
           ) : !selectedProjectId ? (
             <div className='text-center py-8'>
               Please select a project from the filters panel to view files.
             </div>
-          ) : files.length === 0 ? (
+          ) : isFilesNotFound || files.length === 0 ? (
             <div className='text-center py-8'>
               No files found. Upload files to get started.
             </div>
           ) : (
             <>
-              <TabsContent value='list'>
-                <div className='flex-grow'>
+              <TabsContent value='list' className='flex-1 h-full'>
+                <div className='h-full'>
                   <FilesTable
                     isArchived={isArchived}
-                    initialData={files}
+                    initialData={formattedFiles}
                     projectId={projectId}
                   />
                 </div>
               </TabsContent>
-              <TabsContent value='card'>
-                <div className='flex-grow'>
-                  {/* Card view implementation */}
+              <TabsContent value='card' className='flex-1 h-full'>
+                <div className='h-full'>
+                  <FileTileView
+                    isArchived={isArchived}
+                    initialData={formattedFiles}
+                    projectId={projectId}
+                  />
                 </div>
               </TabsContent>
             </>
@@ -122,7 +127,7 @@ export default function FileList<T extends FileListResponseInterface>({
       </Tabs>
       <div
         className={cn(
-          'lg:w-80 transition-all duration-300 ease-in-out',
+          'lg:w-80 transition-all duration-300 ease-in-out shrink-0',
           filtersPanelOpen ? 'block' : 'hidden lg:block'
         )}
       >
@@ -141,16 +146,14 @@ export default function FileList<T extends FileListResponseInterface>({
             </div>
           </CardHeader>
           <CardContent>
-            {projectsLoading ? (
-              <Skeleton className='h-[400px] w-full' />
-            ) : (
-              <FileFilters
-                onFilterChange={handleFilterChange}
-                currentFilters={filters}
-                projects={projects}
-                className='flex flex-col gap-1'
-              />
-            )}
+            <FileFilters
+              onFilterChange={handleFilterChange}
+              currentFilters={{
+                projectId: selectedProjectId,
+              }}
+              projects={projects}
+              className='flex-grow'
+            />
           </CardContent>
         </Card>
       </div>
