@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import type { Breadcrumbs } from '@/lib/definitions';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -11,28 +10,39 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { ContactSettingsPage } from '@/components/ui/components-to-relocate/ContactSettings';
+import { ContactSettings } from '@/components/ui/components-to-relocate/ContactSettings';
 import { AdminTools } from '@/components/ui/components-to-relocate/AdminTools';
+import { useQueryParams } from '@/hooks/use-query-params';
+import { usePathname, useRouter } from 'next/navigation';
 
-// Assuming this is app/admin/settings/page.tsx
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState<string>('contacts');
+  const { paramsKey, params } = useQueryParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
 
+  // Default to 'contacts' if no tab is specified in the URL
+  const activeTab = paramsKey['tab'] || 'contacts';
+
+  const tabs = [
+    { value: 'contacts', label: 'Contact Details' },
+    { value: 'tools', label: 'Admin Tools' },
+  ];
   const routeMap = [
     {
-      href: '/admin/settings/contacts', // Kept for breadcrumbs, but not used for routing
+      href: '/admin/settings/contacts',
       pageName: 'Contact Details',
       value: 'contacts',
     },
     {
-      href: '/admin/settings/tools', // Kept for breadcrumbs, but not used for routing
+      href: '/admin/settings/tools',
       pageName: 'Admin Tools',
       value: 'tools',
     },
   ];
 
   const handleTabChange = (value: string) => {
-    setActiveTab(value);
+    params.set('tab', value);
+    replace(`${pathname}?${params.toString()}`);
   };
 
   const currentRoute =
@@ -45,7 +55,7 @@ export default function SettingsPage() {
       active: false,
     },
     {
-      href: currentRoute.href, // Still useful for breadcrumbs display
+      href: currentRoute.href,
       pageName: currentRoute.pageName,
       active: true,
     },
@@ -71,11 +81,14 @@ export default function SettingsPage() {
             className='w-full'
           >
             <TabsList className='grid w-full grid-cols-2 mb-6'>
-              <TabsTrigger value='contacts'>Contact Details</TabsTrigger>
-              <TabsTrigger value='tools'>Admin Tools</TabsTrigger>
+              {tabs.map((tab) => (
+                <TabsTrigger key={tab.value} value={tab.value}>
+                  {tab.label}
+                </TabsTrigger>
+              ))}
             </TabsList>
             <TabsContent value='contacts'>
-              <ContactSettingsPage />
+              <ContactSettings />
             </TabsContent>
             <TabsContent value='tools'>
               <AdminTools />

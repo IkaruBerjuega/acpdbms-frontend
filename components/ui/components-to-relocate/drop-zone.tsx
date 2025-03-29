@@ -1,10 +1,14 @@
+'use client';
+
 import { Button } from '@/components/ui/button';
-import React, { useState } from 'react';
-import { useDropzone, DropzoneOptions } from 'react-dropzone';
-import { FieldErrors, UseFormRegister } from 'react-hook-form';
-import { FcCancel } from 'react-icons/fc';
+import type React from 'react';
+import { useState, useEffect } from 'react';
+import { useDropzone, type DropzoneOptions } from 'react-dropzone';
+import type { UseFormRegister } from 'react-hook-form';
 import { IoMdClose } from 'react-icons/io';
+import { AlertCircle } from 'lucide-react';
 import FormInput from '../general/form-components/form-input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface DropzoneProps {
   onDrop: (acceptedFiles: File[]) => void; // Accept File objects directly
@@ -14,68 +18,146 @@ interface DropzoneProps {
     name: string;
     register: UseFormRegister<any>;
   };
+  maxSize?: number; // Size in bytes
 }
 
 const Dropzone: React.FC<DropzoneProps> = ({
   onDrop,
-  accept,
+  accept = {
+    'image/jpeg': [],
+    'image/png': [],
+    'image/webp': [],
+    'image/svg+xml': [], // Added SVG support
+  },
   showImages = false,
   formInput,
+  maxSize = 2 * 1024 * 1024, // Default to 2MB to match backend
 }) => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
+  const [fileErrors, setFileErrors] = useState<string[]>([]);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept,
-    multiple: true,
-    onDrop: (files) => {
-      setUploadedFiles((prevFiles) => [...prevFiles, ...files]);
-      onDrop(files); // Pass File objects directly to the parent
-    },
-  });
+  // Format file size for display
+  const formatFileSize = (bytes: number) => {
+    if (bytes < 1024) return bytes + ' bytes';
+    else if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    else return (bytes / 1048576).toFixed(1) + ' MB';
+  };
+
+  const { getRootProps, getInputProps, isDragActive, fileRejections } =
+    useDropzone({
+      accept,
+      multiple: true,
+      maxSize,
+      onDrop: (acceptedFiles, rejectedFiles) => {
+        // Filter out files that exceed the size limit
+        const validFiles = acceptedFiles.filter((file) => file.size <= maxSize);
+        const oversizedFiles = acceptedFiles.filter(
+          (file) => file.size > maxSize
+        );
+
+        // Handle rejected files
+        const errors: string[] = [];
+
+        if (oversizedFiles.length > 0) {
+          errors.push(
+            `${oversizedFiles.length} file(s) exceed the 2MB size limit`
+          );
+        }
+
+        if (rejectedFiles.length > 0) {
+          errors.push(
+            `${rejectedFiles.length} file(s) have invalid file types. Supported formats: JPG, PNG, SVG`
+          );
+        }
+
+        setFileErrors(errors);
+
+        if (validFiles.length > 0) {
+          setUploadedFiles((prevFiles) => [...prevFiles, ...validFiles]);
+          onDrop(validFiles); // Pass valid File objects to the parent
+        }
+      },
+    });
 
   const removeFile = (index: number) => {
     const newFiles = uploadedFiles.filter((_, i) => i !== index);
     setUploadedFiles(newFiles);
     onDrop(newFiles); // Update the parent component with the new list
+
+    // Clear errors if no files remain
+    if (newFiles.length === 0) {
+      setFileErrors([]);
+    }
   };
 
+  // Clean up object URLs when component unmounts
+  useEffect(() => {
+    return () => {
+      uploadedFiles.forEach((file) => {
+        if ('preview' in file && typeof file.preview === 'string') {
+          URL.revokeObjectURL(file.preview);
+        }
+      });
+    };
+  }, [uploadedFiles]);
+
   return (
-    <div>
+    <div className='space-y-4'>
+      {fileErrors.length > 0 && (
+        <Alert variant='destructive'>
+          <AlertCircle className='h-4 w-4' />
+          <AlertDescription>
+            {fileErrors.map((error, index) => (
+              <div key={index}>{error}</div>
+            ))}
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div
         {...getRootProps()}
-        style={{
-          border: '2px dashed #A9A9A9',
-          borderRadius: '4px',
-          padding: '20px',
-          textAlign: 'center',
-          cursor: 'pointer',
-          backgroundColor: isDragActive ? '#f0f8ff' : '#fff',
-        }}
+        className={`border-2 border-dashed rounded-md p-6 text-center cursor-pointer ${
+          isDragActive
+            ? 'border-primary bg-primary/10'
+            : 'border-muted-foreground/20'
+        }`}
       >
         <input {...getInputProps()} />
         {isDragActive ? (
           <p>Drop the files here ...</p>
         ) : (
-          <p>Drag and drop or click to select files</p>
+          <div className='space-y-2'>
+            <p>Drag and drop or click to select files</p>
+            <p className='text-sm text-muted-foreground'>
+              Supported formats: JPG, PNG, SVG (Max size: 2MB)
+            </p>
+          </div>
         )}
       </div>
 
       {uploadedFiles.length > 0 && (
-        <div style={{ marginTop: '10px' }}>
+        <div className='mt-4'>
           {!showImages ? (
-            <ul>
+            <ul className='space-y-2'>
               {uploadedFiles.map((file, index) => (
                 <li
                   key={index}
-                  style={{ display: 'flex', alignItems: 'center', gap: '10px' }}
+                  className='flex items-center justify-between p-2 border rounded'
                 >
-                  <span>{file.name}</span>
-                  <button
+                  <div className='flex items-center gap-2'>
+                    <span>{file.name}</span>
+                    <span className='text-xs text-muted-foreground'>
+                      ({formatFileSize(file.size)})
+                    </span>
+                  </div>
+                  <Button
                     onClick={() => removeFile(index)}
-                    style={{ color: 'red', cursor: 'pointer' }}
+                    variant='ghost'
+                    size='sm'
+                    className='text-destructive hover:text-destructive/90'
                   >
                     Remove
-                  </button>
+                  </Button>
                 </li>
               ))}
             </ul>
@@ -87,19 +169,13 @@ const Dropzone: React.FC<DropzoneProps> = ({
                   <div key={index} className='mt-2 w-full relative space-y-1'>
                     <div className='w-full'>
                       <img
-                        src={fileUrl}
+                        src={fileUrl || '/placeholder.svg'}
                         alt={file.name}
                         className='object-contain w-full h-32 border-[1px]' // Adjust height as needed
                         style={{ maxWidth: '100%', height: 'auto' }} // Contain the image within the div
                       />
                       <Button
                         onClick={() => removeFile(index)}
-                        style={{
-                          color: 'red',
-                          cursor: 'pointer',
-                          display: 'block',
-                          marginTop: '5px',
-                        }}
                         className='absolute right-[-10px] top-[-10px] bg-white-200 w-auto h-auto border-none p-0'
                         variant={'outline'}
                       >
@@ -113,7 +189,7 @@ const Dropzone: React.FC<DropzoneProps> = ({
                         inputType='default'
                         placeholder='Enter Project Title' //temp solution
                         register={formInput?.register}
-                        required={false}
+                        required={true}
                       />
                     )}
                   </div>

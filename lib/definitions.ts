@@ -336,6 +336,7 @@ export interface ContactDetails {
 
 export interface DynamicContactSchema {
   contact_details: ContactDetails[];
+  removedIds: number[];
 }
 
 // Type for logo upload
@@ -356,4 +357,43 @@ export interface UploadImage {
 export interface UploadData {
   content: string;
   images?: UploadImage[];
+}
+
+// //File Management
+// export interface File {
+//   task_version_id: number;
+//   name: string;
+//   path: string;
+//   size: number;
+//   type: string;
+//   category: string;
+//   uploaded_by: string;
+//   uploaded_at: string;
+//   is_archived: boolean;
+//   phase_id: number | null;
+//   phase_category: string | null;
+//   task_id: number | null;
+//   task_name: string | null;
+//   task_version_number: number;
+// }
+
+interface Filters {
+  projectId: number;
+  phaseId: number | null;
+  taskId: number | null;
+  versionId: number | null;
+  sortBy: keyof File;
+  sortOrder: 'asc' | 'desc';
+}
+
+export interface FileListResponseInterface {
+  task_version_id: number;
+  task_id: number;
+  phase_id: number;
+  id: string;
+  name: string;
+  category: string;
+  task_name: string;
+  task_version: string;
+  uploaded_at: string;
 }

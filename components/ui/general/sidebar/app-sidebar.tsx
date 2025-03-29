@@ -8,6 +8,7 @@ import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import { TeamHeader } from "@/components/ui/general/sidebar/team-header";
 import { Notifications } from "./notifications";
+import { useAdminSettings } from "@/hooks/general/use-admin-settings";
 
 // Menu items.
 const data = {

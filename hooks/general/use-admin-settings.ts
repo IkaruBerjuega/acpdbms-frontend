@@ -1,5 +1,3 @@
-'use client';
-
 import { useApiQuery, useApiMutation } from '@/hooks/tanstack-query';
 
 export const useAdminSettings = <T>() => {
@@ -38,26 +36,26 @@ export const useSettingsActions = <T>() => {
     contentType: 'application/json',
     auth: true,
   });
+  const deleteContactDetail = useApiMutation<T>({
+    url: '/contact-details',
+    method: 'DELETE',
+    contentType: 'application/json',
+    auth: true,
+  });
   const uploadLogo = useApiMutation<T>({
     url: '/settings/logo',
     method: 'POST',
-    contentType: 'application/json',
+    contentType: 'multipart/form-data',
     auth: true,
   });
   const uploadRecentProjectImage = useApiMutation<T>({
     url: '/recent-projects',
     method: 'POST',
-    contentType: 'application/json',
+    contentType: 'multipart/form-data',
     auth: true,
   });
   const deleteRecentProjectImage = useApiMutation<T>({
     url: '/recent-projects',
-    method: 'DELETE',
-    contentType: 'application/json',
-    auth: true,
-  });
-  const deleteContactDetail = useApiMutation<T>({
-    url: '/contact-numbers',
     method: 'DELETE',
     contentType: 'application/json',
     auth: true,
