@@ -383,7 +383,7 @@ interface Filters {
   taskId: number | null;
   versionId: number | null;
   sortBy: keyof File;
-  sortOrder: 'asc' | 'desc';
+  sortOrder: "asc" | "desc";
 }
 
 export interface FileListResponseInterface {
