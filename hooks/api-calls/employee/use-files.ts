@@ -18,7 +18,7 @@ export default function useFileActions({ projectId }: { projectId?: string }) {
   );
 
   const updateClientApproval = useApiMutation<TaskFilesApprovalRequest>({
-    url: "/task-files/project-manager-approval",
+    url: "/task-files/client-approval",
     method: "POST",
     contentType: "application/json",
     auth: true,

@@ -2,7 +2,11 @@
 import Link from "next/link";
 import { IconType } from "react-icons";
 import { AiOutlineProject } from "react-icons/ai";
-import { MdOutlineDashboard, MdPeopleOutline } from "react-icons/md";
+import {
+  MdOutlineDashboard,
+  MdOutlineRateReview,
+  MdPeopleOutline,
+} from "react-icons/md";
 import { RiAccountCircleLine, RiInfoCardLine } from "react-icons/ri";
 import { LiaFileSolid } from "react-icons/lia";
 import { BiNews } from "react-icons/bi";
@@ -114,11 +118,6 @@ export function NavMain({ role }: { role: string }) {
       icon: AiOutlineProject,
     },
     {
-      title: "Feed",
-      url: "/employee/feed",
-      icon: BiNews,
-    },
-    {
       title: "Files",
       url: "/employee/files",
       icon: LiaFileSolid,
@@ -127,12 +126,12 @@ export function NavMain({ role }: { role: string }) {
 
   const clientNavs = [
     {
-      title: "FEEDS",
-      url: "/client/feeds",
-      icon: BiNews,
+      title: "Approval",
+      url: "/client/approval?view=to review",
+      icon: MdOutlineRateReview,
     },
     {
-      title: "FILES",
+      title: "Files",
       url: "/client/files",
       icon: LiaFileSolid,
     },

@@ -94,8 +94,6 @@ export default function GrantProjectAccess({ isOpen }: { isOpen: boolean }) {
   const { mutate, isLoading } = addTeamToProjects;
 
   const processSubmit: SubmitHandler<grantProjectAccess> = async (data) => {
-    console.log("data submitted");
-
     const transformedSelectedMembers: employeesToAssign[] =
       selectedMembers
         .filter((emp) => Boolean(emp.id)) // Ensure only valid employees are mapped
@@ -105,12 +103,7 @@ export default function GrantProjectAccess({ isOpen }: { isOpen: boolean }) {
           role: "Member" as const, // Explicitly type the role as "Member"
         })) || [];
 
-    const managers = data.team.filter(
-      (emp) =>
-        emp.employee_id !== undefined ||
-        emp.employee_name !== undefined ||
-        emp.role !== undefined
-    );
+    const managers = data.team.filter((emp) => emp.employee_id !== undefined);
 
     const body = {
       team: [...managers, ...transformedSelectedMembers],

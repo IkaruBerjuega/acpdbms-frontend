@@ -41,7 +41,7 @@ export default async function Page({
       <div className="absolute inset-0 flex flex-col space-y-2">
         <div className="flex-row-between-center w-full">
           <SidebarTrigger breadcrumbs={breadcrumbs} />
-          <ProjectSelector />
+          <ProjectSelector role="employee" />
         </div>
         <AddPhasesTask activeTab={activeTab} />
       </div>

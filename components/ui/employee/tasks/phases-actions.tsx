@@ -131,7 +131,7 @@ const RenderPhasesByStatus = ({
                       />
                     )}
                   </>
-                ) : !isArchived ? (
+                ) : !isArchived && !isFinished ? (
                   <ButtonIconTooltipDialog
                     iconSrc={"/button-svgs/table-action-archive-black.svg"}
                     alt={"archive phase button"}

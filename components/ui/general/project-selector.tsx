@@ -25,23 +25,28 @@ import { useCheckViceManagerPermission } from "@/hooks/general/use-project";
 
 export function ProjectSelector({
   dynamicPage,
+  role,
 }: {
   dynamicPage?: "project-details";
+  role: "employee" | "client";
 }) {
-  const { data: projects } = useAssociatedProjects();
+  const { data: projects } = useAssociatedProjects({ role: role });
   const { data: projectSelected, setData, resetData } = useProjectSelectStore();
 
-  let btnText = projectSelected[0]?.projectName || "Select A Project";
-  let isSelected = !!projectSelected[0];
-
   const router = useRouter();
-
   const [projectId, setProjectId] = useState<string>("");
+
   const { data } = useCheckViceManagerPermission(projectId);
   const hasVicePermission = data?.vice_manager_permission === true;
 
-  const [selectedProject, setSelectedProject] =
-    useState<ProjectSelectorProps>();
+  useEffect(() => {
+    const savedProject = localStorage.getItem("projectSelected");
+    if (savedProject) {
+      const parsedProject: ProjectSelectorProps = JSON.parse(savedProject);
+      setData([{ ...parsedProject }]);
+      setProjectId(parsedProject.projectId);
+    }
+  }, []);
 
   function onSelect(
     projectId?: string,
@@ -49,25 +54,21 @@ export function ProjectSelector({
     userRole?: ProjectListResponseInterface["user_role"]
   ) {
     if (projectId && projectSelected) {
-      setProjectId(projectId); // Updates asynchronously
-      setSelectedProject({
+      const data = {
         projectId,
         projectName: projectSelected,
         userRole,
         hasVicePermission,
-      });
+      };
+      setProjectId(projectId); // Updates asynchronously
+      localStorage.setItem("projectSelected", JSON.stringify(data));
+      setData([{ ...data }]); // Sync store with localStorage
     }
 
     if (projectId && dynamicPage === "project-details") {
       router.push(`/employee/project-details/${projectId}/view`);
     }
   }
-
-  useEffect(() => {
-    if (selectedProject) {
-      setData([{ ...selectedProject, hasVicePermission }]);
-    }
-  }, [hasVicePermission, selectedProject]);
 
   return (
     <Sheet
@@ -80,16 +81,16 @@ export function ProjectSelector({
     >
       <SheetTrigger asChild>
         <Button variant="ghost" className="flex-row-between-center p-0 h-5">
-          {btnText}
+          {projectSelected[0]?.projectName || "Select A Project"}
           <MdOutlineKeyboardArrowUp
             className={`${
-              isSelected ? "-rotate-180" : "rotate-0"
+              projectSelected[0] ? "-rotate-180" : "rotate-0"
             } transition-all duration-500`}
           />
         </Button>
       </SheetTrigger>
-      <SheetContent side={"bottom"} className="h-[90vh] overflow-y-auto ">
-        <SheetHeader className=" w-full">
+      <SheetContent side={"bottom"} className="h-[90vh] overflow-y-auto">
+        <SheetHeader className="w-full">
           <SheetTitle className="text-2xl font-bold w-full">
             Your Projects
           </SheetTitle>
@@ -98,10 +99,10 @@ export function ProjectSelector({
           </SheetDescription>
         </SheetHeader>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2  xl:grid-cols-4 gap-2 mt-10">
-          {projects?.map((project, index) => {
-            return <Card key={index} data={project} fn={onSelect} />;
-          })}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 mt-10">
+          {projects?.map((project, index) => (
+            <Card key={index} data={project} fn={onSelect} />
+          ))}
         </div>
 
         <SheetFooter className="hidden">

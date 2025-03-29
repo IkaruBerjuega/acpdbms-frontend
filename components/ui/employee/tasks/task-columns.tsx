@@ -2,7 +2,7 @@
 import { ItemTypes } from "@/lib/definitions";
 import { titleCase } from "@/lib/utils";
 import { useDrop } from "react-dnd";
-import TaskCard from "./task-card";
+import TaskCard from "../../general/tasks/draggable-task-card";
 import { useState } from "react";
 import { TaskItemProps, TaskStatuses } from "@/lib/tasks-definitions";
 
@@ -54,7 +54,7 @@ export default function TaskColumn({
     >
       <div className="flex-row-start-center gap-2 px-2">
         <div
-          className={`w-[10px] h-[10px] rounded-full bg-gray-200 ${getStatusBgColor(
+          className={`w-[10px] h-[10px] rounded-full ${getStatusBgColor(
             columnStatus
           )}`}
         ></div>

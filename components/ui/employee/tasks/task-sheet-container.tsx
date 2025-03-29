@@ -4,7 +4,7 @@ import { useQueryParams } from "@/hooks/use-query-params";
 import ReusableSheet from "../../general/sheet-component";
 import { PhasesActive, PhasesArchived } from "./phases-actions";
 import TaskComments from "./task-comments";
-import TaskFiles from "./task-files";
+import TaskFiles from "../../general/tasks/task-files";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import Members from "./task-details/task-members-view";
@@ -37,7 +37,7 @@ const config = {
     title: "Files",
     desc: "See attached files or attach a file",
     content: ({ taskId, version }: { taskId?: string; version?: string }) => (
-      <TaskFiles taskId={taskId} version={version} />
+      <TaskFiles taskId={taskId} version={version} role={"manager"} />
     ),
   },
   phases: {

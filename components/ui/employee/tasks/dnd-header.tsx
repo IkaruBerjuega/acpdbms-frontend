@@ -10,14 +10,28 @@ import Image from "next/image";
 import { useProjectSelectStore } from "@/hooks/states/create-store";
 import Tabs from "../../general/tabs";
 
-export default function TasksHeaderActions() {
+export default function TasksHeaderActions({
+  isEmployee,
+}: {
+  isEmployee: boolean;
+}) {
   const { paramsKey, params } = useQueryParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
   const queryClient = useQueryClient();
-  const isArchived = paramsKey["archived"] === "true";
-  const activeTab = paramsKey["view"] === "assigned" ? "My Tasks" : "All Tasks";
+
+  const tabValue = paramsKey["view"];
+  const activeTab =
+    tabValue === "assigned"
+      ? "My Tasks"
+      : tabValue === "general"
+      ? "All Tasks"
+      : tabValue === "to review"
+      ? "To Review"
+      : tabValue === "done"
+      ? "Done"
+      : null;
 
   // Function to update query parameters without modifying params directly
   const createQueryString = useCallback(
@@ -37,6 +51,7 @@ export default function TasksHeaderActions() {
 
   const { data: projectSelected } = useProjectSelectStore();
 
+  const projectId = projectSelected[0]?.projectId;
   const role = projectSelected[0]?.userRole;
   const hasVicePermission =
     projectSelected[0]?.hasVicePermission && role === "Vice Manager";
@@ -69,28 +84,51 @@ export default function TasksHeaderActions() {
                 dark={true}
                 className="h-full"
               />
-
-              <div className="w-full sm:w-fit flex-row-end">
-                <Tabs
-                  activeTab={activeTab}
-                  tabItems={[
-                    {
-                      item: "All Tasks",
-                      action: () => {
-                        createQueryString("view", "general");
-                      },
-                    },
-                    {
-                      item: "My Tasks",
-                      action: () => {
-                        createQueryString("view", "assigned");
-                      },
-                    },
-                  ]}
-                />
-              </div>
             </>
           )}
+
+          <div className="w-full sm:w-fit flex-row-end">
+            <Tabs
+              activeTab={activeTab}
+              tabItems={
+                isEmployee
+                  ? [
+                      {
+                        item: "All Tasks",
+                        action: () => {
+                          createQueryString("view", "general");
+                          queryClient.invalidateQueries({
+                            queryKey: ["tasks", projectId],
+                          });
+                        },
+                      },
+                      {
+                        item: "My Tasks",
+                        action: () => {
+                          createQueryString("view", "assigned");
+                          queryClient.invalidateQueries({
+                            queryKey: ["my-tasks", projectId],
+                          });
+                        },
+                      },
+                    ]
+                  : [
+                      {
+                        item: "To Review",
+                        action: () => {
+                          createQueryString("view", "to review");
+                        },
+                      },
+                      {
+                        item: "Done",
+                        action: () => {
+                          createQueryString("view", "done");
+                        },
+                      },
+                    ]
+              }
+            />
+          </div>
         </>
       }
     />

@@ -1,14 +1,11 @@
 import { DragSourceMonitor, useDrag } from "react-dnd";
 import { Badge } from "../../badge";
 import { Separator } from "../../separator";
-import { Avatar, AvatarFallback, AvatarImage } from "../../avatar";
-import { getInitialsFallback, titleCase } from "@/lib/utils";
+import { Avatar, AvatarFallback } from "../../avatar";
+import { titleCase } from "@/lib/utils";
 import { LuFileCheck, LuFileX, LuMessageSquareMore } from "react-icons/lu";
 import { SlPaperClip } from "react-icons/sl";
-import { IoIosTimer } from "react-icons/io";
-import { IoTimer } from "react-icons/io5";
-import { GrNext } from "react-icons/gr";
-import Link from "next/link";
+import { IoTimer, IoTimerOutline } from "react-icons/io5";
 import { useQueryParams } from "@/hooks/use-query-params";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
@@ -17,6 +14,7 @@ import { TaskItem, TaskItemProps, TaskStatuses } from "@/lib/tasks-definitions";
 import { ItemTypes } from "@/lib/definitions";
 import { Button } from "../../button";
 import { CustomDropdownMenu } from "../../dropdown-menu";
+import Profile from "../profile";
 
 interface IconWithTextInfoProps {
   icon: JSX.Element;
@@ -32,8 +30,9 @@ function IconWithTextInfo({ icon, text, className }: IconWithTextInfoProps) {
     </div>
   );
 }
+
 interface TaskCardProps extends TaskItemProps {
-  moveTask: ({
+  moveTask?: ({
     id,
     droppedStatus,
     recentStatus,
@@ -43,6 +42,7 @@ interface TaskCardProps extends TaskItemProps {
     recentStatus: TaskStatuses;
   }) => void;
   className: string;
+  clientView?: boolean;
 }
 
 export default function TaskCard(props: TaskCardProps) {
@@ -156,6 +156,7 @@ export default function TaskCard(props: TaskCardProps) {
   );
 
   const isInNeedsReview = status === "needs review";
+  const { setData: setStatus } = useSelectedTaskStatus();
 
   function onMembersClick() {
     createQueryString("sheet", "members");
@@ -167,14 +168,13 @@ export default function TaskCard(props: TaskCardProps) {
     createQueryString("taskId", String(id));
   }
 
-  function onFilesClick() {
-    if (isInNeedsReview) {
-      goTo(`tasks/${id}/review-files?view_files=true`);
+  function goToFiles() {
+    if (status === "needs review") {
+      goTo(`/employee/tasks/${id}/review-files?view_files=true`);
       return;
     }
-
-    createQueryString("sheet", "files");
-    createQueryString("taskId", String(id));
+    goTo(`/employee/tasks/${id}/view-files?view_files=true`);
+    setStatus([status]);
   }
 
   function onMessagesClick() {
@@ -190,7 +190,47 @@ export default function TaskCard(props: TaskCardProps) {
   const isStatusNeedsReview = isInNeedsReview && approvedFiles && rejectedFiles;
 
   const approvedFilesCountText = `${approved_files_count} accepted`;
-  const rejectedFilesCountText = `${approved_files_count} rejected`;
+  const rejectedFilesCountText = `${rejected_files_count} rejected`;
+
+  const reviewedFilesCount =
+    Number(approved_files_count ?? "0") + Number(rejected_files_count ?? "0");
+
+  let reviewStatus: { text: string; color: string } = { text: "", color: "" };
+
+  if (isInNeedsReview) {
+    const reviewedAllFiles = task_files_count === reviewedFilesCount;
+
+    if (reviewedAllFiles) {
+      const hasRejectedFiles = rejected_files_count ?? 0 > 0;
+      const text = hasRejectedFiles
+        ? `Ver. ${version} rejected`
+        : `Ver. ${version} approved`;
+
+      const color = hasRejectedFiles
+        ? "bg-red-100 text-red-600"
+        : "bg-green-100 bg-green-600";
+
+      reviewStatus = {
+        text: text,
+        color: color,
+      };
+    } else {
+      reviewStatus = {
+        text: "Review Ongoing",
+        color: "bg-yellow-100 text-yellow-600",
+      };
+    }
+  }
+
+  const taskName =
+    version > 0 ? (
+      <div>
+        {titleCase(`${task_name} `)}{" "}
+        <span className=" text-xs text-slate-500">(v{version})</span>
+      </div>
+    ) : (
+      <div>{titleCase(task_name)}</div>
+    );
 
   return (
     <div
@@ -200,9 +240,17 @@ export default function TaskCard(props: TaskCardProps) {
       ref={drag as any}
     >
       <div className="w-full flex-row-between-center">
-        <Badge className={`${phaseColor?.dark} ${phaseColor?.light} `}>
-          {phase_category}
-        </Badge>
+        <div className="flex-row-start-center">
+          <Badge className={`${phaseColor?.dark} ${phaseColor?.light} `}>
+            {phase_category}
+          </Badge>
+          {isInNeedsReview && (
+            <Badge className={` ${reviewStatus.color}`}>
+              {reviewStatus.text}
+            </Badge>
+          )}
+        </div>
+
         <div className="rotate-90">
           <CustomDropdownMenu
             menuLabel={"Actions"}
@@ -224,11 +272,19 @@ export default function TaskCard(props: TaskCardProps) {
       </div>
 
       <div className="flex-col-start w-full mt-2 space-y-1">
-        <h1 className="text-base font-bold">{titleCase(task_name)}</h1>
+        {taskName}
         <h2 className="text-sm">{task_description}</h2>
       </div>
 
       <div className="flex-row-start w-full gap-2 text-base mt-4">
+        {status === "done" && (
+          <IconWithTextInfo
+            icon={<IoTimerOutline />}
+            text={totalDurationText}
+            className={"text-slate-500"}
+          />
+        )}
+
         {shouldDisplayRemaining && (
           <IconWithTextInfo
             icon={<IoTimer />}
@@ -264,7 +320,6 @@ export default function TaskCard(props: TaskCardProps) {
           >
             {hasMembers &&
               assigned_team_members.map((member, index) => {
-                const fallbackInitials = getInitialsFallback(member.full_name);
                 {
                   if (index > 2) {
                     return;
@@ -283,16 +338,12 @@ export default function TaskCard(props: TaskCardProps) {
                   }
                 }
                 return (
-                  <Avatar
-                    key={index} // Use unique key if possible
-                    className="h-8 w-8 rounded-full border-[1px] "
-                  >
-                    <AvatarImage
-                      src={member.profile_picture_url ?? ""}
-                      alt={member.full_name}
-                    />
-                    <AvatarFallback>{fallbackInitials}</AvatarFallback>
-                  </Avatar>
+                  <Profile
+                    key={index}
+                    profileName={member.full_name}
+                    profileSrc={member.profile_picture_url}
+                    variant={"sm"}
+                  />
                 );
               })}
           </div>
@@ -319,7 +370,7 @@ export default function TaskCard(props: TaskCardProps) {
           </div>
           <div
             className="flex-row-start-center gap-1 cursor-pointer"
-            onClick={onFilesClick}
+            onClick={goToFiles}
           >
             <SlPaperClip />
             {task_files_count}

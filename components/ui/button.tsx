@@ -147,7 +147,7 @@ const ButtonTooltip = ({
       <Tooltip delayDuration={1}>
         <TooltipTrigger
           onClick={handleClick}
-          className={`px-2 py-1 border-[1px] rounded-md hover:bg-white-secondary ${className}`}
+          className={`px-2 py-1 border-[1px]  min-w-[35px] flex-col-center rounded-md hover:bg-white-secondary ${className}`}
         >
           {iconSrc ? (
             <Image
@@ -209,7 +209,9 @@ const ButtonIconTooltipDialog = ({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         asChild
-        className={`${disabled ? "pointer-events-none opacity-50" : ""}`}
+        className={` min-w-[35px] flex-col-center  ${
+          disabled ? "pointer-events-none opacity-50" : ""
+        }`}
       >
         <button
           className={`border-[1px] px-2 py-1 ${className} rounded-md hover:bg-white-secondary cursor-pointer flex-col-center ${

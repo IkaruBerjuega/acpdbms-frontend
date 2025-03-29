@@ -34,10 +34,10 @@ export default async function Page({
       <div className="flex-col-start gap-4 sm:flex-row-between-center sm:gap-0 w-full">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
         <div className="flex-1 sm:flex-none flex-row-start">
-          <ProjectSelector />
+          <ProjectSelector role="employee" />
         </div>
       </div>
-      <TasksHeaderActions />
+      <TasksHeaderActions isEmployee={true} />
       <TasksDND />
       <TaskSheetContainer
         sheetParamValue={sheet}
