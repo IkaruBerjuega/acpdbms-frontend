@@ -52,7 +52,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     <>
       <div className="flex-row-between-center w-full">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
-        <ProjectSelector dynamicPage="project-details" />
+        <ProjectSelector dynamicPage="project-details" role="client" />
       </div>
       <ProjectView
         id={projectId}

@@ -1,6 +1,6 @@
 "use client";
 import { useAdminSettings } from "@/hooks/general/use-admin-settings";
-import type { Project } from "../components-to-relocate/AdminTools";
+import type { Project } from "../admin/settings/admin-tools";
 import { ProjectCarousel } from "../components-to-relocate/recent-project-carousel";
 
 export default function RecentProjects() {

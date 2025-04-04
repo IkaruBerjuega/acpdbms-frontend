@@ -39,6 +39,8 @@ export default function FileReview({
     [pathname, replace, params.toString()]
   );
 
+  //(projectId, 1)
+
   const openFiles = () => {
     createQueryString("view_files", "true");
   };
