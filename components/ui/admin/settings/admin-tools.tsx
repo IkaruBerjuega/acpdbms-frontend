@@ -7,10 +7,10 @@ import {
   useSettingsActions,
 } from "@/hooks/general/use-admin-settings";
 import { toast } from "@/hooks/use-toast";
-import { LogoUpload } from "./admin-tools/logo-upload";
-import { MaintenanceToggle } from "./admin-tools/maintenance-toggle";
-import { RecentProjectsUpload } from "./admin-tools/recent-project-upload";
-import { Button } from "../button";
+import { LogoUpload } from "../../components-to-relocate/admin-tools/logo-upload";
+import { MaintenanceToggle } from "../../components-to-relocate/admin-tools/maintenance-toggle";
+import { RecentProjectsUpload } from "../../components-to-relocate/admin-tools/recent-project-upload";
+import { Button } from "../../button";
 import { IoMdRemoveCircleOutline } from "react-icons/io";
 import Image from "next/image";
 export interface Project {
@@ -91,6 +91,7 @@ export function AdminTools() {
   return (
     <div className="grid gap-6">
       {/* Logo Card */}
+
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <div>

@@ -172,12 +172,14 @@ export default function TaskCard(props: TaskCardProps) {
       className={`bg-white-primary system-padding  shadow-md min-h-[250px] transition-all duration-300 h-fit rounded-sm flex-col-start gap-2  `}
     >
       <div className="w-full flex-row-between-center">
-        <div className="flex-row-start-center">
-          <Badge className={`${phaseColor?.dark} ${phaseColor?.light} `}>
+        <div className="flex-row-start-center ">
+          <Badge
+            className={`${phaseColor?.dark} ${phaseColor?.light} `}
+          >
             {phase_category}
           </Badge>
           {isInNeedsReview && (
-            <Badge className={` ${reviewStatus.color}`}>
+            <Badge className={` ${reviewStatus.color} `}>
               {reviewStatus.text}
             </Badge>
           )}

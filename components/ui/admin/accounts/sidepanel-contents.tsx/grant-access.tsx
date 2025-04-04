@@ -103,7 +103,15 @@ export default function GrantProjectAccess({ isOpen }: { isOpen: boolean }) {
           role: "Member" as const, // Explicitly type the role as "Member"
         })) || [];
 
-    const managers = data.team.filter((emp) => emp.employee_id !== undefined);
+    const toCheck = [undefined, "undefined"];
+
+    const managers = data.team.filter((emp) => {
+      if (toCheck.includes(emp.employee_id)) {
+        return;
+      }
+
+      return emp;
+    });
 
     const body = {
       team: [...managers, ...transformedSelectedMembers],

@@ -337,10 +337,10 @@ export default function TasksDND() {
       return;
     }
 
-    if (droppedStatus === "to do" && recentStatus === "done") {
+    if (droppedStatus === "needs review" && recentStatus === "to do") {
       toast({
         title: "Warning",
-        description: "Tasks that are finished cannot be moved",
+        description: "Tasks that are to do cannot be set to needs review",
         variant: "destructive",
       });
 
@@ -367,17 +367,10 @@ export default function TasksDND() {
       return;
     }
 
-    if (droppedStatus === "done" && recentStatus === "to do") {
-      toast({
-        title: "Warning",
-        description:
-          "Tasks to do cannot be finished without being manager approval",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (droppedStatus === "to do" && recentStatus === "needs review") {
+    if (
+      droppedStatus === "to do" &&
+      (recentStatus === "needs review" || recentStatus === "done")
+    ) {
       setValue("approved", false);
     }
     if (droppedStatus === "done" && recentStatus === "needs review") {

@@ -195,7 +195,7 @@ export interface Phase {
   created_at?: Date;
   finish_date?: Date;
   project_id?: string;
-  status:
+  status?:
     | "to do"
     | "in progress"
     | "cancelled"

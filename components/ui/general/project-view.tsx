@@ -21,6 +21,9 @@ import {
   FileText,
   Home,
   Map,
+  Calendar1Icon,
+  CalendarCheck,
+  CalendarDaysIcon,
 } from "lucide-react";
 import Image from "next/image";
 import FormInput from "@/components/ui/general/form-components/form-input";
@@ -878,27 +881,31 @@ function PhasesMapping({
 
                     <StatusNotice {...statusNoticeConfig[phase.status]} />
                   </div>
-                  <div className="ml-6 mt-2 text-sm text-slate-500">
+                  <div className="ml-6 mt-2 text-sm text-slate-500 flex-row-start-center gap-2">
                     <div className="flex-row-start-center gap-2">
-                      <LuCalendarPlus className="text-base" />
+                      <CalendarDaysIcon className="text-xs h-4 w-4" />
                       <span>{phase?.created_at?.toString().slice(0, 10)}</span>
                     </div>
-                    {phase.finish_date && (
-                      <div className="flex-row-start-center gap-2">
-                        <LuCalendarCheck className="text-base" />
-                        <span>
-                          {phase?.finish_date?.toString().slice(0, 10)}
-                        </span>
-                      </div>
-                    )}
-                    {phase.status === "archived" && (
-                      <div className="flex-row-start-center gap-2">
-                        <LuCalendarMinus className="text-base" />
-                        <span>
-                          {phase?.updated_at?.toString().slice(0, 10)}
-                        </span>
-                      </div>
-                    )}
+
+                    <div className="flex-row-start-center gap-2">
+                      {phase.finish_date && (
+                        <>
+                          <span>-</span>
+                          <span>
+                            {phase?.finish_date?.toString().slice(0, 10)}
+                          </span>
+                        </>
+                      )}
+
+                      {phase.status === "archived" && (
+                        <>
+                          <span>-</span>
+                          <span>
+                            {phase?.updated_at?.toString().slice(0, 10)}
+                          </span>
+                        </>
+                      )}
+                    </div>
                   </div>
                 </div>
               );
