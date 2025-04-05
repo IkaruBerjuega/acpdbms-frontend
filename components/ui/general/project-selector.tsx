@@ -27,7 +27,7 @@ export function ProjectSelector({
   dynamicPage,
   role,
 }: {
-  dynamicPage?: "project-details";
+  dynamicPage?: "project-details" | "admin-files";
   role: "employee" | "client";
 }) {
   const { data: projects } = useAssociatedProjects({ role: role });

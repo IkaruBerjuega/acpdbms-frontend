@@ -94,9 +94,9 @@ export function ProjectCarousel({
                 </div>
 
                 {/* Project title with semi-white background */}
-                <div className="bg-white-secondary/70 absolute bottom-0">
-                  <div className="px-8 py-6 inline-block">
-                    <h3 className="text-black text-xl md:text-2xl font-bold">
+                <div className="bg-white-secondary/70 absolute top-2 left-2">
+                  <div className="px-8 py-2 inline-block">
+                    <h3 className="text-black text-sm font-bold">
                       {project.project_title || `Project ${index + 1}`}
                     </h3>
                   </div>

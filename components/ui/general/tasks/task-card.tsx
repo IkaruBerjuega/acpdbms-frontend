@@ -1,20 +1,16 @@
-import { DragSourceMonitor, useDrag } from "react-dnd";
 import { Badge } from "../../badge";
 import { Separator } from "../../separator";
-import { Avatar, AvatarFallback } from "../../avatar";
 import { titleCase } from "@/lib/utils";
-import { LuFileCheck, LuFileX, LuMessageSquareMore } from "react-icons/lu";
+import { LuFileCheck, LuFileX } from "react-icons/lu";
 import { SlPaperClip } from "react-icons/sl";
 import { IoTimer, IoTimerOutline } from "react-icons/io5";
 import { useQueryParams } from "@/hooks/use-query-params";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback } from "react";
 import { useSelectedTaskStatus } from "@/hooks/states/create-store";
-import { TaskItem, TaskItemProps, TaskStatuses } from "@/lib/tasks-definitions";
-import { ItemTypes } from "@/lib/definitions";
-import { Button, ButtonLink } from "../../button";
-import { CustomDropdownMenu } from "../../dropdown-menu";
-import Profile from "../profile";
+import { TaskItemProps, TaskStatuses } from "@/lib/tasks-definitions";
+
+import { Button } from "../../button";
 
 interface IconWithTextInfoProps {
   icon: JSX.Element;
@@ -88,7 +84,6 @@ export default function TaskCard(props: TaskCardProps) {
       : `${remainingDuration} day${isDaysPlural ? "s" : ""} remaining`;
 
   const shouldDisplayRemaining = status !== "done" && status !== "to do";
-  const detailsLink = `tasks/${id}/details`;
 
   const { params } = useQueryParams();
   const pathname = usePathname();
@@ -137,9 +132,7 @@ export default function TaskCard(props: TaskCardProps) {
 
     if (reviewedAllFiles) {
       const hasRejectedFiles = rejected_files_count ?? 0 > 0;
-      const text = hasRejectedFiles
-        ? `Ver. ${version} rejected`
-        : `Ver. ${version} approved`;
+      const text = hasRejectedFiles ? `Rejected` : `Approved`;
 
       const color = hasRejectedFiles
         ? "bg-red-100 text-red-600"
@@ -173,9 +166,7 @@ export default function TaskCard(props: TaskCardProps) {
     >
       <div className="w-full flex-row-between-center">
         <div className="flex-row-start-center ">
-          <Badge
-            className={`${phaseColor?.dark} ${phaseColor?.light} `}
-          >
+          <Badge className={`${phaseColor?.dark} ${phaseColor?.light} `}>
             {phase_category}
           </Badge>
           {isInNeedsReview && (
