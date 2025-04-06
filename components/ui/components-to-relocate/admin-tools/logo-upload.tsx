@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { toast } from '@/hooks/use-toast';
-import type { UploadLogoType } from '@/lib/definitions';
-import { Upload } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Dropzone from '../drop-zone';
+import { toast } from "@/hooks/use-toast";
+import type { UploadLogoType } from "@/lib/definitions";
+import { Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Dropzone from "../drop-zone";
 import {
   useForm,
   type SubmitHandler,
   FormProvider,
   Controller,
-} from 'react-hook-form';
-import { DialogFooter } from '../../dialog';
-import { UploadDialog } from './upload-dialog';
-import { useQueryClient } from '@tanstack/react-query';
-import { useQueryParams } from '@/hooks/use-query-params';
-import { usePathname, useRouter } from 'next/navigation';
+} from "react-hook-form";
+import { DialogFooter } from "../../dialog";
+import { UploadDialog } from "./upload-dialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { useQueryParams } from "@/hooks/use-query-params";
+import { usePathname, useRouter } from "next/navigation";
 
 interface ApiMutationResult<T> {
   mutate: (
@@ -40,10 +40,10 @@ export function LogoUpload({
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const isOpen = paramsKey['upload_logo'] === 'true';
+  const isOpen = paramsKey["upload_logo"] === "true";
 
   const methods = useForm<UploadLogoType>({
-    mode: 'onSubmit',
+    mode: "onSubmit",
     defaultValues: { logo: undefined },
   });
 
@@ -56,9 +56,9 @@ export function LogoUpload({
 
   const toggleUpload = (open: boolean) => {
     if (open) {
-      params.set('upload_logo', 'true');
+      params.set("upload_logo", "true");
     } else {
-      params.delete('upload_logo');
+      params.delete("upload_logo");
       reset();
     }
     replace(`${pathname}?${params.toString()}`);
@@ -66,40 +66,40 @@ export function LogoUpload({
 
   const onSuccess = (response: { message?: string }) => {
     toast({
-      title: 'Upload Successful',
-      description: response.message || 'Logo uploaded successfully.',
+      title: "Upload Successful",
+      description: response.message || "Logo uploaded successfully.",
     });
-    queryClient.invalidateQueries({ queryKey: ['site-logo'] });
+    queryClient.invalidateQueries({ queryKey: ["logo"] });
     reset();
     toggleUpload(false);
   };
 
   const onError = (error: { message?: string }) => {
-    console.error('Logo upload error:', error);
+    console.error("Logo upload error:", error);
     toast({
-      variant: 'destructive',
-      title: 'Upload Failed',
+      variant: "destructive",
+      title: "Upload Failed",
       description:
         error.message ||
-        'An error occurred while uploading the logo. Please try again.',
+        "An error occurred while uploading the logo. Please try again.",
     });
-    queryClient.invalidateQueries({ queryKey: ['site-logo'] });
+    queryClient.invalidateQueries({ queryKey: ["site-logo"] });
   };
 
   const processForm: SubmitHandler<UploadLogoType> = (data) => {
     if (!data.logo || data.logo.length === 0) {
       toast({
-        variant: 'destructive',
-        title: 'Upload Failed',
-        description: 'Please select a logo file to upload.',
+        variant: "destructive",
+        title: "Upload Failed",
+        description: "Please select a logo file to upload.",
       });
       return;
     }
 
     const formData = new FormData();
-    formData.append('logo', data.logo[0]);
+    formData.append("logo", data.logo[0]);
 
-    console.log('processForm - Uploading logo', { formData });
+    console.log("processForm - Uploading logo", { formData });
 
     uploadLogo.mutate(formData, {
       onSuccess,
@@ -111,7 +111,7 @@ export function LogoUpload({
 
   return (
     <UploadDialog
-      title='Upload Logo'
+      title="Upload Logo"
       description="Update your site's logo. Recommended size: 200x60px."
       open={isOpen}
       onOpenChange={(open) => {
@@ -120,48 +120,48 @@ export function LogoUpload({
         }
       }}
       trigger={
-        <Button onClick={() => toggleUpload(true)} className='gap-2'>
-          <Upload className='h-4 w-4' />
+        <Button onClick={() => toggleUpload(true)} className="gap-2">
+          <Upload className="h-4 w-4" />
           Upload Logo
         </Button>
       }
     >
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(processForm)} className='space-y-4'>
-          <div className='space-y-2'>
+        <form onSubmit={handleSubmit(processForm)} className="space-y-4">
+          <div className="space-y-2">
             <Controller
-              name='logo'
+              name="logo"
               control={control}
-              rules={{ required: 'Please select a logo file.' }}
+              rules={{ required: "Please select a logo file." }}
               render={({ field: { onChange } }) => (
                 <Dropzone
                   onDrop={(acceptedFiles) => onChange(acceptedFiles)}
                   accept={{
-                    'image/jpeg': [],
-                    'image/png': [],
-                    'image/webp': [],
+                    "image/jpeg": [],
+                    "image/png": [],
+                    "image/webp": [],
                   }}
                   showImages={true}
                 />
               )}
             />
             {errors.logo && (
-              <p className='text-sm text-destructive'>
-                {errors.logo.message || 'Please provide a valid logo file.'}
+              <p className="text-sm text-destructive">
+                {errors.logo.message || "Please provide a valid logo file."}
               </p>
             )}
           </div>
           <DialogFooter>
             <Button
-              type='button'
-              variant='outline'
+              type="button"
+              variant="outline"
               onClick={() => toggleUpload(false)}
               disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button type='submit' disabled={isSubmitting}>
-              {isSubmitting ? 'Uploading...' : 'Upload Logo'}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Uploading..." : "Upload Logo"}
             </Button>
           </DialogFooter>
         </form>

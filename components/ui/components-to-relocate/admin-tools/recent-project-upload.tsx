@@ -1,21 +1,21 @@
-'use client';
+"use client";
 
-import { toast } from '@/hooks/use-toast';
-import type { UploadRecentProjectsType } from '@/lib/definitions';
-import { Upload } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import Dropzone from '../drop-zone';
+import { toast } from "@/hooks/use-toast";
+import type { UploadRecentProjectsType } from "@/lib/definitions";
+import { Upload } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Dropzone from "../drop-zone";
 import {
   useForm,
   type SubmitHandler,
   FormProvider,
   Controller,
-} from 'react-hook-form';
-import { DialogFooter } from '@/components/ui/dialog';
-import { UploadDialog } from './upload-dialog';
-import { useQueryClient } from '@tanstack/react-query';
-import { useQueryParams } from '@/hooks/use-query-params';
-import { usePathname, useRouter } from 'next/navigation';
+} from "react-hook-form";
+import { DialogFooter } from "@/components/ui/dialog";
+import { UploadDialog } from "./upload-dialog";
+import { useQueryClient } from "@tanstack/react-query";
+import { useQueryParams } from "@/hooks/use-query-params";
+import { usePathname, useRouter } from "next/navigation";
 
 interface ApiMutationResult<T> {
   mutate: (
@@ -42,10 +42,10 @@ export function RecentProjectsUpload({
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const isOpen = paramsKey['upload_projects'] === 'true';
+  const isOpen = paramsKey["upload_projects"] === "true";
 
   const methods = useForm<UploadRecentProjectsType>({
-    mode: 'onSubmit',
+    mode: "onSubmit",
     defaultValues: {
       project_titles: [],
       project_images: [],
@@ -62,13 +62,11 @@ export function RecentProjectsUpload({
     setValue,
   } = methods;
 
-  const projectImages = watch('project_images') || [];
-
   const toggleUpload = (open: boolean) => {
     if (open) {
-      params.set('upload_projects', 'true');
+      params.set("upload_projects", "true");
     } else {
-      params.delete('upload_projects');
+      params.delete("upload_projects");
       reset();
     }
     replace(`${pathname}?${params.toString()}`);
@@ -76,41 +74,41 @@ export function RecentProjectsUpload({
 
   const onSuccess = (response: { message?: string }) => {
     toast({
-      title: 'Upload Successful',
-      description: response.message || 'Recent projects uploaded successfully.',
+      title: "Upload Successful",
+      description: response.message || "Recent projects uploaded successfully.",
     });
-    queryClient.invalidateQueries({ queryKey: ['recent-projects'] });
+    queryClient.invalidateQueries({ queryKey: ["recentProjects"] });
     reset();
     toggleUpload(false);
   };
 
   const onError = (error: { message?: string }) => {
-    console.error('Recent projects upload error:', error);
+    console.error("Recent projects upload error:", error);
     toast({
-      variant: 'destructive',
-      title: 'Upload Failed',
+      variant: "destructive",
+      title: "Upload Failed",
       description:
         error.message ||
-        'An error occurred while uploading projects. Please try again.',
+        "An error occurred while uploading projects. Please try again.",
     });
   };
 
   const handleFileDrop = (files: File[]) => {
     const browserFiles = files as unknown as BrowserFile[];
-    setValue('project_images', browserFiles, { shouldValidate: true });
+    setValue("project_images", browserFiles, { shouldValidate: true });
 
-    const currentTitles = watch('project_titles') || [];
+    const currentTitles = watch("project_titles") || [];
     if (currentTitles.length > files.length) {
-      setValue('project_titles', currentTitles.slice(0, files.length), {
+      setValue("project_titles", currentTitles.slice(0, files.length), {
         shouldValidate: true,
       });
     }
     if (currentTitles.length < files.length) {
       setValue(
-        'project_titles',
+        "project_titles",
         [
           ...currentTitles,
-          ...Array(files.length - currentTitles.length).fill(''),
+          ...Array(files.length - currentTitles.length).fill(""),
         ],
         { shouldValidate: true }
       );
@@ -120,21 +118,21 @@ export function RecentProjectsUpload({
   const processForm: SubmitHandler<UploadRecentProjectsType> = (data) => {
     if (!data.project_images || !data.project_images.length) {
       toast({
-        variant: 'destructive',
-        title: 'Upload Failed',
-        description: 'Please upload at least one project image.',
+        variant: "destructive",
+        title: "Upload Failed",
+        description: "Please upload at least one project image.",
       });
       return;
     }
 
     if (
       data.project_images.length !== data.project_titles.length ||
-      data.project_titles.some((title) => !title || title.trim() === '')
+      data.project_titles.some((title) => !title || title.trim() === "")
     ) {
       toast({
-        variant: 'destructive',
-        title: 'Upload Failed',
-        description: 'Please provide a non-empty title for each project image.',
+        variant: "destructive",
+        title: "Upload Failed",
+        description: "Please provide a non-empty title for each project image.",
       });
       return;
     }
@@ -144,9 +142,9 @@ export function RecentProjectsUpload({
     );
     if (oversizedFiles.length > 0) {
       toast({
-        variant: 'destructive',
-        title: 'Upload Failed',
-        description: 'One or more files exceed the 2MB size limit.',
+        variant: "destructive",
+        title: "Upload Failed",
+        description: "One or more files exceed the 2MB size limit.",
       });
       return;
     }
@@ -158,7 +156,7 @@ export function RecentProjectsUpload({
       formData.append(`projects[${index}][image]`, file);
     });
 
-    console.log('processForm - Submitting', {
+    console.log("processForm - Submitting", {
       titles: data.project_titles,
       imageCount: data.project_images.length,
     });
@@ -173,8 +171,8 @@ export function RecentProjectsUpload({
 
   return (
     <UploadDialog
-      title='Upload Recent Projects'
-      description='Add images and titles for your recent projects. Recommended image size: 800x600px. Maximum file size: 2MB.'
+      title="Upload Recent Projects"
+      description="Add images and titles for your recent projects. Recommended image size: 800x600px. Maximum file size: 2MB."
       open={isOpen}
       onOpenChange={(open) => {
         if (!isSubmitting) {
@@ -182,58 +180,58 @@ export function RecentProjectsUpload({
         }
       }}
       trigger={
-        <Button onClick={() => toggleUpload(true)} className='gap-2'>
-          <Upload className='h-4 w-4' />
+        <Button onClick={() => toggleUpload(true)} className="gap-2">
+          <Upload className="h-4 w-4" />
           Upload Projects
         </Button>
       }
     >
       <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(processForm)} className='space-y-4'>
-          <div className='space-y-2'>
+        <form onSubmit={handleSubmit(processForm)} className="space-y-4">
+          <div className="space-y-2">
             <Controller
-              name='project_images'
+              name="project_images"
               control={control}
-              rules={{ required: 'Please upload at least one image' }}
+              rules={{ required: "Please upload at least one image" }}
               render={({ field }) => (
                 <Dropzone
                   onDrop={handleFileDrop}
                   accept={{
-                    'image/jpeg': [],
-                    'image/png': [],
-                    'image/svg+xml': [],
+                    "image/jpeg": [],
+                    "image/png": [],
+                    "image/svg+xml": [],
                   }}
                   showImages={true}
-                  formInput={{ name: 'project_titles', register }}
+                  formInput={{ name: "project_titles", register }}
                   maxSize={2 * 1024 * 1024}
                 />
               )}
             />
             {errors.project_images && (
-              <p className='text-sm text-destructive'>
+              <p className="text-sm text-destructive">
                 {errors.project_images.message ||
-                  'Please upload at least one image'}
+                  "Please upload at least one image"}
               </p>
             )}
             {errors.project_titles && (
-              <p className='text-sm text-destructive'>
+              <p className="text-sm text-destructive">
                 {errors.project_titles.message ||
-                  'Please provide valid project titles'}
+                  "Please provide valid project titles"}
               </p>
             )}
           </div>
 
           <DialogFooter>
             <Button
-              type='button'
-              variant='outline'
+              type="button"
+              variant="outline"
               onClick={() => toggleUpload(false)}
               disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button type='submit' disabled={isSubmitting}>
-              {isSubmitting ? 'Uploading...' : 'Upload Projects'}
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? "Uploading..." : "Upload Projects"}
             </Button>
           </DialogFooter>
         </form>

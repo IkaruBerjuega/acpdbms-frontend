@@ -106,7 +106,7 @@ export function useApiQuery<T>({
   url: string;
   additionalHeaders?: Record<string, string>;
   initialData?: T;
-  enabled?: Enabled<T, Error, T, string[]> | undefined;
+  enabled?: Enabled<T, Error, T, string[]>;
   auth?: boolean;
 }) {
   const { getToken } = useToken();
@@ -131,7 +131,7 @@ export function useApiQuery<T>({
   };
   const queryKey = typeof key === "string" ? [key] : key;
 
-  const { data, isLoading, isPending, error } = useQuery({
+  const { data, isLoading, isPending, error, isError } = useQuery({
     queryKey: queryKey,
     queryFn: () => fetchApiData(),
     initialData: initialData,
@@ -143,19 +143,6 @@ export function useApiQuery<T>({
     isLoading,
     isPending,
     error,
+    isError,
   };
 }
-
-export const useInvalidateQuery = ({
-  queryKey,
-}: {
-  queryKey: string[] | string;
-}) => {
-  const queryClient = useQueryClient();
-
-  function refetch() {
-    queryClient.invalidateQueries({ queryKey: queryKey });
-  }
-
-  return { refetch };
-};

@@ -14,7 +14,6 @@ export type ProjectFormSchemaType = {
   finish_date?: string;
   status: string;
   image_url: string;
-  project_description: string;
 };
 
 export interface ProjectUpdateRequest {

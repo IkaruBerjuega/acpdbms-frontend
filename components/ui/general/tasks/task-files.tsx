@@ -360,6 +360,9 @@ export default function TaskFiles({
   const filesToReview = files.filter(
     (file) => file.status === "to be reviewed"
   );
+  const toCheckForApproved = [null, false];
+  const toCheckForRejected = [null, true];
+
   const approvedFiles = files.filter((file) => file.status === "approved");
   const rejectedFiles = files.filter((file) => file.status === "rejected");
   const referencesFiles = files.filter(
@@ -371,12 +374,14 @@ export default function TaskFiles({
 
   const filesApprovedByManager = approvedFiles.filter(
     (file) =>
-      file.project_manager_approval === true && file.client_approval === null
+      file.project_manager_approval === true &&
+      toCheckForApproved.includes(file.client_approval)
   );
 
   const filesApprovedByClient = approvedFiles.filter(
     (file) =>
-      file.client_approval === true && file.project_manager_approval === null
+      file.client_approval === true &&
+      toCheckForApproved.includes(file?.project_manager_approval)
   );
 
   const filesApprovedByBothManagerAndClient = approvedFiles.filter(
@@ -386,12 +391,14 @@ export default function TaskFiles({
 
   const filesRejectedByManager = rejectedFiles.filter(
     (file) =>
-      file.project_manager_approval === false && file.client_approval === null
+      file.project_manager_approval === false &&
+      toCheckForRejected.includes(file.client_approval)
   );
 
   const filesRejectedByClient = rejectedFiles.filter(
     (file) =>
-      file.client_approval === false && file.project_manager_approval === null
+      file.client_approval === false &&
+      toCheckForRejected.includes(file.project_manager_approval)
   );
 
   const filesRejectedByBothManagerAndClient = rejectedFiles.filter(
@@ -660,43 +667,43 @@ export default function TaskFiles({
 
                 {isViewAccepted && (
                   <>
-                    {role === "client" && (
-                      <div className="space-y-2">
-                        <Badge className="bg-gray-100 text-black-secondary">
-                          Manager Approved
-                        </Badge>
-                        <FileView
-                          files={filesApprovedByManager}
-                          onFileClick={selectFile}
-                          btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                          btnClassName={"border-none"}
-                          reviewMode={reviewMode}
-                          selectedFile={selectedfile}
-                          review={review}
-                          handleSetApproval={handleSetApproval}
-                          role={role}
-                        />
-                      </div>
-                    )}
+                    {/* {role === "client" && ( */}
+                    <div className="space-y-2">
+                      <Badge className="bg-gray-100 text-black-secondary">
+                        Manager Approved
+                      </Badge>
+                      <FileView
+                        files={filesApprovedByManager}
+                        onFileClick={selectFile}
+                        btnSrc={"/button-svgs/table-action-archive-black.svg"}
+                        btnClassName={"border-none"}
+                        reviewMode={reviewMode}
+                        selectedFile={selectedfile}
+                        review={review}
+                        handleSetApproval={handleSetApproval}
+                        role={role}
+                      />
+                    </div>
+                    {/* )} */}
 
-                    {role === "manager" && (
-                      <div className="space-y-2">
-                        <Badge className="bg-gray-100 text-black-secondary">
-                          Client Approved
-                        </Badge>
-                        <FileView
-                          files={filesApprovedByClient}
-                          onFileClick={selectFile}
-                          btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                          btnClassName={"border-none"}
-                          reviewMode={reviewMode}
-                          selectedFile={selectedfile}
-                          handleSetApproval={handleSetApproval}
-                          review={review}
-                          role={role}
-                        />
-                      </div>
-                    )}
+                    {/* {role === "manager" && ( */}
+                    <div className="space-y-2">
+                      <Badge className="bg-gray-100 text-black-secondary">
+                        Client Approved
+                      </Badge>
+                      <FileView
+                        files={filesApprovedByClient}
+                        onFileClick={selectFile}
+                        btnSrc={"/button-svgs/table-action-archive-black.svg"}
+                        btnClassName={"border-none"}
+                        reviewMode={reviewMode}
+                        selectedFile={selectedfile}
+                        handleSetApproval={handleSetApproval}
+                        review={review}
+                        role={role}
+                      />
+                    </div>
+                    {/* )} */}
 
                     <div className="space-y-2">
                       <Badge className="bg-gray-100 text-black-secondary">
@@ -717,43 +724,43 @@ export default function TaskFiles({
 
                 {isViewRejected && (
                   <>
-                    {role === "client" && (
-                      <div className="space-y-2">
-                        <Badge className="bg-gray-100 text-black-secondary">
-                          Manager Rejected
-                        </Badge>
-                        <FileView
-                          files={filesRejectedByManager}
-                          onFileClick={selectFile}
-                          btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                          btnClassName={"border-none"}
-                          reviewMode={reviewMode}
-                          selectedFile={selectedfile}
-                          review={review}
-                          handleSetApproval={handleSetApproval}
-                          role={role}
-                        />
-                      </div>
-                    )}
+                    {/* {role === "client" && ( */}
+                    <div className="space-y-2">
+                      <Badge className="bg-gray-100 text-black-secondary">
+                        Manager Rejected
+                      </Badge>
+                      <FileView
+                        files={filesRejectedByManager}
+                        onFileClick={selectFile}
+                        btnSrc={"/button-svgs/table-action-archive-black.svg"}
+                        btnClassName={"border-none"}
+                        reviewMode={reviewMode}
+                        selectedFile={selectedfile}
+                        review={review}
+                        handleSetApproval={handleSetApproval}
+                        role={role}
+                      />
+                    </div>
+                    {/* )} */}
 
-                    {role === "manager" && (
-                      <div className="space-y-2">
-                        <Badge className="bg-gray-100 text-black-secondary">
-                          Client Rejected
-                        </Badge>
-                        <FileView
-                          files={filesRejectedByClient}
-                          onFileClick={selectFile}
-                          btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                          btnClassName={"border-none"}
-                          reviewMode={reviewMode}
-                          selectedFile={selectedfile}
-                          handleSetApproval={handleSetApproval}
-                          review={review}
-                          role={role}
-                        />
-                      </div>
-                    )}
+                    {/* {role === "manager" && ( */}
+                    <div className="space-y-2">
+                      <Badge className="bg-gray-100 text-black-secondary">
+                        Client Rejected
+                      </Badge>
+                      <FileView
+                        files={filesRejectedByClient}
+                        onFileClick={selectFile}
+                        btnSrc={"/button-svgs/table-action-archive-black.svg"}
+                        btnClassName={"border-none"}
+                        reviewMode={reviewMode}
+                        selectedFile={selectedfile}
+                        handleSetApproval={handleSetApproval}
+                        review={review}
+                        role={role}
+                      />
+                    </div>
+                    {/* )} */}
 
                     <div className="space-y-2">
                       <Badge className="bg-gray-100 text-black-secondary">

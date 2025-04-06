@@ -202,9 +202,7 @@ export default function TaskCard(props: TaskCardProps) {
 
     if (reviewedAllFiles) {
       const hasRejectedFiles = rejected_files_count ?? 0 > 0;
-      const text = hasRejectedFiles
-        ? `Ver. ${version} rejected`
-        : `Ver. ${version} approved`;
+      const text = hasRejectedFiles ? `Rejected` : `Approved`;
 
       const color = hasRejectedFiles
         ? "bg-red-100 text-red-600"

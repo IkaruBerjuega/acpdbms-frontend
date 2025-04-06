@@ -13,6 +13,7 @@ import { RecentProjectsUpload } from "../../components-to-relocate/admin-tools/r
 import { Button } from "../../button";
 import { IoMdRemoveCircleOutline } from "react-icons/io";
 import Image from "next/image";
+import { useQueryClient } from "@tanstack/react-query";
 export interface Project {
   id: number;
   image_url: string;
@@ -47,8 +48,7 @@ export function AdminTools() {
 
   const projects = recentProjectsData?.recent_project_images || [];
 
-  const recentProjectsMessage =
-    recentProjectsData?.message ||
+  const noUploadedRecentProjectsMessage =
     "No recent projects available. Upload some to get started!";
 
   // Maintenance mode states
@@ -60,6 +60,8 @@ export function AdminTools() {
 
   const maintenanceMode = maintenanceData?.maintenance_mode || false;
 
+  //for refetching
+  const queryClient = useQueryClient();
   const {
     mutate: deleteRecentImages,
     error: deleteError,
@@ -75,6 +77,7 @@ export function AdminTools() {
             title: "Delete Successful",
             description: "Project removed successfully.",
           });
+          queryClient.invalidateQueries({ queryKey: ["recentProjects"] });
         },
         onError: (err) => {
           console.error("Delete failed:", err);
@@ -107,14 +110,8 @@ export function AdminTools() {
             <div className="flex items-center justify-center p-4">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
             </div>
-          ) : logoError ? (
-            <p className="text-sm text-destructive">
-              Failed to load logo: {logoError.message || "Unknown error"}
-            </p>
-          ) : !logo ? (
-            <p className="text-sm text-muted-foreground">
-              {logoData?.message || "No logo uploaded yet."}
-            </p>
+          ) : (logoError as any)?.status === 404 ? (
+            <div className="text-sm ">No Logo Available. Upload a logo</div>
           ) : (
             <div className="flex items-center justify-center bg-gray-100 p-4 rounded-md">
               <Image
@@ -145,18 +142,12 @@ export function AdminTools() {
             <div className="flex items-center justify-center p-4">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
             </div>
-          ) : projectsError ? (
-            <p className="text-sm text-destructive">
-              Failed to load projects:{" "}
-              {projectsError.message || "Unknown error"}
-            </p>
+          ) : (projectsError as any)?.status === 404 ||
+            projects.length === 0 ? (
+            <p className="text-sm ">{noUploadedRecentProjectsMessage}</p>
           ) : deleteError ? (
             <p className="text-sm text-destructive">
               Delete Error: {deleteError || "Unknown error"}
-            </p>
-          ) : projects.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              {recentProjectsMessage}
             </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4 bg-gray-100 p-4 rounded-md">

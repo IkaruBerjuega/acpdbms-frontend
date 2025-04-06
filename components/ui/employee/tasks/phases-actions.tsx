@@ -12,7 +12,7 @@ import { toast } from "@/hooks/use-toast";
 import { ButtonIconTooltipDialog } from "../../button";
 import { Badge } from "../../badge";
 import { Phase } from "@/lib/definitions";
-import { useInvalidateQuery } from "@/hooks/tanstack-query";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Actions {
   id: string;
@@ -261,10 +261,7 @@ export function PhasesActive() {
     },
   };
 
-  //refetch
-  const { refetch } = useInvalidateQuery({
-    queryKey: ["phases-active", projectId],
-  });
+  const queryClient = useQueryClient();
 
   const handleAction = ({ id, action }: Actions) => {
     setSelectedPhaseId(id);
@@ -280,7 +277,9 @@ export function PhasesActive() {
           title: toastTitle,
           description: response.message || successMessagePlaceholder,
         });
-        refetch();
+        queryClient.invalidateQueries({
+          queryKey: ["phases-active", projectId],
+        });
       },
       onError: (response: { message: string }) => {
         toast({

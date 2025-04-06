@@ -22,7 +22,7 @@ function ProcessCard({ image, title, description }: ProcessCardInterface) {
         <h1 className="text-xl md:text-2xl lg:text-3xl">{title}</h1>
       </div>
       <div className="flex-row-start font-normal">
-        <p className="text-sm xl:text-xl ">{description}</p>
+        <p className="text-sm xl:text-lg ">{description}</p>
       </div>
     </div>
   );
@@ -57,7 +57,7 @@ export default function Process() {
       id="process"
       className="w-full h-fit xl:h-screen homepage-padding flex flex-col bg-white-secondary gap-4"
     >
-      <div className="w-full xl:h-[20%] flex-row-start-end">
+      <div className="w-full xl:h-[15%] flex-row-start-end">
         <h1 className="text-2xl md:text-5xl 2xl:text-7xl font-bold">
           Our Process
         </h1>

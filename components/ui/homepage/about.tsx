@@ -23,7 +23,7 @@ const AboutSection = () => {
               <h1 className="text-2xl md:text-5xl 2xl:text-7xl font-bold  text-white-primary">
                 About Us
               </h1>
-              <p className="lg:max-w-lg text-wrap mt-6 md:text-2xl font-light text-justify lg:text-justify text-white-100 text-white-secondary">
+              <p className="lg:max-w-lg text-wrap mt-6 md:text-lg font-light text-justify lg:text-justify text-white-100 text-white-secondary">
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
                 eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
                 enim ad minim veniam, quis nostrud exercitation ullamco laboris

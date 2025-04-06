@@ -9,8 +9,8 @@ export interface TaskFile {
   uploaded_at: string;
   is_archived: boolean;
   status: string;
-  project_manager_approval: boolean | undefined;
-  client_approval: boolean | undefined;
+  project_manager_approval: boolean | null;
+  client_approval: boolean | null;
 }
 
 export interface TaskFilesApproval {
