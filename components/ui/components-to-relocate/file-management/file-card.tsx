@@ -63,6 +63,7 @@ export default function FileCard({
   return (
     <FileActionWrapper
       projectId={projectId}
+      isArchived={file.is_archived}
       elementTrigger={
         <Card
           onClick={handleSelectFiles}

@@ -1,34 +1,34 @@
-import AccountSettings from '@/components/ui/components-to-relocate/account-settings-wrapper';
-import { SidebarTrigger } from '@/components/ui/sidebar';
-import { Breadcrumbs } from '@/lib/definitions';
+import AccountSettings from "@/components/ui/components-to-relocate/account-settings-wrapper";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { Breadcrumbs } from "@/lib/definitions";
 
 export default async function SettingsPage({
   searchParams,
 }: {
   searchParams: Promise<{
-    tab: 'profile' | 'security' | 'notification' | null;
+    tab: "profile" | "security" | "notification" | null;
   }>;
 }) {
   const { tab } = await searchParams;
 
   // Default to 'contacts' if no tab is specified in the URL
-  const activeTab = tab ? tab : 'profile';
+  const activeTab = tab ? tab : "profile";
 
   const routeMap = [
     {
-      href: '/employee/settings/profile',
-      pageName: 'Profile Settings',
-      value: 'profile',
+      href: "/employee/settings/profile",
+      pageName: "Profile Settings",
+      value: "profile",
     },
     {
-      href: '/employee/settings/account-security',
-      pageName: 'Account Security',
-      value: 'security',
+      href: "/employee/settings/account-security",
+      pageName: "Account Security",
+      value: "security",
     },
     {
-      href: '/employee/settings/notifications',
-      pageName: 'Notification Settings',
-      value: 'notification',
+      href: "/employee/settings/notifications",
+      pageName: "Notification Settings",
+      value: "notification",
     },
   ];
 
@@ -37,8 +37,8 @@ export default async function SettingsPage({
 
   const breadcrumbs: Breadcrumbs[] = [
     {
-      href: '/employee',
-      pageName: 'Employee',
+      href: "/employee",
+      pageName: "Employee",
       active: false,
     },
     {
@@ -49,11 +49,11 @@ export default async function SettingsPage({
   ];
 
   return (
-    <main className='w-full h-full flex-col-start gap-2'>
-      <div className='flex items-center'>
+    <main className="w-full h-full flex-col-start gap-2">
+      <div className="flex items-center">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
       </div>
-      <AccountSettings activeTab={activeTab} />
+      <AccountSettings activeTab={activeTab} role="employee" />
     </main>
   );
 }

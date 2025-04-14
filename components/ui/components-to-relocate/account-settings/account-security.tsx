@@ -1,63 +1,84 @@
-import { useState, useEffect } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import FormInput from '../../general/form-components/form-input';
+import { useState, useEffect } from "react";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import FormInput from "../../general/form-components/form-input";
 import {
   useAccountSettings,
   getAccountSettings,
-} from '@/hooks/general/use-account-settings';
-import { Button } from '@/components/ui/button';
-import { Popover, PopoverContent } from '../../popover';
-import { useQueryClient } from '@tanstack/react-query';
-import { LoginSchemaType } from '@/lib/form-constants/form-constants';
-import { emailPattern } from '@/lib/utils';
+} from "@/hooks/general/use-account-settings";
+import { BtnDialog, Button } from "@/components/ui/button";
+import { useQueryClient } from "@tanstack/react-query";
+import { emailPattern } from "@/lib/utils";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '../../card';
-import { AlertDialog } from '@radix-ui/react-alert-dialog';
-import { AlertDialogContent } from '../../alert-dialog';
-import { UserInfoInterface } from '@/lib/definitions';
+} from "../../card";
+import { DialogNoBtn } from "../../dialog";
+import {
+  PasswordChangeFormProps,
+  PasswordChangeRequest,
+  UpdateEmailRequest,
+} from "@/lib/user-definitions";
+import { toast } from "@/hooks/use-toast";
 
 export default function AccountSecurity() {
-  const { getUser } = getAccountSettings<any>();
-  const { checkEmail, send2FA, update2FA, changePass } =
-    useAccountSettings<any>();
+  const { getUser } = getAccountSettings();
+  const { checkEmail, send2FA, update2FA, changePass } = useAccountSettings();
 
   const [editMode, setEditMode] = useState(false);
   const [passwordEditMode, setPasswordEditMode] = useState(false);
-  const [emailToUpdate, setEmailToUpdate] = useState('');
+
   const [isEmailValid, setIsEmailValid] = useState(false);
-  const [codeSent, setCodeSent] = useState(false);
+  const [codeSucessfullySent, setCodeSuccessfullySent] = useState<
+    "success" | "error" | undefined
+  >();
+  const [showNewEmailInput, setShowNewEmailInput] = useState<boolean>(false);
 
   const { data, isLoading, error } = getUser;
   const queryClient = useQueryClient();
 
-  const methods = useForm({
-    mode: 'onChange',
+  const newEmailMethods = useForm<UpdateEmailRequest>({
+    mode: "onChange",
     defaultValues: {
-      new_email: '',
-      twoFactorCode: '',
-      current_password: '',
-      new_password: '',
-      confirm_new_password: '', // Added new field
+      new_email: "",
+      two_factor_code: "",
     },
   });
 
   const {
-    register,
-    watch,
-    handleSubmit,
-    setError,
-    resetField,
-    formState: { errors },
-  } = methods;
+    register: emailRegister,
+    watch: emailWatch,
+    handleSubmit: emailHandleSubmit,
+    setError: emailSetError,
+    resetField: emailResetField,
+    reset: emailReset,
+    formState: { errors: emailErrors },
+  } = newEmailMethods;
 
-  const watchedEmail = watch('new_email');
-  const watchedNewPassword = watch('new_password');
-  const watchedConfirmPassword = watch('confirm_new_password');
+  const passwordChangeFormMethods = useForm<PasswordChangeFormProps>({
+    mode: "onChange",
+    defaultValues: {
+      current_password: "",
+      confirm_password: "",
+      new_password: "",
+    },
+  });
+
+  const {
+    register: passwordRegister,
+    watch: passwordWatch,
+    handleSubmit: passHandleSubmit,
+    setError: passSetError,
+    resetField: passResetField,
+    reset: passReset,
+    formState: { errors: passErrors },
+  } = passwordChangeFormMethods;
+
+  const watchedEmail = emailWatch("new_email");
+  const watchedNewPassword = passwordWatch("new_password");
+  const watchedConfirmPassword = passwordWatch("confirm_password");
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -70,9 +91,9 @@ export default function AccountSecurity() {
             },
             onError: (err) => {
               setIsEmailValid(false);
-              setError('new_email', {
-                type: 'manual',
-                message: err.message || 'Email is already taken',
+              emailSetError("new_email", {
+                type: "manual",
+                message: err.message || "Email is already taken",
               });
             },
           }
@@ -86,121 +107,102 @@ export default function AccountSecurity() {
   }, [watchedEmail]);
 
   const handleSend2FA = (email: string) => {
-    try {
-      // Call the send2FA API mutation to send the code
-      send2FA.mutate({ email });
-
-      // If successful, update the UI to reflect that the code was sent
-      setCodeSent(true);
-      setEmailToUpdate(email);
-      alert('2FA code sent successfully to your email.');
-    } catch (error: any) {
-      // Check if error has a response and handle accordingly
-      if (error?.response?.status === 422) {
-        // This could be a validation error or email already in use
-        if (error?.response?.data?.message) {
-          alert(error?.response?.data?.message);
-        } else {
-          alert('Invalid email format. Please enter a valid email.');
-        }
-      } else if (error?.response?.status === 429) {
-        // Handle too many requests error (waiting for previous code to expire)
-        const remainingSeconds = error?.response?.data?.remaining_seconds;
-        alert(
-          `Please wait for ${remainingSeconds} seconds before requesting a new code.`
-        );
-      } else if (error?.response?.status === 500) {
-        // Server error while sending the email
-        alert('Failed to send 2FA code. Please try again later.');
-      } else {
-        // General catch for any other error
-        alert('An unexpected error occurred. Please try again.');
+    // Call the send2FA API mutation to send the code
+    send2FA.mutate(
+      { email: email },
+      {
+        onSuccess: () => setCodeSuccessfullySent("success"),
+        onError: () => setCodeSuccessfullySent("error"),
       }
-    }
+    );
   };
 
-  const handleUpdateEmail = (formData: any) => {
-    update2FA.mutate(
-      {
-        new_email: formData.new_email,
-        two_factor_code: formData.twoFactorCode,
+  const handleUpdateEmail: SubmitHandler<UpdateEmailRequest> = (data) => {
+    update2FA.mutate(data, {
+      onSuccess: (data) => {
+        toast({
+          title: "Change Email",
+          description: data.message || "Email successfully changed!",
+        });
+        queryClient.invalidateQueries({ queryKey: ["user"] });
+        setEditMode(false);
+        emailReset;
       },
-      {
-        onSuccess: (data) => {
-          alert(data.message);
-          queryClient.invalidateQueries({ queryKey: ['user'] });
-          setEditMode(false);
-          setCodeSent(false);
-          setEmailToUpdate('');
-          resetField('new_email');
-          resetField('twoFactorCode');
-        },
-        onError: (err) => {
-          setError('twoFactorCode', {
-            type: 'manual',
-            message: err.message || 'Invalid 2FA code',
+      onError: (err) => {
+        emailSetError("two_factor_code", {
+          type: "manual",
+          message: err.message || "Invalid 2FA code",
+        });
+      },
+    });
+  };
+
+  const handleUpdatePassword: SubmitHandler<PasswordChangeFormProps> = (
+    data
+  ) => {
+    const requestBody: PasswordChangeRequest = {
+      current_password: data.current_password,
+      new_password: data.new_password,
+    };
+
+    changePass.mutate(requestBody, {
+      onSuccess: (data: { message: string }) => {
+        toast({
+          title: "Change Password",
+          description: data.message || "Password successfully changed!",
+        });
+        queryClient.invalidateQueries({ queryKey: ["user"] });
+        setPasswordEditMode(false);
+        passReset();
+      },
+      onError: (err: any) => {
+        const errorData = err?.message as {
+          current_password?: string[];
+          new_password?: string[];
+        };
+
+        if (errorData?.current_password?.[0]) {
+          passSetError("current_password", {
+            type: "manual",
+            message: errorData.current_password[0],
           });
-        },
-      }
-    );
-  };
+        }
 
-  const handleUpdatePassword = (formData: any) => {
-    // Check if passwords match before submitting
-    if (formData.new_password !== formData.confirm_new_password) {
-      setError('confirm_new_password', {
-        type: 'manual',
-        message: 'Passwords do not match',
-      });
-      return;
-    }
-
-    changePass.mutate(
-      {
-        current_password: formData.current_password,
-        new_password: formData.new_password,
+        if (errorData?.new_password?.[0]) {
+          passSetError("new_password", {
+            type: "manual",
+            message: errorData.new_password[0],
+          });
+        }
       },
-      {
-        onSuccess: (data) => {
-          alert(data.message);
-          queryClient.invalidateQueries({ queryKey: ['user'] });
-          setPasswordEditMode(false);
-          resetField('current_password');
-          resetField('new_password');
-          resetField('confirm_new_password');
-        },
-        onError: (err: any) => {
-          const errorData = err?.message as {
-            current_password?: string[];
-            new_password?: string[];
-          };
-
-          if (errorData?.current_password?.[0]) {
-            setError('current_password', {
-              type: 'manual',
-              message: errorData.current_password[0],
-            });
-          }
-
-          if (errorData?.new_password?.[0]) {
-            setError('new_password', {
-              type: 'manual',
-              message: errorData.new_password[0],
-            });
-          }
-        },
-      }
-    );
+    });
   };
+
+  const dialogConfig = {
+    success: "2FA code sent successfully to your email.",
+    error: "There was an error processing the request",
+  };
+
+  const passwordsDoesMatch =
+    watchedNewPassword &&
+    watchedConfirmPassword &&
+    watchedNewPassword === watchedConfirmPassword &&
+    !passErrors.new_password &&
+    !passErrors.confirm_password;
+
+  const passwordDoesNotMatch =
+    watchedNewPassword &&
+    watchedConfirmPassword &&
+    watchedNewPassword !== watchedConfirmPassword;
 
   return (
-    <div className='space-y-4'>
+    <div className="space-y-4">
       <Card>
         <CardHeader>
-          <div className='flex items-center justify-between'>
-            <CardTitle className='text-lg'>Email</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">Email</CardTitle>
             {!editMode && (
-              <Button className='flex' onClick={() => setEditMode(true)}>
+              <Button className="flex" onClick={() => setEditMode(true)}>
                 Change Email
               </Button>
             )}
@@ -209,55 +211,69 @@ export default function AccountSecurity() {
         </CardHeader>
 
         {editMode && (
-          <CardContent className='space-y-4'>
+          <CardContent className="space-y-4">
             <form
-              onSubmit={handleSubmit(handleUpdateEmail)}
-              className='space-y-4'
+              onSubmit={emailHandleSubmit(handleUpdateEmail)}
+              className="space-y-4"
             >
               <FormInput
-                name='new_email'
-                dataType='email'
-                inputType='default'
-                label='New Email'
-                placeholder='Enter new email'
-                register={register}
+                name="new_email"
+                dataType="email"
+                inputType="default"
+                label="New Email"
+                placeholder="Enter new email"
+                register={emailRegister}
                 required
-                errorMessage={errors.new_email?.message}
+                errorMessage={emailErrors.new_email?.message}
               />
 
               {!watchedEmail && (
-                <p className='text-sm text-muted-foreground ml-1'>
+                <p className="text-sm text-muted-foreground ml-1">
                   Please enter your new email.
                 </p>
               )}
 
-              {watchedEmail && !errors.new_email && isEmailValid && (
-                <p className='text-sm text-green-600 ml-1'>
+              {watchedEmail && !emailErrors.new_email && isEmailValid && (
+                <p className="text-sm text-green-600 ml-1">
                   Email is available!
                 </p>
               )}
 
               <Button
-                type='button'
-                disabled={!watchedEmail || !!errors.new_email || !isEmailValid}
+                type="button"
+                disabled={
+                  !watchedEmail || !!emailErrors.new_email || !isEmailValid
+                }
                 onClick={() => handleSend2FA(watchedEmail)}
               >
                 Send 2FA to Email
               </Button>
 
-              {codeSent && (
+              {showNewEmailInput && (
                 <FormInput
-                  name='twoFactorCode'
-                  label='2FA Code'
-                  inputType='default'
-                  placeholder='Enter 2FA code'
-                  register={register}
+                  name="two_factor_code"
+                  label="2FA Code"
+                  inputType="default"
+                  placeholder="Enter 2FA code"
+                  register={emailRegister}
                   required
-                  errorMessage={errors.twoFactorCode?.message}
+                  errorMessage={emailErrors.two_factor_code?.message}
                 />
               )}
 
-              {codeSent && <Button type='submit'>Update Email</Button>}
+              {showNewEmailInput && (
+                <BtnDialog
+                  btnTitle={"Submit"}
+                  isLoading={update2FA.isLoading}
+                  alt={"Submit Button"}
+                  dialogTitle={"Change Email"}
+                  dialogDescription={"Do you confirm on changing your email? "}
+                  onClick={emailHandleSubmit(handleUpdateEmail)}
+                  submitType={"button"}
+                  submitTitle="Confirm"
+                  variant={"default"}
+                />
+              )}
             </form>
           </CardContent>
         )}
@@ -265,8 +281,8 @@ export default function AccountSecurity() {
 
       <Card>
         <CardHeader>
-          <div className='flex items-center justify-between'>
-            <CardTitle className='text-lg'>Password</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg">Password</CardTitle>
             {!passwordEditMode && (
               <Button onClick={() => setPasswordEditMode(true)}>
                 Change Password
@@ -276,59 +292,83 @@ export default function AccountSecurity() {
         </CardHeader>
 
         {passwordEditMode && (
-          <CardContent className='space-y-4'>
+          <CardContent className="space-y-4">
             <form
-              onSubmit={handleSubmit(handleUpdatePassword)}
-              className='space-y-4'
+              onSubmit={passHandleSubmit(handleUpdatePassword)}
+              className="space-y-4"
             >
               <FormInput
-                name='current_password'
-                dataType='password'
-                inputType='default'
-                label='Current Password'
-                placeholder='Enter current password'
-                register={register}
+                name="current_password"
+                dataType="password"
+                inputType="default"
+                label="Current Password"
+                placeholder="Enter current password"
+                register={passwordRegister}
                 required
-                errorMessage={errors.current_password?.message}
+                errorMessage={passErrors.current_password?.message}
               />
 
               <FormInput
-                name='new_password'
-                dataType='password'
-                inputType='default'
-                label='New Password'
-                placeholder='Enter new password'
-                register={register}
+                name="new_password"
+                dataType="password"
+                inputType="default"
+                label="New Password"
+                placeholder="Enter new password"
+                register={passwordRegister}
                 required
-                errorMessage={errors.new_password?.message}
+                errorMessage={passErrors.new_password?.message}
               />
 
               <FormInput
-                name='confirm_new_password'
-                dataType='password'
-                inputType='default'
-                label='Confirm New Password'
-                placeholder='Re-enter new password'
-                register={register}
+                name="confirm_password"
+                dataType="password"
+                inputType="default"
+                label="Confirm New Password"
+                placeholder="Re-enter new password"
+                register={passwordRegister}
                 required
-                errorMessage={errors.confirm_new_password?.message}
+                errorMessage={passErrors.confirm_password?.message}
               />
 
-              {watchedNewPassword &&
-                watchedConfirmPassword &&
-                watchedNewPassword === watchedConfirmPassword &&
-                !errors.new_password &&
-                !errors.confirm_new_password && (
-                  <p className='text-sm text-green-600 ml-1'>
-                    Passwords match!
-                  </p>
-                )}
+              {passwordsDoesMatch ? (
+                <p className="text-sm text-green-600 ml-1">Passwords match!</p>
+              ) : passwordDoesNotMatch ? (
+                <p className="text-sm text-red-600 ml-1">
+                  Passwords don't match!
+                </p>
+              ) : null}
 
-              <Button type='submit'>Update Password</Button>
+              <BtnDialog
+                btnTitle={"Submit"}
+                isLoading={changePass.isLoading}
+                alt={"Submit Button"}
+                dialogTitle={"Change Password"}
+                dialogDescription={"Do you confirm on changing your password? "}
+                onClick={passHandleSubmit(handleUpdatePassword)}
+                submitType={"button"}
+                submitTitle="Confirm"
+                variant={"default"}
+              />
             </form>
           </CardContent>
         )}
       </Card>
+
+      {codeSucessfullySent && codeSucessfullySent !== undefined && (
+        <DialogNoBtn
+          title={"Update Email"}
+          description={dialogConfig[codeSucessfullySent!]}
+          onClick={() => {
+            setCodeSuccessfullySent(undefined);
+            setShowNewEmailInput(true);
+          }}
+          onOpen={!!codeSucessfullySent}
+          onClose={() => {
+            setCodeSuccessfullySent(undefined);
+            setShowNewEmailInput(true);
+          }}
+        />
+      )}
     </div>
   );
 }

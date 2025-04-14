@@ -63,6 +63,7 @@ export default function FileRow({
   return (
     <FileActionWrapper
       projectId={projectId}
+      isArchived={file.is_archived}
       elementTrigger={
         <Card
           className={`${

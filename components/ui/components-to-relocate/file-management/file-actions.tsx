@@ -8,9 +8,11 @@ import { useCheckboxStore } from "@/hooks/states/create-store";
 export function FileActionWrapper({
   elementTrigger,
   projectId,
+  isArchived,
 }: {
   elementTrigger: JSX.Element;
   projectId: string;
+  isArchived: boolean;
 }) {
   const { resetData } = useCheckboxStore();
 
@@ -82,16 +84,20 @@ export function FileActionWrapper({
           btnSrc: "/button-svgs/download.svg",
           isDialog: false,
         },
-        {
-          actionName: "Delete",
-          onClick: handleDeleteFile,
-          btnSrc: "/button-svgs/trash.svg",
-          isDialog: true,
-          dialogBtnSubmitLabel: "Confirm",
-          dialogDescription:
-            "Are you sure you want to delete the selected files",
-          dialogTitle: "Delete Files",
-        },
+        ...(isArchived
+          ? [
+              {
+                actionName: "Delete",
+                onClick: handleDeleteFile,
+                btnSrc: "/button-svgs/trash.svg",
+                isDialog: true,
+                dialogBtnSubmitLabel: "Confirm",
+                dialogDescription:
+                  "Are you sure you want to delete the selected files?",
+                dialogTitle: "Delete Files",
+              },
+            ]
+          : []),
       ]}
     />
   );

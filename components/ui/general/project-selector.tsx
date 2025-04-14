@@ -33,17 +33,10 @@ export function ProjectSelector({ role }: { role: "employee" | "client" }) {
   const { data } = useCheckViceManagerPermission(projectId);
   const hasVicePermission = data?.vice_manager_permission === true;
 
-  useEffect(() => {
-    const savedProject = localStorage.getItem("projectSelected");
-    if (savedProject) {
-      const parsedProject: ProjectSelectorProps = JSON.parse(savedProject);
-      setData([{ ...parsedProject }]);
-      setProjectId(parsedProject.projectId);
-    }
-  }, []);
-
   // Function to update query parameters without modifying params directly
-  const { params } = useQueryParams();
+  const { params, paramsKey } = useQueryParams();
+
+  const hasProjectId = !!paramsKey["projectId"];
   const pathname = usePathname();
   const { replace } = useRouter();
 
@@ -54,6 +47,20 @@ export function ProjectSelector({ role }: { role: "employee" | "client" }) {
     },
     [pathname, params, replace]
   );
+
+  useEffect(() => {
+    const savedProject = localStorage.getItem("projectSelected");
+    if (savedProject) {
+      const parsedProject: ProjectSelectorProps = JSON.parse(savedProject);
+      setData([{ ...parsedProject }]);
+      setProjectId(parsedProject.projectId);
+
+      if (!hasProjectId) {
+        const projectQueryParam = `${parsedProject.projectId}_${parsedProject.projectName}`;
+        createQueryString(projectQueryParam);
+      }
+    }
+  }, []);
 
   function onSelect(
     projectId?: string,

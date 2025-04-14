@@ -51,7 +51,7 @@ export function NavUser({
   const settingsMap = {
     admin: { href: "/admin/settings", label: "Admin Settings" },
     employee: { href: "/employee/settings", label: "Account Settings" },
-    client: { href: "/client/settings", label: "Admin Settings" },
+    client: { href: "/client/settings", label: "Account Settings" },
   };
 
   const handleLogout = () => {

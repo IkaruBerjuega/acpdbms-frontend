@@ -1,21 +1,20 @@
-'use client';
+"use client";
 
 import {
   getAccountSettings,
   useAccountSettings,
-} from '@/hooks/general/use-account-settings';
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
-import { useQueryClient } from '@tanstack/react-query';
-import { toast } from '@/hooks/use-toast';
-import { NotificationsInterface } from '@/lib/definitions';
+} from "@/hooks/general/use-account-settings";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "@/hooks/use-toast";
 
 export default function NotificationsToggle() {
   const queryClient = useQueryClient();
 
-  const { getUserNotification } = getAccountSettings<NotificationsInterface>();
+  const { getUserNotification } = getAccountSettings();
   const { toggleEmailNotification, toggleSystemNotification } =
-    useAccountSettings<any>();
+    useAccountSettings();
 
   const {
     data: toggleNotificationData,
@@ -28,21 +27,21 @@ export default function NotificationsToggle() {
   const handleToggleEmail = () => {
     toggleEmailNotification.mutate(undefined, {
       onSuccess: (response) => {
-        queryClient.invalidateQueries({ queryKey: ['notification'] });
+        queryClient.invalidateQueries({ queryKey: ["notification"] });
 
         toast({
-          title: 'Success',
+          title: "Success",
           description: `Email notifications ${
-            response?.email_notifications ? 'enabled' : 'disabled'
+            response?.email_notifications ? "enabled" : "disabled"
           }.`,
         });
       },
       onError: (error) => {
         toast({
-          title: 'Error',
+          title: "Error",
           description:
             error?.message ||
-            'An error occurred while toggling email notifications.',
+            "An error occurred while toggling email notifications.",
         });
       },
     });
@@ -51,34 +50,34 @@ export default function NotificationsToggle() {
   const handleToggleSystem = () => {
     toggleSystemNotification.mutate(undefined, {
       onSuccess: (response) => {
-        queryClient.invalidateQueries({ queryKey: ['notification'] });
+        queryClient.invalidateQueries({ queryKey: ["notification"] });
 
         toast({
           title: `Success`,
           description: `System notifications ${
-            response?.system_notifications ? 'enabled' : 'disabled'
+            response?.system_notifications ? "enabled" : "disabled"
           }.`,
         });
       },
       onError: (error) => {
         toast({
-          title: 'Error',
+          title: "Error",
           description:
             error?.message ||
-            'An error occurred while toggling system notifications.',
+            "An error occurred while toggling system notifications.",
         });
       },
     });
   };
 
   return (
-    <div className='space-y-4'>
+    <div className="space-y-4">
       {/* Email Notifications Card */}
       <Card>
-        <CardHeader className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 pb-2'>
-          <div className='flex-1'>
-            <CardTitle className='text-lg'>Email Notifications</CardTitle>
-            <p className='text-sm text-muted-foreground mb-2 sm:mb-4 max-w-full sm:max-w-xl'>
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 pb-2">
+          <div className="flex-1">
+            <CardTitle className="text-lg">Email Notifications</CardTitle>
+            <p className="text-sm text-muted-foreground mb-2 sm:mb-4 max-w-full sm:max-w-xl">
               Receive important account updates and alerts via email.
             </p>
           </div>
@@ -90,9 +89,9 @@ export default function NotificationsToggle() {
         </CardHeader>
         {toggleNotificationError && (
           <CardContent>
-            <p className='text-sm text-destructive'>
-              Failed to update:{' '}
-              {toggleNotificationError.message || 'Unknown error'}
+            <p className="text-sm text-destructive">
+              Failed to update:{" "}
+              {toggleNotificationError.message || "Unknown error"}
             </p>
           </CardContent>
         )}
@@ -100,10 +99,10 @@ export default function NotificationsToggle() {
 
       {/* System Notifications Card */}
       <Card>
-        <CardHeader className='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 pb-2'>
-          <div className='flex-1'>
-            <CardTitle className='text-lg'>System Notifications</CardTitle>
-            <p className='text-sm text-muted-foreground mb-2 sm:mb-4 max-w-full sm:max-w-xl'>
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 pb-2">
+          <div className="flex-1">
+            <CardTitle className="text-lg">System Notifications</CardTitle>
+            <p className="text-sm text-muted-foreground mb-2 sm:mb-4 max-w-full sm:max-w-xl">
               Enable or disable system messages shown while using the app.
             </p>
           </div>
@@ -115,9 +114,9 @@ export default function NotificationsToggle() {
         </CardHeader>
         {toggleNotificationError && (
           <CardContent>
-            <p className='text-sm text-destructive'>
-              Failed to update:{' '}
-              {toggleNotificationError.message || 'Unknown error'}
+            <p className="text-sm text-destructive">
+              Failed to update:{" "}
+              {toggleNotificationError.message || "Unknown error"}
             </p>
           </CardContent>
         )}
