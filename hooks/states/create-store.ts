@@ -2,6 +2,7 @@ import { Phase, ProjectSelector, SupportedTableTypes } from "@/lib/definitions";
 import { TaskStatuses } from "@/lib/tasks-definitions";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
+import { File } from "@/lib/files-definitions";
 
 // accept argument of type T or a callback using previous state of type T
 type ReactStyleStateSetter<T> = T | ((prev: T) => T);
@@ -46,7 +47,8 @@ export const createStore = <T>(initialData?: T[]) =>
   );
 
 // Create Zustand store
-export const useCheckboxStore = createStore<SupportedTableTypes | string>([]);
+export const useCheckboxStore = createStore<SupportedTableTypes>([]);
+export const useSelectFiles = createStore<string>([]);
 export const useProjectSelectStore = createStore<ProjectSelector>();
 export const usePhaseTransfer = createStore<Phase>([]);
 export const useSelectedTaskStatus = createStore<TaskStatuses | undefined>();

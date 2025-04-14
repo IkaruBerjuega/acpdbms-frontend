@@ -1,11 +1,10 @@
 "use client";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import type { File, FileUIProps } from "@/lib/files-definitions";
+import type { FileUIProps } from "@/lib/files-definitions";
 import { FileIcon } from "../../general/file-icon";
 import { FileActionWrapper } from "./file-actions";
-import { useCheckboxStore } from "@/hooks/states/create-store";
-import { SetStateAction, useState } from "react";
+import { useSelectFiles } from "@/hooks/states/create-store";
 
 export default function FileRow({
   file,
@@ -16,7 +15,7 @@ export default function FileRow({
   secondIndex,
   setSecondIndex,
 }: FileUIProps) {
-  const { data, setData } = useCheckboxStore();
+  const { data, setData } = useSelectFiles();
 
   const isSelected = (data as string[]).includes(file.file_id);
 

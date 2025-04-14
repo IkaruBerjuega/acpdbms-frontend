@@ -2,12 +2,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tag } from "lucide-react";
-import { File, FileUIProps } from "@/lib/files-definitions";
+import { FileUIProps } from "@/lib/files-definitions";
 import { FileIcon } from "../../general/file-icon";
-import { FaDeleteLeft } from "react-icons/fa6";
 import { FileActionWrapper } from "./file-actions";
-import { useCheckboxStore } from "@/hooks/states/create-store";
-import { useState } from "react";
+import { useSelectFiles } from "@/hooks/states/create-store";
 
 export default function FileCard({
   file,
@@ -18,7 +16,7 @@ export default function FileCard({
   secondIndex,
   setSecondIndex,
 }: FileUIProps) {
-  const { data, setData } = useCheckboxStore();
+  const { data, setData } = useSelectFiles();
   const isSelected = (data as string[]).includes(file.file_id);
 
   const handleSelectFiles = (event: React.MouseEvent<HTMLDivElement>) => {

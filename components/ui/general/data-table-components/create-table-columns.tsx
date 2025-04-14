@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import {
   SupportedTableTypes,
@@ -6,15 +6,14 @@ import {
   SupportedTableName,
   AccountsTableType,
   ProjectListResponseInterface,
-  FileListResponseInterface,
-} from '@/lib/definitions';
-import { multiFilter } from '@/lib/utils';
-import { ColumnDef, Row, Table } from '@tanstack/react-table';
-import { Checkbox } from '../../checkbox';
-import { useCheckboxStore } from '@/hooks/states/create-store';
-import React from 'react';
-import AccountActions from '../../admin/accounts/table-actions';
-import ProjectActions from '../../admin/projects/table-actions';
+} from "@/lib/definitions";
+import { multiFilter } from "@/lib/utils";
+import { ColumnDef, Row, Table } from "@tanstack/react-table";
+import { Checkbox } from "../../checkbox";
+import { useCheckboxStore } from "@/hooks/states/create-store";
+import React from "react";
+import AccountActions from "../../admin/accounts/table-actions";
+import ProjectActions from "../../admin/projects/table-actions";
 
 interface TableActionsInterface<T extends SupportedTableTypes> {
   tableName: SupportedTableName;
@@ -25,13 +24,13 @@ const TableActions = <T extends SupportedTableTypes>({
   tableName,
   attrs,
 }: TableActionsInterface<T>): JSX.Element => {
-  if (tableName === 'Accounts') {
+  if (tableName === "Accounts") {
     return (
       <AccountActions<AccountsTableType> attrs={attrs as AccountsTableType} />
     );
   }
 
-  if (tableName === 'Projects') {
+  if (tableName === "Projects") {
     return (
       <ProjectActions<ProjectListResponseInterface>
         attrs={attrs as ProjectListResponseInterface}
@@ -60,7 +59,7 @@ const SelectAllCheckbox = <T,>({ table }: SelectAllCheckboxProps<T>) => {
       checked={
         data.length > 0 &&
         (table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate'))
+          (table.getIsSomePageRowsSelected() && "indeterminate"))
       }
       onCheckedChange={(value) => {
         table.toggleAllPageRowsSelected(!!value);
@@ -68,14 +67,14 @@ const SelectAllCheckbox = <T,>({ table }: SelectAllCheckboxProps<T>) => {
           const allRowData: T[] =
             table
               .getRowModel()
-              .rows.filter((row) => row.id !== 'select' && row.id !== 'actions')
+              .rows.filter((row) => row.id !== "select" && row.id !== "actions")
               .map((row) => row.original as T) || [];
           setData(allRowData as SupportedTableTypes[]);
         } else {
           resetData();
         }
       }}
-      aria-label='Select all'
+      aria-label="Select all"
     />
   );
 };
@@ -102,17 +101,17 @@ const RowCheckbox = <T,>({ row, rowData }: RowCheckboxProps<T>) => {
               )
         );
       }}
-      aria-label='Select row'
+      aria-label="Select row"
     />
   );
 };
 
 export const getStatusColor = (status: string) => {
-  const green = 'bg-green-200 text-green-700';
-  const lightGray = 'bg-gray-200 text-gray-700';
-  const dark = 'bg-black-secondary text-white-secondary';
-  const yellow = 'bg-yellow-200 text-yellow-700';
-  const red = 'bg-red-200 text-red-700';
+  const green = "bg-green-200 text-green-700";
+  const lightGray = "bg-gray-200 text-gray-700";
+  const dark = "bg-black-secondary text-white-secondary";
+  const yellow = "bg-yellow-200 text-yellow-700";
+  const red = "bg-red-200 text-red-700";
 
   const colorMap: Record<string, string> = {
     //account statuses
@@ -127,7 +126,7 @@ export const getStatusColor = (status: string) => {
     paused: lightGray,
   };
 
-  return colorMap[status] || 'bg-gray-200 text-gray-700';
+  return colorMap[status] || "bg-gray-200 text-gray-700";
 };
 
 export const useCreateTableColumns = <T,>(
@@ -135,10 +134,10 @@ export const useCreateTableColumns = <T,>(
   tableName: SupportedTableName
 ) => {
   return columns.map((column) => {
-    const isSelect = column.id === 'select';
-    const isActions = column.id == 'actions';
+    const isSelect = column.id === "select";
+    const isActions = column.id == "actions";
     const enableHiding = column.enableHiding;
-    const isStatus = column.accessorKey === 'status';
+    const isStatus = column.accessorKey === "status";
 
     const generatedColumn: ColumnDef<T> = {
       id: column.id || column.accessorKey,
@@ -172,7 +171,7 @@ export const useCreateTableColumns = <T,>(
               ? row.getValue(column.accessorKey)
               : column.id
               ? row.getValue(column.id)
-              : 'N/A';
+              : "N/A";
 
             if (isStatus) {
               return (
@@ -190,13 +189,13 @@ export const useCreateTableColumns = <T,>(
 
             if (isActions) {
               return (
-                <div className='w-full h-full flex-row-end-center px-2 space-x-1'>
+                <div className="w-full h-full flex-row-end-center px-2 space-x-1">
                   <TableActions tableName={tableName} attrs={rowData} />
                 </div>
               );
             }
 
-            return <div>{value || 'N/A'}</div>;
+            return <div>{value || "N/A"}</div>;
           }
         : undefined,
 

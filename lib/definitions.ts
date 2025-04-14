@@ -217,8 +217,7 @@ export interface PhaseRequest {
 export type SupportedTableTypes =
   | ClientInterface
   | EmployeeInterface
-  | ProjectListResponseInterface
-  | FileObject;
+  | ProjectListResponseInterface;
 
 export interface ClientViewInterface {
   id: number;
