@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
       "127.0.0.1",
       "media.istockphoto.com",
       "apcdbms-public-storage.s3.ap-southeast-2.amazonaws.com",
+      "via.placeholder.com",
     ],
   },
 };

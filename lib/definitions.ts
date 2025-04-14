@@ -93,7 +93,6 @@ export interface ProjectDetailsInterface {
   end_date: string;
   finish_date?: string | null;
   status: "finished" | "on-hold" | "ongoing" | "cancelled" | "archived";
-
   street: string;
   city_town: string;
   state: string;
@@ -137,7 +136,6 @@ export type AccountActions =
 
 export type ProjectActions =
   | "archive"
-  //| "unarchive"
   | "cancel"
   | "remove"
   | "onhold"
@@ -189,6 +187,12 @@ export interface ViceManagerPermissionResponse {
   vice_manager_permission?: boolean;
 }
 
+export interface ContactDetails {
+  id?: number;
+  type: string;
+  value: string;
+}
+
 export interface Phase {
   id: string;
   category: string;
@@ -217,6 +221,9 @@ export type SupportedTableTypes =
   | ClientInterface
   | EmployeeInterface
   | ProjectListResponseInterface;
+
+export type SupportedTableName = "Accounts" | "Projects";
+export type AccountsTableType = ClientInterface | EmployeeInterface;
 
 export interface ClientViewInterface {
   id: number;
@@ -263,11 +270,42 @@ export interface UserDetailsResponse {
   client: ClientViewInterface | null;
 }
 
-export type TaskCountIntervalTypes = "daily" | "weekly" | "monthly" | "yearly";
+export interface Metrics {
+  projectsInProgress: number;
+  projectsCompleted: number;
+  tasksInProgress: number;
+  tasksNeedsReview: number;
+  tasksCompleted: number;
+}
+export interface ProjectMetricsData {
+  ongoing_projects: number;
+  finished_projects: number;
+}
+
+export interface TaskMetricsData {
+  in_progress_tasks: number;
+  needs_review_tasks: number;
+  done_tasks: number;
+}
+
+export interface TaskCountData {
+  period: string;
+  in_progress: number;
+  needs_review: number;
+  done: number;
+}
+
+export type TaskCountIntervalTypes =
+  | "7_days"
+  | "4_weeks"
+  | "12_months"
+  | "3_years";
+
 export type TaskCountByInterval = {
   period: string;
-  ongoing_tasks: number;
-  completed_tasks: number;
+  in_progress: number;
+  needs_review: number;
+  done: number;
 };
 
 export type TicketData = {
@@ -280,81 +318,23 @@ export type TicketData = {
   status: string;
 };
 
-export interface CustomTabsProps {
-  activeTab: string | null;
-  tabItems: {
-    item: string;
-    action: () => void;
-  }[];
+export type ProjectLocationYear = {
+  selectedYear: string;
+};
+
+export interface Employee {
+  user_id: number;
+  full_name: string;
+  hours: number;
 }
 
-// Interface for a single task in the request
-export interface TaskRequest {
-  phase_id: string; // Required, must exist in phases table
-  phase_name: string;
-  task_name: string; // Required string
-  task_description?: string; // Optional (nullable) string
-  duration?: string; // Optional (nullable) integer
-}
+export type EmpWorkHours = {
+  user_id: number;
+  full_name: string;
+  hours: number;
+};
 
-// Interface for the full request body
-export interface StoreTaskRequest {
-  tasks: TaskRequest[]; // Required array of TaskRequest objects
-}
-
-export type SupportedTableName = "Accounts" | "Projects";
-export type AccountsTableType = ClientInterface | EmployeeInterface;
-
-export interface RecentProject {
-  id?: number | null;
-  project_title: string;
-  image_url: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface LogoResponse {
-  message: string;
-  logo_url?: string;
-}
-
-export interface RecentProjectsResponse {
-  message: string;
-  recent_project_images?: RecentProject[] | null;
-}
-
-export interface MaintenanceModeResponse {
-  message: string;
-  maintenance_mode: boolean;
-}
-
-export interface ContactDetails {
-  id?: number;
-  type: string;
-  value: string;
-}
-
-export interface DynamicContactSchema {
-  contact_details: ContactDetails[];
-  removedIds: number[];
-}
-
-// Type for logo upload
-export interface UploadLogoType {
-  logo: FileList;
-}
-
-// Type for recent projects upload
-export interface UploadRecentProjectsType {
-  project_titles: string[];
-  project_images: File[];
-}
-
-export interface UploadImage {
-  file?: File | string;
-}
-
-export interface UploadData {
-  content: string;
-  images?: UploadImage[];
-}
+export type EmpWorkHoursDate = {
+  empSelectedMonth: string;
+  empSelectedYear: string;
+};

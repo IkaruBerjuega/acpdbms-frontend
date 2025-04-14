@@ -7,6 +7,10 @@ import {
   ProjectListResponseInterface,
   UserDetailsResponse,
 } from '@/lib/definitions';
+import {
+  adminUpdateProfile,
+  updateProfile,
+} from '@/lib/form-constants/form-constants';
 
 // fetches profile and projects for employees and clients
 export const useProfile = (userId?: string) => {
@@ -56,7 +60,7 @@ export const useProfile = (userId?: string) => {
   const error = profileError || ongoingError || finishedError;
 
   // update profile (non-admin)
-  const updateProfileMutation = useApiMutation<any>({
+  const updateProfileMutation = useApiMutation<updateProfile>({
     url: `/profile`,
     method: 'PUT',
     contentType: 'application/json',
@@ -72,9 +76,9 @@ export const useProfile = (userId?: string) => {
     });
   };
 
-  // update profile from admin (updated to behave like the non-admin version)
-  const updateProfileFromAdminMutation = useApiMutation<any>({
-    url: `/users/${userId}/update`,
+  // update profile from admin
+  const updateProfileFromAdminMutation = useApiMutation<adminUpdateProfile>({
+    url: `/edit-profile/${userId}`,
     method: 'PUT',
     contentType: 'application/json',
     auth: true,
