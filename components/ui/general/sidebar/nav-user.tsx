@@ -48,14 +48,20 @@ export function NavUser({
   const email = data?.email;
   const initialsAsProfileSrcFallback = getInitialsFallback(name);
 
+  const settingsMap = {
+    admin: { href: "/admin/settings", label: "Admin Settings" },
+    employee: { href: "/employee/settings", label: "Account Settings" },
+    client: { href: "/client/settings", label: "Admin Settings" },
+  };
+
   const handleLogout = () => {
     mutate(null, {
       onSuccess: async () => {
         await deleteToken();
-        router.push("/login");
 
-        localStorage.removeItem("projectSelected");
+        router.push("/login");
         resetData();
+        localStorage.removeItem("projectSelected");
       },
     });
   };
@@ -104,12 +110,14 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <Link href="/admin/settings">
-                <DropdownMenuItem>
-                  <IoSettings />
-                  Admin Settings
-                </DropdownMenuItem>
-              </Link>
+              {settingsMap[role] && (
+                <Link href={settingsMap[role].href}>
+                  <DropdownMenuItem>
+                    <IoSettings />
+                    {settingsMap[role].label}
+                  </DropdownMenuItem>
+                </Link>
+              )}
             </DropdownMenuGroup>
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut />

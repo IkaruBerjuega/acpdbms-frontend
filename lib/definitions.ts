@@ -1,6 +1,5 @@
 import { CellContext, HeaderContext, Row } from "@tanstack/react-table";
 import { FilterType } from "./filter-types";
-import { File as FileObject } from "./files-definitions";
 
 export interface UserInterface {
   id: number;
@@ -196,7 +195,7 @@ export interface Phase {
   created_at?: Date;
   finish_date?: Date;
   project_id?: string;
-  status:
+  status?:
     | "to do"
     | "in progress"
     | "cancelled"
@@ -358,13 +357,4 @@ export interface UploadImage {
 export interface UploadData {
   content: string;
   images?: UploadImage[];
-}
-
-interface Filters {
-  projectId: number;
-  phaseId: number | null;
-  taskId: number | null;
-  versionId: number | null;
-  sortBy: keyof File;
-  sortOrder: "asc" | "desc";
 }
