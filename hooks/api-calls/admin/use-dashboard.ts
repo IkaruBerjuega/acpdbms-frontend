@@ -6,7 +6,6 @@ import { TaskCountIntervalTypes } from "@/lib/definitions";
 import { useApiQuery } from "@/hooks/tanstack-query";
 
 export const useDashboard = () => {
-  const disableFetching = true;
   const queryClient = useQueryClient();
 
   // Auto refetch online users every 60 seconds
@@ -49,7 +48,6 @@ export const useDashboard = () => {
     key: `task-stats-graph-${taskCountInterval}`,
     url: `/dashboard/task-statistics/graph?period=${taskCountInterval}`,
     auth: true,
-    initialData: [],
   });
 
   const [selectedYear, setSelectedYear] = useState(
@@ -61,7 +59,6 @@ export const useDashboard = () => {
     key: ["project-locations", selectedYear],
     url: `/project-locations?year=${selectedYear}`,
     auth: true,
-    initialData: [],
   });
 
   const [empSelectedMonth, setEmpSelectedMonth] = useState(
@@ -75,14 +72,12 @@ export const useDashboard = () => {
     key: ["employee-work-hours", empSelectedMonth, empSelectedYear],
     url: `/dashboard/work-hours?month=${empSelectedMonth}&year=${empSelectedYear}`,
     auth: true,
-    initialData: [],
   });
 
   const ticketsWithDetails = useApiQuery({
     key: "tickets-with-details",
     url: "/dashboard/tickets-with-details",
     auth: true,
-    initialData: [],
   });
 
   return {

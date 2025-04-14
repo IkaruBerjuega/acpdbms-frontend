@@ -21,13 +21,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
 import { useProfile } from "@/hooks/general/use-profile";
 import { ViewEditCard } from "./project-view-card";
-import { editAccountDetails } from "@/lib/form-constants/form-constants";
+import { adminUpdateProfile } from "@/lib/form-constants/form-constants";
+import USLocationSelector from "@/components/ui/general/location-selector";
 
 export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
   const router = useRouter();
   const [editAccDetails, setEditAccDetails] = useState<boolean>(false);
 
-  const methods = useForm<editAccountDetails>({ mode: "onBlur" });
+  const methods = useForm<adminUpdateProfile>({
+    mode: "onSubmit",
+  });
+
   const {
     handleSubmit,
     register,
@@ -64,7 +68,7 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
     }
   }, [profileDetails, reset]);
 
-  const processForm: SubmitHandler<editAccountDetails> = async (data) => {
+  const processForm: SubmitHandler<adminUpdateProfile> = async (data) => {
     const formatted = {
       first_name: data.first_name,
       middle_name: data.middle_name,
@@ -230,38 +234,34 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                         </h2>
                       </div>
                     </div>
-                    <FormInput
-                      name="state"
-                      label="State"
-                      inputType="default"
-                      placeholder="Ex. California"
-                      register={register}
-                      required
-                    />
-                    <FormInput
-                      name="city_town"
-                      label="City/Town"
-                      inputType="default"
-                      placeholder="Ex. Los Angeles"
-                      register={register}
-                      required
-                    />
-                    <FormInput
-                      name="street"
-                      label="Street"
-                      inputType="default"
-                      placeholder="Ex. 123 Sunset Blvd"
-                      register={register}
-                      required
-                    />
-                    <FormInput
-                      name="zip_code"
-                      label="Zip Code"
-                      inputType="default"
-                      placeholder="90028"
-                      register={register}
-                      errorMessage={errors.zip_code?.message}
-                    />
+                    <div className="lg:col-span-3 col-span-1">
+                      <USLocationSelector
+                        control={methods}
+                        stateFieldName="state"
+                        cityFieldName="city_town"
+                        zipcodeFieldName="zip_code"
+                        onStateChange={(state) =>
+                          console.log("State changed:", state)
+                        }
+                        onCityChange={(city) =>
+                          console.log("City changed:", city)
+                        }
+                        onZipcodeChange={(zipcode) =>
+                          console.log("Zipcode changed:", zipcode)
+                        }
+                      />
+                    </div>
+
+                    <div className="lg:col-span-1 col-span-1">
+                      <FormInput
+                        name="street"
+                        label="Street"
+                        inputType="default"
+                        placeholder="Ex. 123 Sunset Blvd"
+                        register={register}
+                        required
+                      />
+                    </div>
 
                     {/* Other Details */}
                     <div className="lg:col-span-4 col-span-1">
@@ -334,16 +334,18 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                         {profileDetails?.employee?.city_town || "Not Set"}
                       </p>
                     </div>
-                    <div>
-                      <p className="text-sm text-slate-500">Street</p>
-                      <p className="text-base text-slate-700">
-                        {profileDetails?.employee?.street || "Not Set"}
-                      </p>
-                    </div>
+
                     <div>
                       <p className="text-sm text-slate-500">Zip Code</p>
                       <p className="text-base text-slate-700">
                         {profileDetails?.employee?.zip_code || "Not Set"}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-sm text-slate-500">Street</p>
+                      <p className="text-base text-slate-700">
+                        {profileDetails?.employee?.street || "Not Set"}
                       </p>
                     </div>
 

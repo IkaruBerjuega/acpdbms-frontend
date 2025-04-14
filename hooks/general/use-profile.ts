@@ -93,30 +93,15 @@ export const useProfile = (userId?: string) => {
     });
   };
 
-  // toggle notifications
-  const toggleNotifsMutation = useApiMutation<any>({
-    url: `/profile/notifications/${userId}`,
-    method: 'PUT',
-    contentType: 'application/json',
-    auth: true,
-  });
-
-  const toggleNotifs = async (data: {
-    email_notifications?: boolean;
-    system_notifications?: boolean;
-  }) => {
-    return await toggleNotifsMutation.mutate(data);
-  };
-
   // upload profile picture
-  const uploadPhotoMutation = useApiMutation<any>({
+  const uploadPhotoMutation = useApiMutation<FormData>({
     url: `/profile/update-picture`,
     method: 'POST',
     contentType: 'multipart/form-data',
     auth: true,
   });
 
-  const uploadPhoto = async (data: FormData): Promise<any> => {
+  const uploadPhoto = async (data: FormData): Promise<String> => {
     return new Promise((resolve, reject) => {
       uploadPhotoMutation.mutate(data, {
         onSuccess: (response) => resolve(response),
@@ -152,7 +137,6 @@ export const useProfile = (userId?: string) => {
     updateProfile,
     uploadPhoto,
     updateProfileFromAdmin,
-    toggleNotifs,
     deactivateEmployeeFromProject,
     getAuthenticatedUser,
     error,
