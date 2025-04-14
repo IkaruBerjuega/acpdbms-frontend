@@ -49,7 +49,7 @@ export default function TaskColumn({
 
   return (
     <div
-      className={`min-w-[250px] xl:min-w-0 xl:w-1/5 flex-col-start gap-1 overflow-y-auto  `}
+      className={`min-w-[250px] xl:min-w-0 xl:w-1/5 flex-col-start gap-1 overflow-y-auto`}
       ref={drop as unknown as React.RefObject<HTMLDivElement>}
     >
       <div className="flex-row-start-center gap-2 px-2">

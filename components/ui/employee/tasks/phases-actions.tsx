@@ -23,10 +23,12 @@ const RenderPhasesByStatus = ({
   status,
   phases,
   handleAction,
+  enableEmptyMessage = false,
 }: {
   status: Phase["status"];
   phases: Phase[] | undefined;
   handleAction: ({ id, action }: Actions) => void | undefined;
+  enableEmptyMessage?: boolean;
 }) => {
   function getStatusBgColor(status: string) {
     if (status === "to do") return "bg-orange-100 text-orange-600";
@@ -42,7 +44,10 @@ const RenderPhasesByStatus = ({
   const phasesLength = phases.length;
 
   if (phasesLength === 0) {
-    console.log(true);
+    if (enableEmptyMessage) {
+      return <div className="text-slate-500 text-sm">No {status} phases</div>;
+    }
+
     return;
   }
 
@@ -195,6 +200,7 @@ export function PhasesArchived() {
           status={"archived"}
           phases={filteredPhases}
           handleAction={() => {}}
+          enableEmptyMessage={true}
         />
       </div>
     </div>

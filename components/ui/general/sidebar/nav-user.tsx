@@ -25,6 +25,7 @@ import { useToken } from "@/hooks/general/use-token";
 import { useRouter } from "next/navigation";
 import { useUserBasicInfo } from "@/hooks/api-calls/admin/use-account";
 import { getInitialsFallback } from "@/lib/utils";
+import { useProjectSelectStore } from "@/hooks/states/create-store";
 
 export function NavUser({
   role = "admin",
@@ -40,6 +41,7 @@ export function NavUser({
   const router = useRouter();
 
   const { data } = useUserBasicInfo();
+  const { resetData } = useProjectSelectStore();
 
   const name = data?.full_name || "Admin";
   const profileSrc = data?.profile_picture_url;
@@ -51,6 +53,9 @@ export function NavUser({
       onSuccess: async () => {
         await deleteToken();
         router.push("/login");
+
+        localStorage.removeItem("projectSelected");
+        resetData();
       },
     });
   };

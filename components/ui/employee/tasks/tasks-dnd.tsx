@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import TaskColumn from "./task-columns";
-import { useProjectSelectStore } from "@/hooks/states/create-store";
 import {
   useGetTasks,
   useTaskActions,
@@ -30,26 +29,18 @@ import { useQueryParams } from "@/hooks/use-query-params";
 import { SubmitHandler, useForm } from "react-hook-form";
 import FormInput from "../../general/form-components/form-input";
 
-const isReviewTaskRequest = (obj: any): obj is ReviewTaskRequest => {
-  return (
-    obj &&
-    "approved" in obj &&
-    "new_task_description" in obj &&
-    "new_duration" in obj
-  );
-};
-
-export default function TasksDND() {
-  //get selected project id
-  const { data: projectSelected } = useProjectSelectStore();
-
-  const { params, paramsKey } = useQueryParams();
-
-  const isGeneral = paramsKey["view"] === "general";
+export default function TasksDND({
+  projectId,
+  view,
+}: {
+  projectId: string;
+  view: "general" | "assigned" | null;
+}) {
+  const isGeneral = view === "general";
 
   //tasks
   const { data: taskList, isLoading } = useGetTasks({
-    projectId: projectSelected[0]?.projectId,
+    projectId: projectId,
     initialData: { tasks: [] },
     isGeneral,
   });
@@ -164,7 +155,7 @@ export default function TasksDND() {
   const { startTask, pauseTask, setTaskToNeedsReview, reviewTask } =
     useTaskActions<ReviewTaskRequest | null>({
       taskId: String(taskId),
-      projectId: projectSelected[0]?.projectId,
+      projectId: projectId,
     });
 
   //for making a new version when the recent status is in needs review
@@ -294,7 +285,6 @@ export default function TasksDND() {
           description: response.message || successMessagePlaceholder,
         });
 
-        const projectId = projectSelected[0]?.projectId;
         if (projectId) {
           queryClient.invalidateQueries({
             queryKey: isGeneral
@@ -388,12 +378,12 @@ export default function TasksDND() {
   }
 
   if (tasks?.length === 0) {
-    return <>No Tasks for project selected {projectSelected[0]?.projectId}</>;
+    return <>No Tasks </>;
   }
 
   return (
     <DndProvider backend={HTML5Backend}>
-      <div className="w-full flex-col-start overflow-x-auto min-h-0 ">
+      <div className="w-full flex-col-start overflow-x-auto min-h-0 flex-grow">
         <div className="flex flex-wrap flex-col w-full h-auto gap-2">
           <div className="w-full flex-row-between-center">
             <FilterPopOver

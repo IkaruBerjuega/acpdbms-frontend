@@ -15,25 +15,19 @@ import { useAssociatedProjects } from "@/hooks/general/use-assigned-projects";
 import Card from "../project-card";
 import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ProjectListResponseInterface,
   ProjectSelector as ProjectSelectorProps,
 } from "@/lib/definitions";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useCheckViceManagerPermission } from "@/hooks/general/use-project";
+import { useQueryParams } from "@/hooks/use-query-params";
 
-export function ProjectSelector({
-  dynamicPage,
-  role,
-}: {
-  dynamicPage?: "project-details" | "admin-files";
-  role: "employee" | "client";
-}) {
+export function ProjectSelector({ role }: { role: "employee" | "client" }) {
   const { data: projects } = useAssociatedProjects({ role: role });
   const { data: projectSelected, setData, resetData } = useProjectSelectStore();
 
-  const router = useRouter();
   const [projectId, setProjectId] = useState<string>("");
 
   const { data } = useCheckViceManagerPermission(projectId);
@@ -47,6 +41,19 @@ export function ProjectSelector({
       setProjectId(parsedProject.projectId);
     }
   }, []);
+
+  // Function to update query parameters without modifying params directly
+  const { params } = useQueryParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const createQueryString = useCallback(
+    (value: string) => {
+      params.set("projectId", value);
+      replace(`${pathname}?${params.toString()}`);
+    },
+    [pathname, params, replace]
+  );
 
   function onSelect(
     projectId?: string,
@@ -63,10 +70,7 @@ export function ProjectSelector({
       setProjectId(projectId); // Updates asynchronously
       localStorage.setItem("projectSelected", JSON.stringify(data));
       setData([{ ...data }]); // Sync store with localStorage
-    }
-
-    if (projectId && dynamicPage === "project-details") {
-      router.push(`/employee/project-details/${projectId}/view`);
+      createQueryString(projectId + "_" + projectSelected);
     }
   }
 

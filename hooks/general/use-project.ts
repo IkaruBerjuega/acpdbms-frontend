@@ -2,6 +2,7 @@ import { useApiMutation, useApiQuery } from "../tanstack-query";
 import {
   Phase,
   PhaseRequest,
+  ProjectListResponseInterface,
   TeamDetailsResponse,
   TeamMemberDashboardResponse,
   ViceManagerPermissionResponse,
@@ -17,7 +18,7 @@ interface useProjectListProps<T> {
 }
 
 // Hook for fetching the project list
-export const useProjectList = <T>({
+export const useProjectList = <T extends ProjectListResponseInterface>({
   isArchived,
   initialData,
 }: useProjectListProps<T>) => {

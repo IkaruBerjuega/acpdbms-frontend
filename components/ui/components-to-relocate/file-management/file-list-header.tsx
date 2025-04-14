@@ -10,16 +10,20 @@ import { AccountsTableType } from "@/lib/definitions";
 import { useAccountActions } from "@/hooks/api-calls/admin/use-account";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { AddBtn } from "../../button";
+import { AddBtn, Button } from "../../button";
 import { titleCase } from "@/lib/utils";
+import { PiCardsThreeLight } from "react-icons/pi";
+import { VscListSelection } from "react-icons/vsc";
+import { LuFilter } from "react-icons/lu";
+import { File } from "@/lib/files-definitions";
 
-export default function AccountsTableHeaderActions() {
+export default function FileListHeaderActions() {
   const { paramsKey, params } = useQueryParams();
   const pathname = usePathname();
   const { replace } = useRouter();
   const queryClient = useQueryClient();
 
-  const tabParameter = "role";
+  const tabParameter = "tab";
   const role = paramsKey[tabParameter] || "employee";
   const isClient = role === "client";
   const tableName = isClient ? "Client" : "Employee";
@@ -28,11 +32,6 @@ export default function AccountsTableHeaderActions() {
   // Function to update query parameters without modifying params directly
   const createQueryString = useCallback(
     (parameter: string, value: string) => {
-      if (parameter === "role") {
-        params.delete("add");
-        params.delete("grant_access");
-      }
-
       params.set(parameter, value);
       replace(`${pathname}?${params.toString()}`);
     },
@@ -41,10 +40,15 @@ export default function AccountsTableHeaderActions() {
 
   const tabItems = [
     {
-      item: "employee",
-      action: () => createQueryString(tabParameter, "employee"),
+      item: "row",
+      element: <VscListSelection className="h-5 w-5 text-gray-500 " />,
+      action: () => createQueryString(tabParameter, "row"),
     },
-    { item: "client", action: () => createQueryString(tabParameter, "client") },
+    {
+      item: "card",
+      element: <PiCardsThreeLight className="h-5 w-5 text-gray-500" />,
+      action: () => createQueryString(tabParameter, "card"),
+    },
   ];
 
   // Archive accounts logic
@@ -54,12 +58,10 @@ export default function AccountsTableHeaderActions() {
 
   return (
     <DataTableHeader
-      tableName={tableName}
+      tableName={"Files"}
       onArchive={{
         fn: () => {
-          const userIds = (data as AccountsTableType[]).map(
-            (account) => account.user_id
-          );
+          const userIds = (data as File[]).map((file) => file.id);
           mutate(
             { user_ids: userIds },
             {
@@ -111,25 +113,13 @@ export default function AccountsTableHeaderActions() {
       onGenerateReport={true}
       additionalElement={
         <>
-          {!isClient && (
-            <AddBtn
-              label="Grant Access"
-              onClick={() => {
-                params.delete("add");
-                createQueryString("grant_access", "true");
-              }}
-              dark={false}
-              variant="outline"
-            />
-          )}
-          <AddBtn
-            label={`Add ${titleCase(role)}`}
-            onClick={() => {
-              params.delete("grant_access");
-              createQueryString("add", "true");
-            }}
-            dark={true}
-          />
+          <Button
+            className="h-full "
+            variant={"outline"}
+            onClick={() => createQueryString("filters", "true")}
+          >
+            <LuFilter className="text-xs md:text-lg" /> Filters
+          </Button>
           <Tabs activeTab={role} tabItems={tabItems} />
         </>
       }

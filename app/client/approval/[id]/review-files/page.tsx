@@ -9,10 +9,13 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export default async function Page({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ version: string | null; projectId: string | null }>;
 }) {
   const { id: taskId } = await params;
+  const { version, projectId } = await searchParams;
 
   //for initial data
   const initialData: TaskVersionsResponse = await serverRequestAPI({
@@ -33,6 +36,8 @@ export default async function Page({
     },
   ];
 
+  const _projectId = projectId?.split("_")[0];
+
   return (
     <div className="w-full h-full min-h-0 min-w-0 flex-col-start gap-4">
       <div className="flex-col-start gap-4 sm:flex-row-between-center sm:gap-0 w-full">
@@ -41,12 +46,19 @@ export default async function Page({
           <ProjectSelector role="employee" />
         </div>
       </div>
-      <FileReview
-        taskId={taskId}
-        initialData={initialData}
-        role="client"
-        reviewMode={true}
-      />
+
+      {_projectId ? (
+        <FileReview
+          taskId={taskId}
+          initialData={initialData}
+          role="client"
+          version={version}
+          reviewMode={true}
+          projectId={_projectId}
+        />
+      ) : (
+        "Select a project..."
+      )}
     </div>
   );
 }

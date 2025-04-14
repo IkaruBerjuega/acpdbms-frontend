@@ -71,7 +71,7 @@ export default async function Page({
   return (
     <>
       <SidebarTrigger breadcrumbs={breadcrumbs} />
-      <AccountsTableHeaderActions<AccountsTableType> />
+      <AccountsTableHeaderActions />
 
       <div className="flex-grow flex-row-start gap-2 relative flex-1  min-h-0  min-w-0">
         <div className="rounded-bl-lg bg-white-primary shadow-md  h-full w-full overflow-hidden min-w-0">

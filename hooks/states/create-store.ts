@@ -46,7 +46,7 @@ export const createStore = <T>(initialData?: T[]) =>
   );
 
 // Create Zustand store
-export const useCheckboxStore = createStore<SupportedTableTypes>([]);
+export const useCheckboxStore = createStore<SupportedTableTypes | string>([]);
 export const useProjectSelectStore = createStore<ProjectSelector>();
 export const usePhaseTransfer = createStore<Phase>([]);
 export const useSelectedTaskStatus = createStore<TaskStatuses | undefined>();

@@ -10,15 +10,14 @@ import {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-type PageProps = {
-  params: Promise<{ id: string }>;
-  searchParams: Promise<{ edit?: string }>;
-};
+interface PageProps {
+  searchParams: Promise<{ edit?: string; projectId: string | null }>;
+}
 
-export default async function Page({ params, searchParams }: PageProps) {
-  //await params and search params to destructure it
-  const { id: projectId } = await params;
-  const { edit = "false" } = await searchParams;
+export default async function Page({ searchParams }: PageProps) {
+  //await search params to destructure it
+
+  const { edit = "false", projectId } = await searchParams;
 
   //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
   const projectDetailsInitialData: ProjectDetailsInterface =
@@ -48,19 +47,25 @@ export default async function Page({ params, searchParams }: PageProps) {
     },
   ];
 
+  const _projectId = projectId?.split("_")[0];
+
   return (
     <>
       <div className="flex-row-between-center w-full">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
-        <ProjectSelector dynamicPage="project-details" role="client" />
+        <ProjectSelector role="employee" />
       </div>
-      <ProjectView
-        id={projectId}
-        edit={edit}
-        projectDetailsInitialData={projectDetailsInitialData}
-        teamInitialData={teamMembers}
-        isAdmin={false}
-      />
+      {_projectId ? (
+        <ProjectView
+          id={_projectId}
+          edit={edit}
+          projectDetailsInitialData={projectDetailsInitialData}
+          teamInitialData={teamMembers}
+          isAdmin={false}
+        />
+      ) : (
+        "Select a project"
+      )}
     </>
   );
 }

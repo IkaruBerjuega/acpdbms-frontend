@@ -1,5 +1,6 @@
 import { CellContext, HeaderContext, Row } from "@tanstack/react-table";
 import { FilterType } from "./filter-types";
+import { File as FileObject } from "./files-definitions";
 
 export interface UserInterface {
   id: number;
@@ -195,7 +196,7 @@ export interface Phase {
   created_at?: Date;
   finish_date?: Date;
   project_id?: string;
-  status?:
+  status:
     | "to do"
     | "in progress"
     | "cancelled"
@@ -216,7 +217,8 @@ export interface PhaseRequest {
 export type SupportedTableTypes =
   | ClientInterface
   | EmployeeInterface
-  | ProjectListResponseInterface;
+  | ProjectListResponseInterface
+  | FileObject;
 
 export interface ClientViewInterface {
   id: number;
@@ -359,24 +361,6 @@ export interface UploadData {
   images?: UploadImage[];
 }
 
-// //File Management
-// export interface File {
-//   task_version_id: number;
-//   name: string;
-//   path: string;
-//   size: number;
-//   type: string;
-//   category: string;
-//   uploaded_by: string;
-//   uploaded_at: string;
-//   is_archived: boolean;
-//   phase_id: number | null;
-//   phase_category: string | null;
-//   task_id: number | null;
-//   task_name: string | null;
-//   task_version_number: number;
-// }
-
 interface Filters {
   projectId: number;
   phaseId: number | null;
@@ -384,16 +368,4 @@ interface Filters {
   versionId: number | null;
   sortBy: keyof File;
   sortOrder: "asc" | "desc";
-}
-
-export interface FileListResponseInterface {
-  task_version_id: number;
-  task_id: number;
-  phase_id: number;
-  id: string;
-  name: string;
-  category: string;
-  task_name: string;
-  task_version: string;
-  uploaded_at: string;
 }

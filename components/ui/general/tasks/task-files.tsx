@@ -10,7 +10,7 @@ import { bytesToMb } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
 import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { FileIcon } from "../file-icon";
-import { useQueryClient } from "@tanstack/react-query";
+import { UseMutateFunction, useQueryClient } from "@tanstack/react-query";
 import {
   TaskFile,
   TaskFilesApproval,
@@ -21,7 +21,7 @@ import { Check, X } from "lucide-react";
 import useFileActions from "@/hooks/api-calls/employee/use-files";
 import { Badge } from "../../badge";
 
-type viewType = "references" | "deliverables";
+type viewType = "references" | "deliverables" | "archived";
 
 type inReviewViewType =
   | "approved"
@@ -33,26 +33,36 @@ type inReviewViewType =
 function FileView({
   files,
   onFileClick,
-  btnSrc,
-  btnClassName,
   reviewMode,
   selectedFile,
   review,
   handleSetApproval,
   role,
   tab,
+  handleToggleArchiveFile,
 }: {
   files: TaskFile[];
   onFileClick: ({ file }: { file: TaskFile }) => void;
-  btnSrc: string;
-  btnClassName: string;
   reviewMode?: boolean;
   selectedFile: TaskFile | undefined;
   review: TaskFilesApprovalRequest["approvals"] | undefined;
   handleSetApproval?: ({ task_file_id, approval }: TaskFilesApproval) => void;
   role?: "manager" | "client";
   tab?: inReviewViewType;
+  handleToggleArchiveFile: (id: string) => void;
 }) {
+  const toggleArchiveBtnConfig = (isArchived: boolean) => {
+    const toggleArchiveBtnSrc = isArchived
+      ? "/button-svgs/table-header-unarchive.svg"
+      : "/button-svgs/table-action-archive-black.svg";
+
+    const toggleArchiveBtnClass = isArchived
+      ? "bg-green-500 text-white-primary border-none hover:bg-green-600"
+      : "border-none ";
+
+    return { btnSrc: toggleArchiveBtnSrc, className: toggleArchiveBtnClass };
+  };
+
   return (
     <>
       {!files ||
@@ -130,14 +140,20 @@ function FileView({
               {!reviewMode && (
                 <div className="h-full flex-row-center min-w-10">
                   <ButtonIconTooltipDialog
-                    tooltipContent={"Remove file"}
-                    iconSrc={btnSrc}
-                    className={btnClassName}
-                    onClick={() => {}}
-                    alt={"remove uploaded file button"}
-                    dialogTitle={"Remove Uploaded File"}
+                    tooltipContent={"Archive file"}
+                    iconSrc={
+                      toggleArchiveBtnConfig(attachedFile.is_archived).btnSrc
+                    }
+                    className={
+                      toggleArchiveBtnConfig(attachedFile.is_archived).className
+                    }
+                    onClick={() =>
+                      handleToggleArchiveFile(String(attachedFile.id))
+                    }
+                    alt={"archive uploaded file button"}
+                    dialogTitle={"archive Uploaded File"}
                     dialogDescription={
-                      "Do you confirm on removing this uploaded file?"
+                      "Do you confirm on archiving this uploaded file?"
                     }
                     dialogContent={<DialogDesc />}
                     submitType={"button"}
@@ -204,15 +220,17 @@ export default function TaskFiles({
   role,
   review,
   setReview,
+  projectId,
 }: {
   taskId: string | undefined;
-  version: string | undefined;
+  version: string;
   reviewMode?: boolean;
   initialData?: TaskVersionsResponse;
   getSelectedFileUrl?: ({ file }: { file: TaskFile }) => void;
   role: "manager" | "client";
   review?: TaskFilesApproval[];
   setReview?: Dispatch<SetStateAction<TaskFilesApproval[] | undefined>>;
+  projectId: string;
 }) {
   const taskStatus = localStorage.getItem("selectedTaskStatus") as TaskStatuses;
 
@@ -247,8 +265,6 @@ export default function TaskFiles({
     return size;
   }, [attachedFiles]);
 
-  const { data: projectSelected } = useProjectSelectStore();
-  const projectId = projectSelected[0]?.projectId;
   if (!taskId) return null;
 
   const { data: taskVersions, isLoading: versionLoading } =
@@ -269,6 +285,11 @@ export default function TaskFiles({
   const { uploadDeliverables, uploadReferences } = useTaskActions({
     projectId: projectId,
     taskVersionId: lastVersionNumber,
+  });
+
+  const { archiveFiles } = useFileActions({
+    projectId: projectId,
+    taskVersionId: version,
   });
 
   //for refetching
@@ -357,60 +378,63 @@ export default function TaskFiles({
     ? lastVersion.task_files
     : openedVersion.task_files;
 
+  const archivedFiles = files.filter((file) => file.is_archived === true);
+
   const filesToReview = files.filter(
-    (file) => file.status === "to be reviewed"
+    (file) => file.status === "to be reviewed" && file.is_archived === false
   );
   const toCheckForApproved = [null, false];
   const toCheckForRejected = [null, true];
 
-  const approvedFiles = files.filter((file) => file.status === "approved");
-  const rejectedFiles = files.filter((file) => file.status === "rejected");
+  const approvedFiles = files.filter(
+    (file) => file.status === "approved" && file.is_archived === false
+  );
+  const rejectedFiles = files.filter(
+    (file) => file.status === "rejected" && file.is_archived === false
+  );
   const referencesFiles = files.filter(
-    (file) => file.category === "references"
+    (file) => file.category === "references" && file.is_archived === false
   );
   const deliverablesFiles = files.filter(
-    (file) => file.category === "deliverables"
+    (file) => file.category === "deliverables" && file.is_archived === false
   );
 
   const filesApprovedByManager = approvedFiles.filter(
     (file) =>
       file.project_manager_approval === true &&
-      toCheckForApproved.includes(file.client_approval)
+      toCheckForApproved.includes(file.client_approval) &&
+      file.is_archived === false
   );
 
   const filesApprovedByClient = approvedFiles.filter(
-    (file) =>
-      file.client_approval === true &&
-      toCheckForApproved.includes(file?.project_manager_approval)
-  );
-
-  const filesApprovedByBothManagerAndClient = approvedFiles.filter(
-    (file) =>
-      file.client_approval === true && file.project_manager_approval === true
+    (file) => file.client_approval === true
   );
 
   const filesRejectedByManager = rejectedFiles.filter(
     (file) =>
       file.project_manager_approval === false &&
-      toCheckForRejected.includes(file.client_approval)
+      toCheckForRejected.includes(file.client_approval) &&
+      file.is_archived === false
   );
 
   const filesRejectedByClient = rejectedFiles.filter(
-    (file) =>
-      file.client_approval === false &&
-      toCheckForRejected.includes(file.project_manager_approval)
-  );
-
-  const filesRejectedByBothManagerAndClient = rejectedFiles.filter(
-    (file) =>
-      file.client_approval === false && file.project_manager_approval === false
+    (file) => file.client_approval === false
   );
 
   const maxSizeInMb = 100;
 
   const isLoading = uploadDeliverablesIsLoading || uploadReferencesIsLoading;
 
-  const actionConfig = {
+  const actionConfig: Record<
+    string,
+    {
+      title: string;
+      mutate: UseMutateFunction<any, Error, FormData | undefined, unknown>;
+      successMessagePlaceholder: string;
+      isLoading: boolean;
+      dragAndDropDesc: string;
+    } | null
+  > = {
     deliverables: {
       title: !reviewMode ? "Upload Deliverables" : "Review Files",
       mutate: uploadDeliverablesMutate,
@@ -429,6 +453,7 @@ export default function TaskFiles({
       isLoading: uploadReferencesIsLoading,
       dragAndDropDesc: "Drag and drop to upload reference files",
     },
+    archived: null,
   };
 
   const handleSetApproval = ({ task_file_id, approval }: TaskFilesApproval) => {
@@ -478,10 +503,10 @@ export default function TaskFiles({
       return;
     }
 
-    const actionFn = actionConfig[view].mutate;
+    const actionFn = actionConfig[view]?.mutate;
     const successMessagePlaceholder =
-      actionConfig[view].successMessagePlaceholder;
-    const toastTitle = actionConfig[view].title;
+      actionConfig[view]?.successMessagePlaceholder;
+    const toastTitle = actionConfig[view]?.title;
 
     //setup form data
     const formData = new FormData();
@@ -490,6 +515,8 @@ export default function TaskFiles({
     }
 
     setAttachedFiles([]);
+
+    if (!actionFn) return;
 
     actionFn(formData, {
       onSuccess: async (response: { message?: string }) => {
@@ -522,7 +549,38 @@ export default function TaskFiles({
     setReview(undefined);
   };
 
+  const handleArchiveFiles = async (id: string) => {
+    archiveFiles.mutate(
+      { file_ids: [id] },
+      {
+        onSuccess: async (response: { message?: string }) => {
+          toast({
+            variant: "default",
+            title: "Archive File",
+            description: response.message || "File successfully archived",
+          });
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ["tasks", projectId] }),
+            queryClient.invalidateQueries({
+              queryKey: ["task-versions", taskId],
+            }),
+          ]);
+        },
+        onError: (error: { message?: string }) => {
+          toast({
+            variant: "destructive",
+            title: "Archive File",
+            description:
+              error.message || "There was an error submitting the form",
+          });
+        },
+      }
+    );
+  };
+
   const isViewDeliverables = view === "deliverables";
+  const isViewReferences = view === "references";
+  const isViewArchived = view === "archived" || reviewViewStatus === "archived";
   const isViewToReview = reviewViewStatus === "to review";
   const isViewAccepted = reviewViewStatus === "approved";
   const isViewRejected = reviewViewStatus === "rejected";
@@ -611,7 +669,7 @@ export default function TaskFiles({
                 variant={"ghost"}
                 onClick={() => setView("references")}
                 className={`${
-                  !isViewDeliverables
+                  isViewReferences
                     ? "text-black-primary font-semibold"
                     : "text-slate-400"
                 }`}
@@ -619,6 +677,25 @@ export default function TaskFiles({
                 References
               </Button>
             )}
+
+            <Button
+              size={"sm"}
+              variant={"ghost"}
+              onClick={() => {
+                if (reviewMode) {
+                  setreviewViewStatus("archived");
+                } else {
+                  setView("archived");
+                }
+              }}
+              className={`${
+                isViewArchived
+                  ? "text-black-primary font-semibold"
+                  : "text-slate-400"
+              }`}
+            >
+              Archived
+            </Button>
           </div>
           <Separator />
           <div className="flex-1 overflow-y-auto space-y-2 py-4">
@@ -628,23 +705,21 @@ export default function TaskFiles({
                   <FileView
                     files={deliverablesFiles}
                     onFileClick={selectFile}
-                    btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                    btnClassName={"border-none"}
                     reviewMode={reviewMode}
                     selectedFile={selectedfile}
                     review={undefined}
                     handleSetApproval={undefined}
+                    handleToggleArchiveFile={handleArchiveFiles}
                   />
                 )}
-                {!isViewDeliverables && (
+                {isViewReferences && (
                   <FileView
                     files={referencesFiles}
                     onFileClick={selectFile}
-                    btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                    btnClassName={"border-none"}
                     reviewMode={reviewMode}
                     selectedFile={selectedfile}
                     review={undefined}
+                    handleToggleArchiveFile={handleArchiveFiles}
                   />
                 )}
               </>
@@ -656,18 +731,16 @@ export default function TaskFiles({
                   <FileView
                     files={filesToReview}
                     onFileClick={selectFile}
-                    btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                    btnClassName={"border-none"}
                     reviewMode={reviewMode}
                     selectedFile={selectedfile}
                     review={review}
                     handleSetApproval={handleSetApproval}
+                    handleToggleArchiveFile={handleArchiveFiles}
                   />
                 )}
 
                 {isViewAccepted && (
                   <>
-                    {/* {role === "client" && ( */}
                     <div className="space-y-2">
                       <Badge className="bg-gray-100 text-black-secondary">
                         Manager Approved
@@ -675,18 +748,15 @@ export default function TaskFiles({
                       <FileView
                         files={filesApprovedByManager}
                         onFileClick={selectFile}
-                        btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                        btnClassName={"border-none"}
                         reviewMode={reviewMode}
                         selectedFile={selectedfile}
                         review={review}
                         handleSetApproval={handleSetApproval}
                         role={role}
+                        handleToggleArchiveFile={handleArchiveFiles}
                       />
                     </div>
-                    {/* )} */}
 
-                    {/* {role === "manager" && ( */}
                     <div className="space-y-2">
                       <Badge className="bg-gray-100 text-black-secondary">
                         Client Approved
@@ -694,32 +764,24 @@ export default function TaskFiles({
                       <FileView
                         files={filesApprovedByClient}
                         onFileClick={selectFile}
-                        btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                        btnClassName={"border-none"}
-                        reviewMode={reviewMode}
-                        selectedFile={selectedfile}
-                        handleSetApproval={handleSetApproval}
-                        review={review}
-                        role={role}
-                      />
-                    </div>
-                    {/* )} */}
-
-                    <div className="space-y-2">
-                      <Badge className="bg-gray-100 text-black-secondary">
-                        Manager/Client Approved
-                      </Badge>
-                      <FileView
-                        files={filesApprovedByBothManagerAndClient}
-                        onFileClick={selectFile}
-                        btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                        btnClassName={"border-none"}
                         reviewMode={reviewMode}
                         selectedFile={selectedfile}
                         review={undefined}
+                        handleToggleArchiveFile={handleArchiveFiles}
                       />
                     </div>
                   </>
+                )}
+
+                {isViewArchived && (
+                  <FileView
+                    files={archivedFiles}
+                    onFileClick={selectFile}
+                    reviewMode={reviewMode}
+                    selectedFile={selectedfile}
+                    review={undefined}
+                    handleToggleArchiveFile={handleArchiveFiles}
+                  />
                 )}
 
                 {isViewRejected && (
@@ -732,18 +794,15 @@ export default function TaskFiles({
                       <FileView
                         files={filesRejectedByManager}
                         onFileClick={selectFile}
-                        btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                        btnClassName={"border-none"}
                         reviewMode={reviewMode}
                         selectedFile={selectedfile}
                         review={review}
                         handleSetApproval={handleSetApproval}
                         role={role}
+                        handleToggleArchiveFile={handleArchiveFiles}
                       />
                     </div>
-                    {/* )} */}
 
-                    {/* {role === "manager" && ( */}
                     <div className="space-y-2">
                       <Badge className="bg-gray-100 text-black-secondary">
                         Client Rejected
@@ -751,29 +810,10 @@ export default function TaskFiles({
                       <FileView
                         files={filesRejectedByClient}
                         onFileClick={selectFile}
-                        btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                        btnClassName={"border-none"}
-                        reviewMode={reviewMode}
-                        selectedFile={selectedfile}
-                        handleSetApproval={handleSetApproval}
-                        review={review}
-                        role={role}
-                      />
-                    </div>
-                    {/* )} */}
-
-                    <div className="space-y-2">
-                      <Badge className="bg-gray-100 text-black-secondary">
-                        Manager/Client Rejected
-                      </Badge>
-                      <FileView
-                        files={filesRejectedByBothManagerAndClient}
-                        onFileClick={selectFile}
-                        btnSrc={"/button-svgs/table-action-archive-black.svg"}
-                        btnClassName={"border-none"}
                         reviewMode={reviewMode}
                         selectedFile={selectedfile}
                         review={undefined}
+                        handleToggleArchiveFile={handleArchiveFiles}
                       />
                     </div>
                   </>
@@ -784,7 +824,7 @@ export default function TaskFiles({
         </div>
       </div>
 
-      {isLastVersion && !reviewMode && !isTaskDone && (
+      {isLastVersion && !reviewMode && !isTaskDone && !isViewArchived && (
         <>
           <Separator className="w-full my-4 bg-slate-500" />
           <div className="w-full flex-col-start gap-2 h-1/2 overflow-y-auto">
@@ -794,7 +834,7 @@ export default function TaskFiles({
                   attachedFiles: attachedFiles,
                   setAttachedFiles: setAttachedFiles,
                 }}
-                description={actionConfig[view].dragAndDropDesc}
+                description={actionConfig[view]?.dragAndDropDesc}
               />
               {message && <div className="text-xs text-red-600">{message}</div>}
             </div>
@@ -804,7 +844,7 @@ export default function TaskFiles({
                 btnTitle={"Submit"}
                 isLoading={isLoading}
                 alt={"Submit attached or uploaded files"}
-                dialogTitle={actionConfig[view].title}
+                dialogTitle={actionConfig[view]?.title}
                 dialogDescription={
                   "Do you confirm on uploading the attached files?"
                 }

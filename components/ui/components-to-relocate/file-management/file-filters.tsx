@@ -1,109 +1,146 @@
-'use client';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { X } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+"use client";
 
-interface Project {
-  id: number;
-  project_title: string;
-}
+import { cn } from "@/lib/utils";
+import { usePathname, useRouter } from "next/navigation";
+import { useQueryParams } from "@/hooks/use-query-params";
+import { useQueryClient } from "@tanstack/react-query";
+import { FilesPageProps } from "@/lib/files-definitions";
+import { useCallback } from "react";
+import { Combobox } from "../../combobox";
+import { useProjectList } from "@/hooks/general/use-project";
+import { ItemInterface } from "@/lib/filter-types";
 
-interface FileFiltersProps {
-  onFilterChange: (filters: {
-    projectId: number | null;
-    project_title: string | null;
-  }) => void;
-  currentFilters: { projectId: number | null };
-  projects: Project[];
-  className?: string;
+interface FileFiltersProps extends FilesPageProps {
+  phases: ItemInterface[] | undefined;
+  tasks: ItemInterface[] | undefined;
+  taskVersionItems: ItemInterface[] | undefined;
+  isAdmin: boolean;
 }
 
 export default function FileFilters({
-  onFilterChange,
-  currentFilters,
-  projects,
-  className,
+  phases,
+  tasks,
+  taskVersionItems,
+  projectId,
+  phaseId,
+  taskId,
+  taskVersionId,
+  isAdmin,
 }: FileFiltersProps) {
+  const { params } = useQueryParams();
   const pathname = usePathname();
   const { replace } = useRouter();
-  const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
 
-  // Get projectId from URL (default to currentFilters.projectId)
-  const projectIdFromUrl = searchParams.get('projectId')
-    ? Number(searchParams.get('projectId'))
-    : currentFilters.projectId;
+  //project filter items/options
+  const { data: projects } = useProjectList({ isArchived: false });
+  const projectItems = projects?.map((project) => {
+    return { value: project.id, label: project.project_title };
+  });
 
-  // Find the project title dynamically
-  const activeProject = projects.find((p) => p.id === projectIdFromUrl);
-  const activeProjectId = activeProject ? activeProject.id.toString() : '';
+  const removeFilter = useCallback(
+    (filter: "projectId" | "phaseId" | "taskId" | "taskVersionId") => {
+      if (filter === "projectId") {
+        params.delete("projectId");
+      }
 
-  const handleProjectChange = (value: string) => {
-    const selectedProject = projects.find((p) => p.id.toString() === value);
-    const projectId = selectedProject ? selectedProject.id : null;
+      if (filter === "phaseId" || filter === "projectId") {
+        params.delete("phaseId");
+      }
 
-    // Update URL with projectId
-    const params = new URLSearchParams(searchParams);
-    if (projectId) {
-      params.set('projectId', projectId.toString());
-    } else {
-      params.delete('projectId');
-    }
-    replace(`${pathname}?${params.toString()}`);
+      if (
+        filter === "taskId" ||
+        filter === "phaseId" ||
+        filter === "projectId"
+      ) {
+        params.delete("taskId");
+      }
 
-    // Pass projectId to parent
-    onFilterChange({
-      projectId,
-      project_title: selectedProject ? selectedProject.project_title : null,
-    });
-  };
+      if (
+        filter === "taskVersionId" ||
+        filter === "taskId" ||
+        filter === "phaseId" ||
+        filter === "projectId"
+      ) {
+        params.delete("taskVersionId");
+      }
 
-  const resetFilters = () => {
-    const params = new URLSearchParams(searchParams);
-    params.delete('projectId');
-    replace(`${pathname}?${params.toString()}`);
+      replace(`${pathname}?${params.toString()}`);
+    },
+    [pathname, params, replace]
+  );
 
-    onFilterChange({ projectId: null, project_title: null });
-  };
+  // Function to update query parameters without modifying params directly
+  const createQueryString = useCallback(
+    (
+      parameter: "projectId" | "phaseId" | "taskId" | "taskVersionId",
+      value: string
+    ) => {
+      removeFilter(parameter);
+      params.set(parameter, value);
+      replace(`${pathname}?${params.toString()}`);
+    },
+    [pathname, params, replace]
+  );
 
   return (
-    <div className={cn('w-full h-full space-y-4', className)}>
-      <div className='space-y-2'>
-        <Label htmlFor='project-filter' className='font-medium'>
-          Project
-        </Label>
-        <Select value={activeProjectId} onValueChange={handleProjectChange}>
-          <SelectTrigger id='project-filter'>
-            <SelectValue placeholder='Select Project' />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value='none'>Select Project</SelectItem>
-            {projects.map((project) => (
-              <SelectItem key={project.id} value={project.id.toString()}>
-                {project.project_title}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+    <div className={cn("w-full h-full space-y-4 py-4")}>
+      {isAdmin && (
+        <div className="flex-col-start gap-1">
+          <p className="text-xs text-slate-500 font-semibold">Project</p>
+          <Combobox
+            placeholder={"Select Project"}
+            emptyMessage={"No Available Projects"}
+            items={projectItems}
+            onSelect={(item) =>
+              createQueryString("projectId", item.value + "_" + item.label)
+            }
+            value={projectId?.split("_")[1] ?? ""}
+            clearFn={() => removeFilter("projectId")}
+          />
+        </div>
+      )}
+
+      <div className="flex-col-start gap-1">
+        <p className="text-xs text-slate-500 font-semibold">Phase</p>
+        <Combobox
+          placeholder={"Select Phase"}
+          emptyMessage={"No Available Phase"}
+          items={phases}
+          onSelect={(item) =>
+            createQueryString("phaseId", item.value + "_" + item.label)
+          }
+          value={phaseId?.split("_")[1] ?? ""}
+          clearFn={() => removeFilter("phaseId")}
+        />
+      </div>
+      <div className="flex-col-start gap-1">
+        <p className="text-xs text-slate-500 font-semibold">Task</p>
+        <Combobox
+          placeholder={"Select Task"}
+          emptyMessage={"No Available Task"}
+          items={tasks}
+          onSelect={(item) =>
+            createQueryString("taskId", item.value + "_" + item.label)
+          }
+          value={taskId?.split("_")[1] ?? ""}
+          clearFn={() => removeFilter("taskId")}
+        />
       </div>
 
-      <Button
-        variant='outline'
-        size='sm'
-        onClick={resetFilters}
-        className='w-full flex items-center justify-center mt-4'
-      >
-        <X className='h-4 w-4 mr-2' />
-        Clear Selection
-      </Button>
+      <div className="flex-col-start gap-1">
+        <p className="text-xs text-slate-500 font-semibold">Version</p>
+        <Combobox
+          placeholder={"Select Task Version"}
+          emptyMessage={"No Available Task Version"}
+          items={taskVersionItems}
+          onSelect={(item) =>
+            createQueryString("taskVersionId", item.value + "_" + item.label)
+          }
+          value={taskVersionId?.split("_")[1] ?? ""}
+          clearFn={() => removeFilter("taskVersionId")}
+        />
+      </div>
     </div>
   );
 }
