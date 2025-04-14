@@ -13,7 +13,7 @@ interface DropboxProps {
     attachedFiles: File[];
     setAttachedFiles: Dispatch<SetStateAction<File[]>>;
   };
-  description: string;
+  description?: string;
 }
 
 export default function Dropbox({

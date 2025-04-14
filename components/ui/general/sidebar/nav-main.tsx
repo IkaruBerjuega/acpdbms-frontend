@@ -66,6 +66,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { VscGithubProject } from "react-icons/vsc";
+import { useQueryParams } from "@/hooks/use-query-params";
 
 interface NavigationInterface {
   title: string;
@@ -75,7 +76,7 @@ interface NavigationInterface {
   query?: string;
 }
 
-export function NavMain({ role }: { role: string }) {
+export function NavMain({ role }: { role: "admin" | "employee" | "client" }) {
   const pathname = usePathname();
   let navs: NavigationInterface[];
 
@@ -103,37 +104,42 @@ export function NavMain({ role }: { role: string }) {
       title: "Files",
       url: "/admin/files",
       icon: LiaFileSolid,
+      query: "filters=true&tab=row",
     },
   ];
 
   const employeeNavs = [
     {
-      title: "Project Details",
-      url: `/employee/project-details/${data[0]?.projectId}/view/`,
-      icon: RiInfoCardLine,
+      title: "Project Dashboard",
+      url: `/employee/project-dashboard`,
+      icon: MdOutlineDashboard,
     },
     {
       title: "Tasks",
-      url: "/employee/tasks?view=assigned",
+      url: "/employee/tasks",
       icon: AiOutlineProject,
+      query: "view=assigned",
     },
     {
       title: "Files",
       url: "/employee/files",
       icon: LiaFileSolid,
+      query: "filters=true&tab=row",
     },
   ];
 
   const clientNavs = [
     {
       title: "Approval",
-      url: "/client/approval?view=to review",
+      url: "/client/approval",
       icon: MdOutlineRateReview,
+      query: "view=to review",
     },
     {
       title: "Files",
       url: "/client/files",
       icon: LiaFileSolid,
+      query: "filters=true&tab=row",
     },
   ];
 
@@ -142,15 +148,31 @@ export function NavMain({ role }: { role: string }) {
   else if (role === "client") navs = clientNavs;
   else navs = [];
 
+  //for employee and client users
+  const { paramsKey } = useQueryParams();
+  const projectId = paramsKey["projectId"] || null;
+
   return (
     <SidebarGroup className="">
       <SidebarMenu className=" ">
         {navs.map((nav) => {
           const active = isActive(pathname, nav.url);
           const { query } = nav;
+
+          const hasSearchParams =
+            Boolean(query) ||
+            Boolean(projectId) ||
+            Object.keys(paramsKey).length > 0;
+
           return (
             <SidebarMenuItem key={nav.title}>
-              <Link href={`${nav.url}${query ? `?${query}` : ""}`}>
+              <Link
+                href={`${nav.url}${hasSearchParams ? "?" : ""}${
+                  query ? `${query}` : ""
+                }${hasSearchParams ? "&" : ""}${
+                  projectId && role !== "admin" ? `projectId=${projectId}` : ""
+                }`}
+              >
                 <SidebarMenuButton
                   asChild
                   tooltip={nav.title}

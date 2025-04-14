@@ -25,6 +25,7 @@ import { useToken } from "@/hooks/general/use-token";
 import { useRouter } from "next/navigation";
 import { useUserBasicInfo } from "@/hooks/api-calls/admin/use-account";
 import { getInitialsFallback } from "@/lib/utils";
+import { useProjectSelectStore } from "@/hooks/states/create-store";
 
 export function NavUser({
   role = "admin",
@@ -40,17 +41,27 @@ export function NavUser({
   const router = useRouter();
 
   const { data } = useUserBasicInfo();
+  const { resetData } = useProjectSelectStore();
 
   const name = data?.full_name || "Admin";
   const profileSrc = data?.profile_picture_url;
   const email = data?.email;
   const initialsAsProfileSrcFallback = getInitialsFallback(name);
 
+  const settingsMap = {
+    admin: { href: "/admin/settings", label: "Admin Settings" },
+    employee: { href: "/employee/settings", label: "Account Settings" },
+    client: { href: "/client/settings", label: "Account Settings" },
+  };
+
   const handleLogout = () => {
     mutate(null, {
       onSuccess: async () => {
         await deleteToken();
+
         router.push("/login");
+        resetData();
+        localStorage.removeItem("projectSelected");
       },
     });
   };
@@ -99,12 +110,14 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <Link href="/admin/settings">
-                <DropdownMenuItem>
-                  <IoSettings />
-                  Admin Settings
-                </DropdownMenuItem>
-              </Link>
+              {settingsMap[role] && (
+                <Link href={settingsMap[role].href}>
+                  <DropdownMenuItem>
+                    <IoSettings />
+                    {settingsMap[role].label}
+                  </DropdownMenuItem>
+                </Link>
+              )}
             </DropdownMenuGroup>
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut />

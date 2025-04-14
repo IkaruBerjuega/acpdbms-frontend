@@ -71,7 +71,7 @@ export interface editAccountDetails {
   first_name: string;
   middle_name?: string;
   last_name: string;
-  phoneNumber?: string;
+  phone_number?: string;
   street?: string;
   city_town?: string;
   state?: string;
@@ -79,8 +79,20 @@ export interface editAccountDetails {
   profile_picture_url?: string;
   position?: string;
 }
+export interface adminUpdateProfile {
+  first_name?: string;
+  middle_name?: string;
+  last_name?: string;
+  street?: string;
+  city_town?: string;
+  state?: string;
+  zip_code?: string;
+  phone_number?: string;
+  position?: string;
+  email?: string;
+}
 
-export interface firstLogin {
+export interface updateProfile {
   email: string;
   first_name: string;
   middle_name?: string;

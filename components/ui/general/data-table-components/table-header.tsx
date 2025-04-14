@@ -99,7 +99,7 @@ export default function DataTableHeader({
         {onShowArchive && (
           <ButtonTooltip
             tooltip={`Show Archived ${tableName}`}
-            className={`${isArchived && "bg-green-200 hover:!bg-green-300"}`}
+            className={`${isArchived && "bg-gray-100 hover:!bg-gray-200"}`}
             iconSrc="/button-svgs/table-header-show-archive.svg"
             onClick={toggleArchived}
           />

@@ -13,9 +13,11 @@ export default async function Page({
     sheet: "comments" | "files" | "phases" | "phases_archived" | undefined;
     taskId: string | undefined;
     version: number | undefined;
+    projectId: string | null;
+    view: "general" | "assigned" | null;
   }>;
 }) {
-  const { sheet, taskId, version } = await searchParams;
+  const { sheet, taskId, projectId, view } = await searchParams;
   const breadcrumbs: Breadcrumbs[] = [
     {
       href: "",
@@ -29,6 +31,8 @@ export default async function Page({
     },
   ];
 
+  const _projectId = projectId?.split("_")[0];
+
   return (
     <div className="w-full h-full flex-col-start min-h-0 min-w-0 overflow-x-auto space-y-4">
       <div className="flex-col-start gap-4 sm:flex-row-between-center sm:gap-0 w-full">
@@ -37,13 +41,21 @@ export default async function Page({
           <ProjectSelector role="employee" />
         </div>
       </div>
+
       <TasksHeaderActions isEmployee={true} />
-      <TasksDND />
-      <TaskSheetContainer
-        sheetParamValue={sheet}
-        taskId={taskId}
-        version={undefined}
-      />
+
+      {_projectId ? (
+        <>
+          <TasksDND projectId={_projectId} view={view} />
+          <TaskSheetContainer
+            sheetParamValue={sheet}
+            taskId={taskId}
+            version={undefined}
+          />
+        </>
+      ) : (
+        "Select a project"
+      )}
     </div>
   );
 }

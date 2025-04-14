@@ -9,6 +9,7 @@ import { requireError } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { SubmitHandler } from "react-hook-form";
+
 export default function AddClient({ isOpen }: { isOpen: boolean }) {
   const {
     register,

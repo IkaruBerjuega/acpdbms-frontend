@@ -12,14 +12,18 @@ import { Button } from "../button";
 
 export default function FileReview({
   taskId,
+  version,
   initialData,
   role,
   reviewMode,
+  projectId,
 }: {
   taskId: string;
+  version: string | null;
   initialData: TaskVersionsResponse;
   role: "manager" | "client";
   reviewMode: boolean;
+  projectId: string;
 }) {
   const [selectedFile, setSelectedFile] = useState<TaskFile>();
 
@@ -45,12 +49,34 @@ export default function FileReview({
     createQueryString("view_files", "true");
   };
 
-  const desc =
-    role === "manager"
-      ? "Approve or reject files as the project manager "
-      : "Approve or reject files as the client";
+  const sidepanelConfig = {
+    true: {
+      title: "Files to review",
+      desc:
+        role === "manager"
+          ? "Approve or reject files as the project manager"
+          : "Approve or reject files as the client",
+    },
+    false: {
+      title: "Files",
+      desc:
+        role === "manager"
+          ? "View files and manage files"
+          : "View files as the client",
+    },
+  };
+
+  const isInReviewMode = reviewMode === true ? "true" : "false";
 
   const [review, setReview] = useState<TaskFilesApprovalRequest["approvals"]>();
+
+  if (!version) {
+    return (
+      <div className="flex-grow bg-white-primary rounded-md shadow-md">
+        There was an error
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 xl:flex-row-start-center gap-2 min-h-0">
@@ -69,13 +95,13 @@ export default function FileReview({
       </div>
       <SidepanelDrawerComponent
         paramKey={"view_files"}
-        title="Files To Review"
-        description={desc}
+        title={sidepanelConfig[isInReviewMode].title}
+        description={sidepanelConfig[isInReviewMode].desc}
         content={
           <TaskFiles
             taskId={taskId}
             reviewMode={reviewMode}
-            version={undefined}
+            version={version}
             initialData={initialData}
             getSelectedFileUrl={({ file }: { file: TaskFile }) => {
               setSelectedFile(file);
@@ -83,6 +109,7 @@ export default function FileReview({
             role={role}
             review={review}
             setReview={setReview}
+            projectId={projectId}
           />
         }
       />

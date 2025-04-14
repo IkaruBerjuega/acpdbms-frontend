@@ -15,29 +15,38 @@ import { useAssociatedProjects } from "@/hooks/general/use-assigned-projects";
 import Card from "../project-card";
 import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   ProjectListResponseInterface,
   ProjectSelector as ProjectSelectorProps,
 } from "@/lib/definitions";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useCheckViceManagerPermission } from "@/hooks/general/use-project";
+import { useQueryParams } from "@/hooks/use-query-params";
 
-export function ProjectSelector({
-  dynamicPage,
-  role,
-}: {
-  dynamicPage?: "project-details" | "admin-files";
-  role: "employee" | "client";
-}) {
+export function ProjectSelector({ role }: { role: "employee" | "client" }) {
   const { data: projects } = useAssociatedProjects({ role: role });
   const { data: projectSelected, setData, resetData } = useProjectSelectStore();
 
-  const router = useRouter();
   const [projectId, setProjectId] = useState<string>("");
 
   const { data } = useCheckViceManagerPermission(projectId);
   const hasVicePermission = data?.vice_manager_permission === true;
+
+  // Function to update query parameters without modifying params directly
+  const { params, paramsKey } = useQueryParams();
+
+  const hasProjectId = !!paramsKey["projectId"];
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const createQueryString = useCallback(
+    (value: string) => {
+      params.set("projectId", value);
+      replace(`${pathname}?${params.toString()}`);
+    },
+    [pathname, params, replace]
+  );
 
   useEffect(() => {
     const savedProject = localStorage.getItem("projectSelected");
@@ -45,6 +54,11 @@ export function ProjectSelector({
       const parsedProject: ProjectSelectorProps = JSON.parse(savedProject);
       setData([{ ...parsedProject }]);
       setProjectId(parsedProject.projectId);
+
+      if (!hasProjectId) {
+        const projectQueryParam = `${parsedProject.projectId}_${parsedProject.projectName}`;
+        createQueryString(projectQueryParam);
+      }
     }
   }, []);
 
@@ -63,10 +77,7 @@ export function ProjectSelector({
       setProjectId(projectId); // Updates asynchronously
       localStorage.setItem("projectSelected", JSON.stringify(data));
       setData([{ ...data }]); // Sync store with localStorage
-    }
-
-    if (projectId && dynamicPage === "project-details") {
-      router.push(`/employee/project-details/${projectId}/view`);
+      createQueryString(projectId + "_" + projectSelected);
     }
   }
 

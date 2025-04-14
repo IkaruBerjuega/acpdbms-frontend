@@ -113,7 +113,7 @@ DialogDescription.displayName = DialogPrimitive.Description.displayName;
 interface DialogNoBtn {
   title: string;
   description: string;
-  content: JSX.Element;
+  content?: JSX.Element;
   onClick: () => void;
   onOpen: boolean;
   onClose: () => void;

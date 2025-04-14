@@ -2,11 +2,9 @@
 import { TaskFile } from "@/lib/files-definitions";
 import { getFileExtension } from "@/lib/utils";
 import Image from "next/image";
-import { Button, ButtonLink } from "./button";
-import Link from "next/link";
+import { ButtonLink } from "./button";
 import { useState } from "react";
 import { MdOutlineZoomIn, MdOutlineZoomOut } from "react-icons/md";
-import { FILE } from "dns";
 import { Download } from "lucide-react";
 
 interface FileViewerProps {

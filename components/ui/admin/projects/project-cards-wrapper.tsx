@@ -2,8 +2,9 @@ import { useCreateTableColumns } from "../../general/data-table-components/creat
 import { useProjectList } from "@/hooks/general/use-project";
 import ProjectCards from "../../general/data-table-components/project-cards";
 import { columns } from "./project-columns";
+import { ProjectListResponseInterface } from "@/lib/definitions";
 
-export default function Cards<T>({
+export default function Cards<T extends ProjectListResponseInterface>({
   isArchived,
   initialData,
 }: {

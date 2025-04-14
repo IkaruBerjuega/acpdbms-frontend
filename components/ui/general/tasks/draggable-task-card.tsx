@@ -141,7 +141,7 @@ export default function TaskCard(props: TaskCardProps) {
   const shouldDisplayRemaining = status !== "done" && status !== "to do";
   const detailsLink = `tasks/${id}/details`;
 
-  const { params } = useQueryParams();
+  const { params, paramsKey } = useQueryParams();
   const pathname = usePathname();
   const { replace, push: goTo } = useRouter();
 
@@ -169,11 +169,17 @@ export default function TaskCard(props: TaskCardProps) {
   }
 
   function goToFiles() {
+    //check if there is projectId url parameter
+    const projectId = paramsKey["projectId"];
     if (status === "needs review") {
-      goTo(`/employee/tasks/${id}/review-files?view_files=true`);
+      goTo(
+        `/employee/tasks/${id}/review-files?view_files=true&version=${version}&projectId=${projectId}`
+      );
       return;
     }
-    goTo(`/employee/tasks/${id}/view-files?view_files=true`);
+    goTo(
+      `/employee/tasks/${id}/view-files?view_files=true&version=${version}&projectId=${projectId}`
+    );
     localStorage.setItem("selectedTaskStatus", status);
   }
 

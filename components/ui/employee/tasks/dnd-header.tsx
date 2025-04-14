@@ -94,20 +94,20 @@ export default function TasksHeaderActions({
                 isEmployee
                   ? [
                       {
-                        item: "All Tasks",
-                        action: () => {
-                          createQueryString("view", "general");
-                          queryClient.invalidateQueries({
-                            queryKey: ["tasks", projectId],
-                          });
-                        },
-                      },
-                      {
                         item: "My Tasks",
                         action: () => {
                           createQueryString("view", "assigned");
                           queryClient.invalidateQueries({
                             queryKey: ["my-tasks", projectId],
+                          });
+                        },
+                      },
+                      {
+                        item: "All Tasks",
+                        action: () => {
+                          createQueryString("view", "general");
+                          queryClient.invalidateQueries({
+                            queryKey: ["tasks", projectId],
                           });
                         },
                       },

@@ -129,6 +129,7 @@ export function useApiQuery<T>({
 
     return response.json();
   };
+
   const queryKey = typeof key === "string" ? [key] : key;
 
   const { data, isLoading, isPending, error, isError } = useQuery({

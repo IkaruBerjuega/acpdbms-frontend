@@ -175,12 +175,12 @@ export function Combobox({
               {emptyMessage}...
             </CommandEmpty>
             <CommandGroup className="w-full" autoFocus={false}>
-              {items?.map((item) => {
+              {items?.map((item, index) => {
                 const highlightColor = item.highlight?.initialColor;
 
                 return (
                   <CommandItem
-                    key={item.value} // Use value as the unique key
+                    key={index} // Use value as the unique key
                     value={String(item.value)} // Ensure that the value is used here
                     autoFocus={false}
                     keywords={[item.label]}
@@ -201,7 +201,7 @@ export function Combobox({
                   >
                     <Check
                       className={`mr-2 h-4 w-4 ${
-                        selectedValueId === item.value
+                        selectedValue === item.value
                           ? "opacity-100"
                           : "opacity-0"
                       }`}

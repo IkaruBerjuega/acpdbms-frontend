@@ -214,9 +214,9 @@ const ButtonIconTooltipDialog = ({
         }`}
       >
         <button
-          className={`border-[1px] px-2 py-1 ${className} rounded-md hover:bg-white-secondary cursor-pointer flex-col-center ${
+          className={`border-[1px] px-2 py-1  rounded-md hover:bg-white-secondary cursor-pointer flex-col-center ${
             disabled ? "cursor-not-allowed" : ""
-          }`}
+          } ${className}`}
           onClick={() => setOpen(true)}
           disabled={disabled}
         >
@@ -251,7 +251,7 @@ const ButtonIconTooltipDialog = ({
 interface BtnDialogProps {
   btnTitle: string;
   alt: string;
-  dialogTitle: string;
+  dialogTitle?: string;
   dialogDescription: string;
   dialogContent?: React.JSX.Element;
   submitType: "button" | "submit" | "reset" | undefined;

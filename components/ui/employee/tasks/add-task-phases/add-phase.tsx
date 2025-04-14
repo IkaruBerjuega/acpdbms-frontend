@@ -22,7 +22,6 @@ import * as React from "react";
 
 import { Combobox } from "../../../combobox";
 import { ItemInterface } from "@/lib/filter-types";
-import { useInvalidateQuery } from "@/hooks/tanstack-query";
 
 function AddPhasesForm() {
   const { data: selectedProject } = useProjectSelectStore();
@@ -51,10 +50,7 @@ function AddPhasesForm() {
 
   const btnRemoveField = "/button-svgs/sidepanel-close.svg";
 
-  // Get QueryClient from the context
-  const { refetch } = useInvalidateQuery({
-    queryKey: ["phases-to-add", projectId],
-  });
+  const queryClient = useQueryClient();
 
   const { addPhases } = useProjectActions(projectId);
 
@@ -71,7 +67,9 @@ function AddPhasesForm() {
             title: "Add Phases",
             description: response.message || "Phases Added Successfully",
           });
-          refetch();
+          queryClient.invalidateQueries({
+            queryKey: ["phases-to-add", projectId],
+          });
         },
         onError: (error: { message?: string }) => {
           toast({

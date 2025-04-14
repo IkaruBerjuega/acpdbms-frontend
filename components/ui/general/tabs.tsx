@@ -6,6 +6,7 @@ interface TabsInterface {
   activeTab: string | null;
   tabItems: {
     item: string;
+    element?: JSX.Element;
     action: () => void;
   }[];
 }
@@ -13,7 +14,7 @@ interface TabsInterface {
 export default function Tabs({ activeTab, tabItems }: TabsInterface) {
   return (
     <div className="rounded-md flex-row-between-center bg-gray-200 h-full px-1.5 py-1 w-fit ">
-      {tabItems.map(({ item, action }, index) => {
+      {tabItems.map(({ item, element, action }, index) => {
         return (
           <button
             key={index}
@@ -22,7 +23,7 @@ export default function Tabs({ activeTab, tabItems }: TabsInterface) {
             } `}
             onClick={action}
           >
-            {titleCase(item)}
+            {element ? element : titleCase(item)}
           </button>
         );
       })}

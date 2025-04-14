@@ -13,7 +13,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { AddBtn } from "../../button";
 import { titleCase } from "@/lib/utils";
 
-export default function AccountsTableHeaderActions<T>() {
+export default function AccountsTableHeaderActions() {
   const { paramsKey, params } = useQueryParams();
   const pathname = usePathname();
   const { replace } = useRouter();

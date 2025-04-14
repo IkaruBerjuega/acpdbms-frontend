@@ -85,7 +85,7 @@ export default function TaskCard(props: TaskCardProps) {
 
   const shouldDisplayRemaining = status !== "done" && status !== "to do";
 
-  const { params } = useQueryParams();
+  const { params, paramsKey } = useQueryParams();
   const pathname = usePathname();
   const { replace, push: goTo } = useRouter();
 
@@ -102,11 +102,17 @@ export default function TaskCard(props: TaskCardProps) {
   const { setData: setStatus } = useSelectedTaskStatus();
 
   function goToFiles() {
+    const projectId = paramsKey["projectId"];
     if (status === "needs review") {
-      goTo(`/client/approval/${id}/review-files?view_files=true`);
+      goTo(
+        `/client/approval/${id}/review-files?view_files&version=${version}&projectId=${projectId}`
+      );
+
       return;
     }
-    goTo(`/client/approval/${id}/view-files?view_files=true`);
+    goTo(
+      `/client/approval/${id}/view-files?view_files=true&version=${version}&projectId=${projectId}`
+    );
     localStorage.setItem("selectedTaskStatus", status);
   }
 
