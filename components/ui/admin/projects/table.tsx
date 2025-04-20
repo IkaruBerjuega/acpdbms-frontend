@@ -3,11 +3,11 @@
 import {
   ColumnInterfaceProp,
   ProjectListResponseInterface,
+  RevisionInterface,
 } from "@/lib/definitions";
 import { useProjectList } from "@/hooks/general/use-project";
 import { useCreateTableColumns } from "../../general/data-table-components/create-table-columns";
 import DataTable from "../../general/data-table-components/data-table";
-import { Suspense } from "react";
 
 export default function Table<T extends ProjectListResponseInterface>({
   isArchived,
@@ -106,12 +106,26 @@ export default function Table<T extends ProjectListResponseInterface>({
       header: "Actions",
     },
   ];
-  const transformedColumns = useCreateTableColumns<T>(columns, "Projects");
+  const transformedColumns = useCreateTableColumns<RevisionInterface>(
+    columns,
+    "Projects"
+  );
 
   const { data: projectList, isLoading } = useProjectList<T>({
     isArchived: isArchived,
     initialData: initialData,
   });
+
+  //transform the data so that the project revisions can be in the main display
+  const transformedProjectList =
+    projectList?.flatMap((project) => {
+      const { revisions, ...mainProjectWithoutRevisions } = project;
+
+      // Just return the revisions as-is; they already don't have the `revisions` field
+      const flattenedRevisions = revisions ?? [];
+
+      return [mainProjectWithoutRevisions, ...flattenedRevisions];
+    }) || [];
 
   if (isLoading) {
     return <>Loading</>;
@@ -122,8 +136,6 @@ export default function Table<T extends ProjectListResponseInterface>({
   }
 
   return (
-    <Suspense>
-      <DataTable columns={transformedColumns} data={projectList} />
-    </Suspense>
+    <DataTable columns={transformedColumns} data={transformedProjectList} />
   );
 }

@@ -17,8 +17,8 @@ import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { MdOutlineKeyboardArrowUp } from "react-icons/md";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  ProjectListResponseInterface,
   ProjectSelector as ProjectSelectorProps,
+  RevisionInterface,
 } from "@/lib/definitions";
 import { useCallback, useEffect, useState } from "react";
 import { useCheckViceManagerPermission } from "@/hooks/general/use-project";
@@ -33,6 +33,9 @@ export function ProjectSelector({
 }) {
   const { data: projects } = useAssociatedProjects({ role: role });
   const { data: projectSelected, setData, resetData } = useProjectSelectStore();
+  // const [projectVersions, setprojectVersions] = useState<RevisionInterface[]>(
+  //   []
+  // );
 
   const [projectId, setProjectId] = useState<string>("");
 
@@ -67,22 +70,33 @@ export function ProjectSelector({
     }
   }, [hasProjectId]);
 
-  function onSelect(
-    projectId?: string,
-    projectSelected?: string,
-    userRole?: ProjectListResponseInterface["user_role"]
-  ) {
-    if (projectId && projectSelected) {
-      const data = {
-        projectId,
-        projectName: projectSelected,
-        userRole,
-        hasVicePermission,
-      };
-      setProjectId(projectId); // Updates asynchronously
-      localStorage.setItem("projectSelected", JSON.stringify(data));
-      setData([{ ...data }]); // Sync store with localStorage
-      createQueryString(projectId + "_" + projectSelected);
+  function checkIfThereIsRevisions({ projectId }: { projectId: string }) {
+    const project = projects?.find(
+      (project) => projectId === project.id && !!project.revisions
+    );
+
+    return project;
+  }
+
+  function onSelect(project: RevisionInterface) {
+    if (project.id && project.project_title) {
+      const withRevisions = checkIfThereIsRevisions({ projectId: project.id });
+
+      if (!withRevisions) {
+        const userRole = project.user_role;
+        const data = {
+          projectId: project.id,
+          projectName: project.project_title,
+          userRole,
+          hasVicePermission,
+        };
+        setProjectId(projectId); // Updates asynchronously
+        localStorage.setItem("projectSelected", JSON.stringify(data));
+        setData([{ ...data }]); // Sync store with localStorage
+        createQueryString(project.id + "_" + project.project_title);
+
+        return;
+      }
     }
   }
 
@@ -116,9 +130,9 @@ export function ProjectSelector({
         </SheetHeader>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 mt-10">
-          {projects?.map((project, index) => (
-            <Card key={index} data={project} fn={onSelect} />
-          ))}
+          {projects?.map((project, index) => {
+            return <Card key={index} data={project} fn={onSelect} />;
+          })}
         </div>
 
         <SheetFooter className="hidden">

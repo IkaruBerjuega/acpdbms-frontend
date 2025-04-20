@@ -14,10 +14,11 @@ export default async function Page({
     version: string | null;
     projectId: string | null;
     view_files: "true" | null;
+    view_comments: "true" | null;
   }>;
 }) {
   const { id: taskId } = await params;
-  const { version, projectId, view_files } = await searchParams;
+  const { version, projectId, view_files, view_comments } = await searchParams;
 
   //for initial data
   const initialData: TaskVersionsResponse = await serverRequestAPI({
@@ -58,6 +59,7 @@ export default async function Page({
           reviewMode={true}
           projectId={_projectId}
           view_files={view_files}
+          view_comments={view_comments}
         />
       ) : (
         "Select a project..."

@@ -30,6 +30,7 @@ function transformComments(comments: TaskComment[]): TaskCommentInterface[] {
       status: comment.status,
       content: comment.content,
       created_at: comment.created_at,
+      role: comment.role,
       children: [],
     });
   });
@@ -107,6 +108,8 @@ interface MessageInterfaceProps {
 }
 
 function Message({ comment, onClick }: MessageInterfaceProps) {
+  const isClient = comment.role === "client";
+
   return (
     <div className="flex-col-start gap-1 w-full text-xs relative">
       <div className="flex-row-start-center gap-2">
@@ -116,7 +119,9 @@ function Message({ comment, onClick }: MessageInterfaceProps) {
             {getInitialsFallback(comment.name ?? "")}
           </AvatarFallback>
         </Avatar>
-        <p className="text-black-primary">{comment.name}</p>
+        <p className="text-black-primary">
+          {comment.name} {isClient && "(Client)"}
+        </p>
         <p>•</p>
         <p>{comment.created_at}</p>
       </div>
@@ -247,7 +252,7 @@ export default function TaskComments({
   }
 
   return (
-    <div className="flex-grow flex-col-between-start min-h-0">
+    <div className="flex-grow flex-col-between-start min-h-0 py-1">
       <div className="w-full text-sm text-slate-500 flex-grow flex-col-start gap-4 overflow-y-auto ">
         {transformedComments.map((comment) => {
           return (

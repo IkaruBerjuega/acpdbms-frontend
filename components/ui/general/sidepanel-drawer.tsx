@@ -16,6 +16,7 @@ import { useIsDesktop } from "@/hooks/use-is-desktop";
 import Image from "next/image";
 import Tabs from "./tabs";
 import { CustomTabsProps } from "@/lib/definitions";
+import { usePathname, useRouter } from "next/navigation";
 
 interface DrawerProps {
   paramKey: string;
@@ -23,6 +24,7 @@ interface DrawerProps {
   title?: string;
   description?: string;
   tabs?: CustomTabsProps;
+  containerClassName?: string;
 }
 
 export default function SidepanelDrawerComponent({
@@ -31,14 +33,16 @@ export default function SidepanelDrawerComponent({
   title,
   description,
   tabs,
+  containerClassName,
 }: DrawerProps) {
   const { paramsKey, params } = useQueryParams();
   const canOpen = paramsKey[paramKey] === "true";
+  const { replace } = useRouter();
+  const pathname = usePathname();
 
   const closeDrawer = () => {
-    const newParams = new URLSearchParams(params.toString());
-    newParams.delete(paramKey);
-    window.history.replaceState(null, "", `?${newParams.toString()}`);
+    params.delete(paramKey);
+    replace(`${pathname}?${params.toString()}`);
   };
 
   const isDesktop = useIsDesktop();
@@ -48,9 +52,9 @@ export default function SidepanelDrawerComponent({
     <Drawer open={canOpen} onOpenChange={(isOpen) => !isOpen && closeDrawer()}>
       {isDesktop ? (
         <div
-          className={`h-full hidden flex-col-start-center p-4 space-y-4 ${
+          className={`h-full hidden flex-col-start-center space-y-4 ${
             canOpen &&
-            "w-1/3 lg:flex bg-white-primary shadow-md rounded-md system-padding overflow-y-auto"
+            ` w-1/3 lg:flex bg-white-primary shadow-md rounded-md system-padding  overflow-y-auto ${containerClassName}`
           }`}
         >
           <div className="flex-1 min-h-0 w-full flex-col-start gap-2 overflow-hidden">
@@ -78,9 +82,7 @@ export default function SidepanelDrawerComponent({
               </Button>
             </div>
 
-            <div className="flex-1 w-full overflow-y-auto min-h-0 pb-4 ">
-              {content}
-            </div>
+            {content}
           </div>
         </div>
       ) : (

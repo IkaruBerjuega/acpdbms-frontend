@@ -82,6 +82,7 @@ export interface RevisionInterface {
   image_url: string | null;
   project_manager: string;
   revision?: number | null;
+  user_role?: "Project Manager" | "Vice Manager" | "Member";
   revision_of?: number | null;
 }
 

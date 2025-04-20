@@ -8,6 +8,7 @@ import { Button } from "../../button";
 import { VscListSelection } from "react-icons/vsc";
 import { LuFilter } from "react-icons/lu";
 import { PiCardsThreeLight } from "react-icons/pi";
+import { useQueryParams } from "@/hooks/use-query-params";
 
 export default function FileListHeaderActions({
   tab,
@@ -16,17 +17,17 @@ export default function FileListHeaderActions({
 }) {
   const pathname = usePathname();
   const { replace } = useRouter();
+  const { params } = useQueryParams();
 
   const tabParameter = "tab";
 
   // Function to update query parameters without modifying params directly
   const createQueryString = useCallback(
     (parameter: string, value: string) => {
-      const params = new URLSearchParams();
       params.set(parameter, value);
       replace(`${pathname}?${params.toString()}`);
     },
-    [pathname, replace]
+    [pathname, params, replace]
   );
 
   const tabItems = [

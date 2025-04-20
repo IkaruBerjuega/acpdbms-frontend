@@ -7,7 +7,7 @@ export function ViewEditCard({
   name,
   address,
   endDate,
-  id,
+  // id,
   edit,
   canDelete,
   image,
