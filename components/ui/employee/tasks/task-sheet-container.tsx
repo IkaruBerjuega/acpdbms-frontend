@@ -10,7 +10,6 @@ import { useCallback, useMemo } from "react";
 import Members from "./task-details/task-members-view";
 import AssignMembers from "./task-details/task-members-add";
 import { useQueryClient } from "@tanstack/react-query";
-import { useProjectSelectStore } from "@/hooks/states/create-store";
 
 interface TaskSheetContainerProps {
   sheetParamValue:
@@ -22,52 +21,15 @@ interface TaskSheetContainerProps {
     | "assign_members"
     | undefined;
   taskId: string | undefined;
-  version: string | undefined;
+  version: string;
+  projectId: string;
 }
-
-const config = {
-  comments: {
-    title: "Comments",
-    desc: "Comments made by team members are displayed here",
-    content: ({ taskId }: { taskId?: string }) => (
-      <TaskComments taskId={taskId} />
-    ),
-  },
-  files: {
-    title: "Files",
-    desc: "See attached files or attach a file",
-    content: ({ taskId, version }: { taskId?: string; version?: string }) => (
-      <TaskFiles taskId={taskId} version={version} role={"manager"} />
-    ),
-  },
-  phases: {
-    title: "Phases",
-    desc: "Finish, Cancel, Archive Phases",
-    content: () => <PhasesActive />,
-  },
-  phases_archived: {
-    title: "Phases",
-    desc: "Finish, Cancel, Archive Phases",
-    content: () => <PhasesArchived />,
-  },
-  members: {
-    title: "Members",
-    desc: "List of members assigned in this task",
-    content: ({ taskId }: { taskId?: string }) => <Members taskId={taskId} />,
-  },
-  assign_members: {
-    title: "Members",
-    desc: "List of members assigned in this task",
-    content: ({ taskId }: { taskId?: string }) => (
-      <AssignMembers taskId={taskId} />
-    ),
-  },
-};
 
 export default function TaskSheetContainer({
   sheetParamValue,
   taskId,
   version,
+  projectId,
 }: TaskSheetContainerProps) {
   const { params } = useQueryParams();
   const pathname = usePathname();
@@ -80,17 +42,14 @@ export default function TaskSheetContainer({
       newParams.set(parameter, value);
       replace(`${pathname}?${newParams.toString()}`);
     },
-    [pathname, replace, params.toString()]
+    [pathname, replace, params]
   );
-
-  const { data: projectSelected } = useProjectSelectStore();
-  const projectId = projectSelected[0]?.projectId;
 
   const queryClient = useQueryClient();
 
   const closeDrawerAdditionalFn = useCallback(() => {
     queryClient.invalidateQueries({ queryKey: ["tasks", projectId] });
-  }, []);
+  }, [projectId, queryClient]);
 
   const archivedPhases = sheetParamValue === "phases_archived";
   const viewPhases = sheetParamValue === "phases";
@@ -150,7 +109,47 @@ export default function TaskSheetContainer({
     }
 
     return null;
-  }, [activeTab, createQueryString]);
+  }, [activeTab, createQueryString, isInMembers, isInPhase]);
+
+  const config = {
+    comments: {
+      title: "Comments",
+      desc: "Comments made by team members are displayed here",
+      content: <TaskComments taskId={taskId} projectId={projectId} />,
+    },
+    files: {
+      title: "Files",
+      desc: "See attached files or attach a file",
+      content: (
+        <TaskFiles
+          taskId={taskId}
+          version={version}
+          role={"manager"}
+          projectId={projectId}
+        />
+      ),
+    },
+    phases: {
+      title: "Phases",
+      desc: "Finish, Cancel, Archive Phases",
+      content: <PhasesActive projectId={projectId} />,
+    },
+    phases_archived: {
+      title: "Phases",
+      desc: "Finish, Cancel, Archive Phases",
+      content: <PhasesArchived projectId={projectId} />,
+    },
+    members: {
+      title: "Members",
+      desc: "List of members assigned in this task",
+      content: <Members taskId={taskId} projectId={projectId} />,
+    },
+    assign_members: {
+      title: "Members",
+      desc: "List of members assigned in this task",
+      content: <AssignMembers taskId={taskId} projectId={projectId} />,
+    },
+  };
 
   if (!sheetParamValue) return null;
 
@@ -158,10 +157,7 @@ export default function TaskSheetContainer({
     <ReusableSheet
       title={config[sheetParamValue].title}
       description={config[sheetParamValue].desc}
-      content={config[sheetParamValue].content({
-        taskId: taskId,
-        version: version,
-      })}
+      content={config[sheetParamValue].content}
       paramKey="sheet"
       paramsKeyToDelete={["sheet", "taskId", "version"]}
       toCompare={sheetParamValue}

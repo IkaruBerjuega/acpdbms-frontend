@@ -28,7 +28,7 @@ import { useCheckboxStore } from "@/hooks/states/create-store";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Image from "next/image";
 
-export default function GrantProjectAccess({ isOpen }: { isOpen: boolean }) {
+export default function GrantProjectAccess() {
   const {
     register,
     reset,
@@ -152,7 +152,7 @@ export default function GrantProjectAccess({ isOpen }: { isOpen: boolean }) {
     projectManagerId: string,
     viceManagerId: string
   ) => {
-    let employeesToSet = TeamDetails?.activated_accounts.filter(
+    const employeesToSet = TeamDetails?.activated_accounts.filter(
       (employee) =>
         employee.id !== Number(projectManagerId) &&
         employee.id !== Number(viceManagerId)
@@ -160,8 +160,8 @@ export default function GrantProjectAccess({ isOpen }: { isOpen: boolean }) {
     queryClient.setQueryData(["employees"], employeesToSet);
   };
 
-  let projectManagerId = watch(`team.${0}.employee_id`);
-  let viceManagerId = watch(`team.${1}.employee_id`);
+  const projectManagerId = watch(`team.${0}.employee_id`);
+  const viceManagerId = watch(`team.${1}.employee_id`);
 
   useEffect(() => {
     setEmployeeOptionsForStep2(projectManagerId, viceManagerId);
@@ -193,7 +193,7 @@ export default function GrantProjectAccess({ isOpen }: { isOpen: boolean }) {
         return;
       }
 
-      let employeesToSet = TeamDetails?.other_employees.filter(
+      const employeesToSet = TeamDetails?.other_employees.filter(
         (employee) =>
           employee.id !== Number(projectManagerId) &&
           employee.id !== Number(viceManagerId)
@@ -244,7 +244,7 @@ export default function GrantProjectAccess({ isOpen }: { isOpen: boolean }) {
     (team) => team.role === "Project Manager"
   );
 
-  let canSubmit = isProjectManagerPopulated;
+  const canSubmit = isProjectManagerPopulated;
 
   return (
     <form

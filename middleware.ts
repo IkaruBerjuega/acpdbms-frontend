@@ -5,20 +5,21 @@ import { LoginResponseInterface } from "./lib/definitions";
 const LARAVEL_AUTH_CHECK_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth/check`;
 
 export async function middleware(req: NextRequest) {
-  const userDataWithToken =
-    req.cookies.get("user-info-with-token")?.value || "";
+  const storedToken = req.cookies.get("token")?.value || "";
+  const storedRole = req.cookies.get("role")?.value || "";
 
   // Decode URL-encoded cookie
-  const decodedToken = decodeURIComponent(userDataWithToken);
+  const decodedToken = decodeURIComponent(storedToken);
+  const decodedRole = decodeURIComponent(storedRole);
 
   // Check if the user is on the login page
   const isLoginPage = req.nextUrl.pathname === "/login";
 
   let token = "";
-  let user: LoginResponseInterface["user"] | null = null;
+  let role = "";
 
   // If no token, only allow access to the login page
-  if (!userDataWithToken) {
+  if (!storedToken && !storedRole) {
     return isLoginPage
       ? NextResponse.next()
       : NextResponse.redirect(new URL("/login", req.url));
@@ -26,9 +27,18 @@ export async function middleware(req: NextRequest) {
 
   // Try parsing the stored token data
   try {
-    const parsedData = JSON.parse(decodedToken) as LoginResponseInterface;
+    const parsedData = JSON.parse(decodedToken) as { token: string };
     token = parsedData.token;
-    user = parsedData.user;
+  } catch (error) {
+    return NextResponse.redirect(new URL("/login", req.url));
+  }
+
+  // Try parsing the stored token data
+  try {
+    const parsedData = JSON.parse(decodedRole) as {
+      role: "admin" | "employee" | "client";
+    };
+    role = parsedData.role;
   } catch (error) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
@@ -38,8 +48,6 @@ export async function middleware(req: NextRequest) {
       ? NextResponse.next()
       : NextResponse.redirect(new URL("/login", req.url));
   }
-
-  const role = user.role;
 
   try {
     const laravelResponse = await fetch(LARAVEL_AUTH_CHECK_URL, {

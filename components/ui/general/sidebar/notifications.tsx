@@ -1,65 +1,106 @@
 "use client";
 
-import { LogOut } from "lucide-react";
-import { IoSettings } from "react-icons/io5";
-import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  useSidebar,
 } from "@/components/ui/sidebar";
+import { useQueryParams } from "@/hooks/use-query-params";
+import { usePathname, useRouter } from "next/navigation";
+import { useCallback, useEffect } from "react";
 import { IoIosNotificationsOutline } from "react-icons/io";
+import ReusableSheet from "../sheet-component";
+import NotificationsComponent from "../notifications/notifications";
+import { NotificationFilters } from "@/lib/notification-definitions";
+import { useQueryClient } from "@tanstack/react-query";
+import { useGetUnseenNotificationsCount } from "@/hooks/general/use-notifications";
 
-export function Notifications() {
-  const { isMobile } = useSidebar();
+export function Notifications({
+  role,
+}: {
+  role: "admin" | "employee" | "client";
+}) {
+  const { params, paramsKey } = useQueryParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const { data } = useGetUnseenNotificationsCount({ role: role });
+  const unseenNotificationCount = data?.count;
+
+  const filter = paramsKey["filter"] as NotificationFilters["filter"];
+  const page = paramsKey["page"] || "1";
+
+  // Function to update query parameters without modifying params directly
+  const createQueryString = useCallback(
+    (parameter: string, value: string) => {
+      params.set(parameter, value);
+      replace(`${pathname}?${params.toString()}`);
+    },
+    [pathname, params, replace]
+  );
+
+  const queryClient = useQueryClient();
+
+  const openNotifs = () => {
+    createQueryString("notifications", "open");
+    createQueryString("filter", "all");
+    createQueryString("page", "1");
+  };
+
+  const setIntervalFilter = (interval: NotificationFilters["filter"]) => {
+    createQueryString("filter", interval);
+  };
+
+  const setPageIndex = (pageIndex: string) => {
+    createQueryString("page", pageIndex);
+  };
+
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ["notifications", role] });
+  }, [filter, page]);
+
+  const canOpenNotifs = filter !== undefined && page !== undefined;
 
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              asChild
-              tooltip={"Notifications"}
-              size="lg"
-              className="[&>svg]:size-6 group-data-[collapsible=icon]:[&>svg]:ml-1"
-            >
-              {/* <Avatar className="h-8 w-8 rounded-lg bg-transparent">
-                <AvatarImage
-                  src={"/sidebar/notifications.svg"}
-                  alt={"Notification Icon"}
-                  className="bg-transparent"
-                />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-              </Avatar> */}
-              <div className={`flex rounded-md `}>
-                <IoIosNotificationsOutline />
-                <span>Notifications</span>
-              </div>
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
-            side={isMobile ? "bottom" : "right"}
-            align="end"
-            sideOffset={4}
+    <>
+      <SidebarMenu>
+        <SidebarMenuItem className="relative">
+          <SidebarMenuButton
+            asChild
+            tooltip={"Notifications"}
+            size="lg"
+            className="[&>svg]:size-6 group-data-[collapsible=icon]:[&>svg]:ml-1 cursor-pointer"
           >
-            <DropdownMenuLabel>Notifications</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>No Notifications</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+            <div className={`flex rounded-md `} onClick={openNotifs}>
+              <IoIosNotificationsOutline className="text-xl" />
+              <span>Notifications</span>
+            </div>
+          </SidebarMenuButton>
+          <div className="bg-red-600 p-1 text-[10px]  absolute top-0 h-4 w-4 flex-col-center right-[-2px] leading-none rounded-full">
+            {unseenNotificationCount}
+          </div>
+        </SidebarMenuItem>
+      </SidebarMenu>
+
+      {canOpenNotifs && (
+        <ReusableSheet
+          title={"Notifications"}
+          description={"View your latest updates and alerts."}
+          content={
+            <NotificationsComponent
+              filter={filter}
+              page={page}
+              role={role}
+              setIntervalFilter={setIntervalFilter}
+              setPageIndex={setPageIndex}
+            />
+          }
+          paramKey={"notifications"}
+          paramsKeyToDelete={["notifications"]}
+          toCompare={"open"}
+          tabs={null}
+        />
+      )}
+    </>
   );
 }

@@ -4,7 +4,6 @@ import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
-  DrawerClose,
   DrawerContent,
   DrawerDescription,
   DrawerFooter,
@@ -78,8 +77,8 @@ export default function SidepanelDrawerComponent({
                 />
               </Button>
             </div>
-            {/* Ensure content fills space and allows scrolling */}
-            <div className="flex-1 w-full overflow-y-auto min-h-0 pb-4">
+
+            <div className="flex-1 w-full overflow-y-auto min-h-0 pb-4 ">
               {content}
             </div>
           </div>

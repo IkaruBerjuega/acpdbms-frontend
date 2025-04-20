@@ -5,17 +5,19 @@ import serverRequestAPI from "@/hooks/server-request";
 import { Breadcrumbs } from "@/lib/definitions";
 import { TaskVersionsResponse } from "@/lib/tasks-definitions";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export default async function Page({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ version: string | null; projectId: string | null }>;
+  searchParams: Promise<{
+    version: string | null;
+    projectId: string | null;
+    view_files: "true" | null;
+  }>;
 }) {
   const { id: taskId } = await params;
-  const { version, projectId } = await searchParams;
+  const { version, projectId, view_files } = await searchParams;
 
   //for initial data
   const initialData: TaskVersionsResponse = await serverRequestAPI({
@@ -43,7 +45,7 @@ export default async function Page({
       <div className="flex-col-start gap-4 sm:flex-row-between-center sm:gap-0 w-full">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
         <div className="flex-1 sm:flex-none flex-row-start pointer-events-none">
-          <ProjectSelector role="employee" />
+          <ProjectSelector role="employee" projId={projectId} />
         </div>
       </div>
 
@@ -55,6 +57,7 @@ export default async function Page({
           version={version}
           reviewMode={true}
           projectId={_projectId}
+          view_files={view_files}
         />
       ) : (
         "Select a project..."

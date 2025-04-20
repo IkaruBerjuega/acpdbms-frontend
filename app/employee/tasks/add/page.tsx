@@ -9,14 +9,15 @@ export default async function Page({
   searchParams: Promise<{
     show_phases: "true" | null;
     add_phases: "true" | null;
+    projectId: string | null;
   }>;
 }) {
-  let { show_phases, add_phases } = await searchParams;
+  const { show_phases, add_phases, projectId } = await searchParams;
 
-  let isShowPhases = show_phases === "true";
-  let isAddPhases = add_phases === "true";
+  const isShowPhases = show_phases === "true";
+  const isAddPhases = add_phases === "true";
 
-  let activeTab: "Add Phases" | "Phases" =
+  const activeTab: "Add Phases" | "Phases" =
     isShowPhases && !isAddPhases ? "Phases" : "Add Phases";
 
   const breadcrumbs: Breadcrumbs[] = [
@@ -36,14 +37,24 @@ export default async function Page({
       active: true,
     },
   ];
+
+  const _projectId = projectId?.split("_")[0];
   return (
     <main className="relative h-full w-full ">
       <div className="absolute inset-0 flex flex-col space-y-2">
         <div className="flex-row-between-center w-full">
           <SidebarTrigger breadcrumbs={breadcrumbs} />
-          <ProjectSelector role="employee" />
+          <ProjectSelector role="employee" projId={projectId} />
         </div>
-        <AddPhasesTask activeTab={activeTab} />
+        <>
+          {_projectId ? (
+            <AddPhasesTask activeTab={activeTab} projectId={_projectId} />
+          ) : (
+            <div className="flex-grow bg-white-primary rounded-md shadow-md system-padding">
+              Select a project...
+            </div>
+          )}
+        </>
       </div>
     </main>
   );

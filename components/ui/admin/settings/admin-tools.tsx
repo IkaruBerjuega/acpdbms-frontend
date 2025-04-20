@@ -7,9 +7,9 @@ import {
   useSettingsActions,
 } from "@/hooks/general/use-admin-settings";
 import { toast } from "@/hooks/use-toast";
-import { LogoUpload } from "../../components-to-relocate/admin-tools/logo-upload";
-import { MaintenanceToggle } from "../../components-to-relocate/admin-tools/maintenance-toggle";
-import { RecentProjectsUpload } from "../../components-to-relocate/admin-tools/recent-project-upload";
+import { LogoUpload } from "../admin-tools/logo-upload";
+import { MaintenanceToggle } from "../admin-tools/maintenance-toggle";
+import { RecentProjectsUpload } from "../admin-tools/recent-project-upload";
 import { Button } from "../../button";
 import { IoMdRemoveCircleOutline } from "react-icons/io";
 import Image from "next/image";
@@ -22,14 +22,9 @@ export interface Project {
 
 export function AdminTools() {
   const { logoQuery, recentImagesQuery, maintenanceModeQuery } =
-    useAdminSettings<any>();
+    useAdminSettings();
 
-  const {
-    uploadLogo,
-    uploadRecentProjectImage,
-    deleteRecentProjectImage,
-    toggleMaintenanceMode,
-  } = useSettingsActions<any>();
+  const { deleteRecentProjectImage } = useSettingsActions();
 
   // Logo states
   const {
@@ -37,14 +32,12 @@ export function AdminTools() {
     error: logoError,
     isLoading: isLogoLoading,
   } = logoQuery;
+
   const logo = logoData?.logo_url;
 
   // Recent projects states
-  const {
-    data: recentProjectsData,
-    error: projectsError,
-    isLoading: isImageLoading,
-  } = recentImagesQuery;
+  const { data: recentProjectsData, isLoading: isImageLoading } =
+    recentImagesQuery;
 
   const projects = recentProjectsData?.recent_project_images || [];
 
@@ -72,19 +65,19 @@ export function AdminTools() {
     deleteRecentImages(
       { image_ids: [id] },
       {
-        onSuccess: () => {
+        onSuccess: (response: { message: string }) => {
           toast({
             title: "Delete Successful",
-            description: "Project removed successfully.",
+            description: response.message || "Project removed successfully.",
           });
           queryClient.invalidateQueries({ queryKey: ["recentProjects"] });
         },
-        onError: (err) => {
-          console.error("Delete failed:", err);
+        onError: (err: { message: string }) => {
           toast({
             variant: "destructive",
             title: "Delete Failed",
             description:
+              err.message ||
               "An error occurred while deleting the project. Please try again.",
           });
         },
@@ -103,14 +96,14 @@ export function AdminTools() {
               Update your site logo to reflect your brand identity.
             </p>
           </div>
-          <LogoUpload uploadLogo={uploadLogo} />
+          <LogoUpload />
         </CardHeader>
         <CardContent>
           {isLogoLoading ? (
             <div className="flex items-center justify-center p-4">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
             </div>
-          ) : (logoError as any)?.status === 404 ? (
+          ) : (logoError as unknown as { status: number })?.status === 404 ? (
             <div className="text-sm ">No Logo Available. Upload a logo</div>
           ) : (
             <div className="flex items-center justify-center bg-gray-100 p-4 rounded-md">
@@ -135,15 +128,14 @@ export function AdminTools() {
               Showcase your latest work with images and titles.
             </p>
           </div>
-          <RecentProjectsUpload uploadRecentImages={uploadRecentProjectImage} />
+          <RecentProjectsUpload />
         </CardHeader>
         <CardContent>
           {isImageLoading ? (
             <div className="flex items-center justify-center p-4">
               <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
             </div>
-          ) : (projectsError as any)?.status === 404 ||
-            projects.length === 0 ? (
+          ) : projects.length === 0 ? (
             <p className="text-sm ">{noUploadedRecentProjectsMessage}</p>
           ) : deleteError ? (
             <p className="text-sm text-destructive">
@@ -151,14 +143,16 @@ export function AdminTools() {
             </p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-4 bg-gray-100 p-4 rounded-md">
-              {projects.map((project: Project) => (
+              {projects.map((project) => (
                 <div
                   key={project.id}
                   className="flex flex-col items-center gap-2 relative"
                 >
-                  <img
+                  <Image
                     src={project.image_url || "/placeholder.svg"}
                     alt={project.project_title}
+                    width={1000}
+                    height={1000}
                     className="h-40 w-full object-cover rounded-md"
                   />
                   <Button
@@ -193,10 +187,7 @@ export function AdminTools() {
               maintenance.
             </p>
           </div>
-          <MaintenanceToggle
-            toggleMaintenanceMode={toggleMaintenanceMode}
-            maintenanceMode={maintenanceMode}
-          />
+          <MaintenanceToggle maintenanceMode={maintenanceMode} />
         </CardHeader>
         <CardContent>
           {isMaintenanceLoading ? (

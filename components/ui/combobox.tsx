@@ -53,9 +53,7 @@ export function Combobox({
   const [selectedValue, setSelectedValue] = React.useState<
     string | number | undefined
   >(value);
-  const [selectedValueId, setSelectedValueId] = React.useState<
-    string | number | undefined
-  >(undefined);
+
   const [inputValue, setInputValue] = React.useState<string>("");
 
   React.useEffect(() => {
@@ -68,7 +66,6 @@ export function Combobox({
   const handleClear = () => {
     if (disabled) return; // Prevent clear action if disabled
     setSelectedValue(undefined);
-    setSelectedValueId(undefined); // Select by value
     if (onSelect) onSelect({ label: "", value: "" });
     if (onBlur) onBlur();
     if (clearFn) clearFn();
@@ -188,7 +185,6 @@ export function Combobox({
                     onSelect={() => {
                       if (disabled) return; // Prevent selection if disabled
                       setSelectedValue(item.label); // Select by value
-                      setSelectedValueId(item.value); // Select by value
                       if (onSelect) onSelect(item); // Call onSelect with item
                       setOpen(false);
                     }}

@@ -3,7 +3,6 @@ import { ItemTypes } from "@/lib/definitions";
 import { titleCase } from "@/lib/utils";
 import { useDrop } from "react-dnd";
 import TaskCard from "../../general/tasks/draggable-task-card";
-import { useState } from "react";
 import { TaskItemProps, TaskStatuses } from "@/lib/tasks-definitions";
 
 export default function TaskColumn({
@@ -44,9 +43,6 @@ export default function TaskColumn({
     if (status === "done" || "finished") return "bg-green-400";
   }
 
-  const [collapsed, setCollapsed] = useState<boolean>(false);
-  // const [order, setOrder] = useState<""
-
   return (
     <div
       className={`min-w-[250px] xl:min-w-0 xl:w-1/5 flex-col-start gap-1 overflow-y-auto`}
@@ -66,7 +62,8 @@ export default function TaskColumn({
         }`}
       >
         {tasks?.map((task) => {
-          let className = isOver && draggedTask ? "opacity-60" : "opacity-100";
+          const className =
+            isOver && draggedTask ? "opacity-60" : "opacity-100";
           return (
             <TaskCard
               className={className}

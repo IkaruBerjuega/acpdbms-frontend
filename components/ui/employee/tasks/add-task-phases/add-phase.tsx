@@ -3,11 +3,8 @@ import SidepanelDrawerComponent from "../../../general/sidepanel-drawer";
 import { useCallback, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
-import { Phase, PhaseRequest } from "@/lib/definitions";
-import {
-  usePhaseTransfer,
-  useProjectSelectStore,
-} from "@/hooks/states/create-store";
+import { AddPhaseShortcut, PhaseRequest } from "@/lib/definitions";
+import { usePhaseTransfer } from "@/hooks/states/create-store";
 import { SubmitHandler } from "react-hook-form";
 import { AddBtn, BtnDialog, Button } from "../../../button";
 import FormInput from "../../../general/form-components/form-input";
@@ -23,16 +20,12 @@ import * as React from "react";
 import { Combobox } from "../../../combobox";
 import { ItemInterface } from "@/lib/filter-types";
 
-function AddPhasesForm() {
-  const { data: selectedProject } = useProjectSelectStore();
-
-  const projectId = selectedProject[0]?.projectId;
-
+function AddPhasesForm({ projectId }: { projectId: string }) {
   const {
     control,
     reset,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<PhaseRequest>({
     defaultValues: {
       phases: [
@@ -169,26 +162,23 @@ function AddPhasesForm() {
   );
 }
 
-function ShowPhases() {
+function ShowPhases({ projectId }: { projectId: string }) {
   //stores
   const { setData } = usePhaseTransfer();
-  const { data: projectSelected } = useProjectSelectStore();
 
   //setup
-  const projectId = projectSelected[0]?.projectId;
-  let { data: phases } = usePhases(projectId);
+  const { data: phases } = usePhases(projectId);
   const [noOfFieldsToAdd, setNoOfFieldsToAdd] = useState<number>(0);
-  const [phase, setPhase] = useState<Phase>();
+  const [phase, setPhase] = useState<AddPhaseShortcut>();
 
   //function to store
-  const store = (phase: Phase) => {
-    let phaseContainer = [...Array(noOfFieldsToAdd)].map(() => phase);
+  const store = (phase: AddPhaseShortcut) => {
+    const phaseContainer = [...Array(noOfFieldsToAdd)].map(() => phase);
 
     setData(phaseContainer);
   };
 
   const isValidAmount = noOfFieldsToAdd <= 50; // Adjusted to <= 50 for clarity
-  const isPhaseValid = phase !== undefined;
 
   const transformedPhasesList: ItemInterface[] =
     phases?.map((phase) => ({
@@ -213,7 +203,7 @@ function ShowPhases() {
         <Input
           placeholder="No. of tasks to be added"
           onChangeCapture={(e) => {
-            let value = Number(e.currentTarget.value);
+            const value = Number(e.currentTarget.value);
             setNoOfFieldsToAdd(value);
           }}
         />
@@ -240,9 +230,11 @@ function ShowPhases() {
 export default function AddPhase({
   activeTab,
   activeParamKey,
+  projectId,
 }: {
   activeTab: "Add Phases" | "Phases";
   activeParamKey: "show_phases" | "add_phases";
+  projectId: string;
 }) {
   const { params } = useQueryParams();
   const pathname = usePathname();
@@ -263,7 +255,7 @@ export default function AddPhase({
     [pathname, params, replace]
   );
 
-  let tabs = {
+  const tabs = {
     activeTab: activeTab,
     tabItems: [
       {
@@ -281,16 +273,16 @@ export default function AddPhase({
     ],
   };
 
-  let titleAndDescription = {
+  const titleAndDescription = {
     show_phases: {
       title: "Phases",
       description: "Select a phase/category and the no of fields to add tasks ",
-      content: <ShowPhases />,
+      content: <ShowPhases projectId={projectId} />,
     },
     add_phases: {
       title: "Add Phases",
       description: "Add multiple phases/category",
-      content: <AddPhasesForm />,
+      content: <AddPhasesForm projectId={projectId} />,
     },
   };
 

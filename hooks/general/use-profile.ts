@@ -2,28 +2,25 @@ import {
   requestAPI,
   useApiMutation,
   useApiQuery,
-} from '@/hooks/tanstack-query';
+} from "@/hooks/tanstack-query";
 import {
   ProjectListResponseInterface,
   UserDetailsResponse,
-} from '@/lib/definitions';
+} from "@/lib/definitions";
 import {
   adminUpdateProfile,
   updateProfile,
-} from '@/lib/form-constants/form-constants';
+} from "@/lib/form-constants/form-constants";
 
 // fetches profile and projects for employees and clients
-export const useProfile = (userId?: string) => {
+export const useProfile = (userId: string) => {
   // get profile details
-  const {
-    data: profileDetails,
-    isLoading: profileLoading,
-    error: profileError,
-  } = useApiQuery<UserDetailsResponse>({
-    key: `user-details-${userId}`,
-    url: `/users/${userId}`,
-    enabled: !!userId,
-  });
+  const { data: profileDetails, error: profileError } =
+    useApiQuery<UserDetailsResponse>({
+      key: ["user-details", userId],
+      url: `/users/${userId}`,
+      enabled: !!userId,
+    });
 
   // determine project endpoints based on account type
   const ongoingUrl = profileDetails?.client
@@ -35,22 +32,18 @@ export const useProfile = (userId?: string) => {
     : `/employee/projects/finished/${userId}`;
 
   // fetch ongoing projects
-  const {
-    data: ongoingProjects,
-    isLoading: ongoingLoading,
-    error: ongoingError,
-  } = useApiQuery<ProjectListResponseInterface[]>({
+  const { data: ongoingProjects, error: ongoingError } = useApiQuery<
+    ProjectListResponseInterface[]
+  >({
     key: `ongoing-projects-${userId}`,
     url: ongoingUrl,
     enabled: !!userId && !!profileDetails,
   });
 
   // fetch finished projects
-  const {
-    data: finishedProjects,
-    isLoading: finishedLoading,
-    error: finishedError,
-  } = useApiQuery<ProjectListResponseInterface[]>({
+  const { data: finishedProjects, error: finishedError } = useApiQuery<
+    ProjectListResponseInterface[]
+  >({
     key: `finished-projects-${userId}`,
     url: finishedUrl,
     enabled: !!userId && !!profileDetails,
@@ -62,61 +55,34 @@ export const useProfile = (userId?: string) => {
   // update profile (non-admin)
   const updateProfileMutation = useApiMutation<updateProfile>({
     url: `/profile`,
-    method: 'PUT',
-    contentType: 'application/json',
+    method: "PUT",
+    contentType: "application/json",
     auth: true,
   });
-
-  const updateProfile = async (data: any) => {
-    return new Promise((resolve, reject) => {
-      updateProfileMutation.mutate(data, {
-        onSuccess: (responseData) => resolve(responseData),
-        onError: (error) => reject(error),
-      });
-    });
-  };
 
   // update profile from admin
   const updateProfileFromAdminMutation = useApiMutation<adminUpdateProfile>({
     url: `/edit-profile/${userId}`,
-    method: 'PUT',
-    contentType: 'application/json',
+    method: "PUT",
+    contentType: "application/json",
     auth: true,
   });
-
-  const updateProfileFromAdmin = async (data: any, id?: string) => {
-    return new Promise((resolve, reject) => {
-      updateProfileFromAdminMutation.mutate(data, {
-        onSuccess: (responseData) => resolve(responseData),
-        onError: (error) => reject(error),
-      });
-    });
-  };
 
   // upload profile picture
-  const uploadPhotoMutation = useApiMutation<FormData>({
+  const uploadPhoto = useApiMutation<FormData>({
     url: `/profile/update-picture`,
-    method: 'POST',
-    contentType: 'multipart/form-data',
+    method: "POST",
+    contentType: "multipart/form-data",
     auth: true,
   });
-
-  const uploadPhoto = async (data: FormData): Promise<String> => {
-    return new Promise((resolve, reject) => {
-      uploadPhotoMutation.mutate(data, {
-        onSuccess: (response) => resolve(response),
-        onError: (error) => reject(error),
-      });
-    });
-  };
 
   // deactivate employee from project
   const deactivateEmployeeFromProject = async (teamId: number) => {
     return await requestAPI({
       url: `/teams/${teamId}/deactivate`,
-      method: 'POST',
+      method: "POST",
       body: null,
-      contentType: 'application/json',
+      contentType: "application/json",
       auth: true,
     });
   };
@@ -124,8 +90,8 @@ export const useProfile = (userId?: string) => {
   const getAuthenticatedUser = async () => {
     return await requestAPI({
       url: `/user`,
-      method: 'GET',
-      contentType: 'application/json',
+      method: "GET",
+      contentType: "application/json",
       auth: true,
     });
   };
@@ -134,9 +100,9 @@ export const useProfile = (userId?: string) => {
     ongoingProjects,
     finishedProjects,
     profileDetails,
-    updateProfile,
+    updateProfileMutation,
     uploadPhoto,
-    updateProfileFromAdmin,
+    updateProfileFromAdminMutation,
     deactivateEmployeeFromProject,
     getAuthenticatedUser,
     error,

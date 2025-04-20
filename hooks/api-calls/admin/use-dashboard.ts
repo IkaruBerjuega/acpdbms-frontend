@@ -2,8 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
-import { TaskCountIntervalTypes } from "@/lib/definitions";
 import { useApiQuery } from "@/hooks/tanstack-query";
+import {
+  DashboardStatistics,
+  EmployeeWorkHours,
+  OnlineUser,
+  ProjectLocation,
+  TaskCountIntervalTypes,
+  TaskStatistics,
+  TaskStatsGraphData,
+  TicketDetails,
+} from "@/lib/dashboard-definitions";
 
 export const useDashboard = () => {
   const queryClient = useQueryClient();
@@ -21,21 +30,21 @@ export const useDashboard = () => {
   }, [queryClient]);
 
   // fetch online users
-  const onlineUsers = useApiQuery({
+  const onlineUsers = useApiQuery<OnlineUser>({
     key: "online-users",
     url: "/dashboard/online-users",
     auth: true,
   });
 
   // fetch project statistics
-  const projectStats = useApiQuery({
+  const projectStats = useApiQuery<DashboardStatistics>({
     key: "projectstats",
     url: "/dashboard/statistics",
     auth: true,
   });
 
   // fetch task statistics
-  const taskStats = useApiQuery({
+  const taskStats = useApiQuery<TaskStatistics>({
     key: "taskstats",
     url: "/dashboard/task-statistics",
     auth: true,
@@ -44,7 +53,7 @@ export const useDashboard = () => {
   const [taskCountInterval, setTaskCountInterval] =
     useState<TaskCountIntervalTypes>("12_months");
   // fetch task stats for graph
-  const taskCounts = useApiQuery({
+  const taskCounts = useApiQuery<TaskStatsGraphData>({
     key: `task-stats-graph-${taskCountInterval}`,
     url: `/dashboard/task-statistics/graph?period=${taskCountInterval}`,
     auth: true,
@@ -55,7 +64,7 @@ export const useDashboard = () => {
   );
 
   // fetch project locations based on selectedYear
-  const projectLocations = useApiQuery({
+  const projectLocations = useApiQuery<ProjectLocation>({
     key: ["project-locations", selectedYear],
     url: `/project-locations?year=${selectedYear}`,
     auth: true,
@@ -68,13 +77,13 @@ export const useDashboard = () => {
     String(new Date().getFullYear())
   );
   //fetch employee performance meassured by hours
-  const employeeWorkHours = useApiQuery({
+  const employeeWorkHours = useApiQuery<EmployeeWorkHours>({
     key: ["employee-work-hours", empSelectedMonth, empSelectedYear],
     url: `/dashboard/work-hours?month=${empSelectedMonth}&year=${empSelectedYear}`,
     auth: true,
   });
 
-  const ticketsWithDetails = useApiQuery({
+  const ticketsWithDetails = useApiQuery<TicketDetails>({
     key: "tickets-with-details",
     url: "/dashboard/tickets-with-details",
     auth: true,

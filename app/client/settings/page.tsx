@@ -1,4 +1,4 @@
-import AccountSettings from "@/components/ui/components-to-relocate/account-settings-wrapper";
+import AccountSettings from "@/components/ui/general/account-settings/account-settings-wrapper";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Breadcrumbs } from "@/lib/definitions";
 
@@ -53,6 +53,7 @@ export default async function SettingsPage({
       <div className="flex items-center">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
       </div>
+
       <AccountSettings activeTab={activeTab} role="client" />
     </main>
   );

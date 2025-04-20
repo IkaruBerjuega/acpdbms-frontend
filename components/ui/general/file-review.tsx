@@ -7,7 +7,7 @@ import { useCallback, useState } from "react";
 import { TaskFile, TaskFilesApprovalRequest } from "@/lib/files-definitions";
 import FileViewer from "../file-viewer";
 import { usePathname, useRouter } from "next/navigation";
-import { useQueryParams } from "@/hooks/use-query-params";
+
 import { Button } from "../button";
 
 export default function FileReview({
@@ -17,6 +17,7 @@ export default function FileReview({
   role,
   reviewMode,
   projectId,
+  view_files,
 }: {
   taskId: string;
   version: string | null;
@@ -24,11 +25,12 @@ export default function FileReview({
   role: "manager" | "client";
   reviewMode: boolean;
   projectId: string;
+  view_files: string | null;
 }) {
   const [selectedFile, setSelectedFile] = useState<TaskFile>();
 
-  const { params, paramsKey } = useQueryParams();
-  const filePanelIsOpen = paramsKey["view_files"] === "true";
+  const params = new URLSearchParams();
+  const filePanelIsOpen = view_files === "true";
 
   const pathname = usePathname();
   const { replace } = useRouter();

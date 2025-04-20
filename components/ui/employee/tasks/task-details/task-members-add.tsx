@@ -2,7 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useTeamDetailsForDashboard } from "@/hooks/general/use-project";
-import { useProjectSelectStore } from "@/hooks/states/create-store";
 import {
   useGetTaskAssignedMembers,
   useTaskActions,
@@ -16,15 +15,18 @@ import { FaCheck } from "react-icons/fa6";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 
-export default function AssignMembers({ taskId }: { taskId?: string }) {
-  if (!taskId) return null;
-
-  const { data: projectSelected } = useProjectSelectStore();
-  const projectId = projectSelected[0]?.projectId;
-
+export default function AssignMembers({
+  taskId,
+  projectId,
+}: {
+  taskId?: string;
+  projectId: string;
+}) {
   //api calls setup
   const { data: teamMembers } = useTeamDetailsForDashboard(projectId);
-  const { data: taskMembers } = useGetTaskAssignedMembers({ taskId: taskId });
+  const { data: taskMembers } = useGetTaskAssignedMembers({
+    taskId: taskId || "",
+  });
 
   const projectMembers = teamMembers?.team_members;
 

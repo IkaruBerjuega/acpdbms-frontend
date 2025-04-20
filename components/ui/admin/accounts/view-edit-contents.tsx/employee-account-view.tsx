@@ -14,7 +14,8 @@ import {
 } from "lucide-react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query"; // Import queryClient
 
 import FormInput from "@/components/ui/general/form-components/form-input";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,33 +25,55 @@ import { ViewEditCard } from "./project-view-card";
 import { adminUpdateProfile } from "@/lib/form-constants/form-constants";
 import USLocationSelector from "@/components/ui/general/location-selector";
 
-export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
+export default function EmpAccView({
+  id,
+  isEdit,
+}: {
+  id: string;
+  isEdit: boolean;
+}) {
   const router = useRouter();
-  const [editAccDetails, setEditAccDetails] = useState<boolean>(false);
+  const pathname = usePathname();
+
+  const queryClient = useQueryClient(); // get the query client instance
+
+  // Functions to set or remove the "edit" query parameter.
+  const handleEdit = () => {
+    const params = new URLSearchParams();
+    params.set("edit", "true");
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+    router.replace(newUrl);
+  };
+
+  const closeEdit = () => {
+    const params = new URLSearchParams();
+    params.delete("edit");
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+    router.replace(newUrl);
+  };
 
   const methods = useForm<adminUpdateProfile>({
     mode: "onSubmit",
   });
-
   const {
     handleSubmit,
     register,
     reset,
     formState: { errors },
+    control,
+    setValue,
   } = methods;
-
-  useEffect(() => {
-    setEditAccDetails(edit === "true");
-  }, [edit]);
 
   const {
     profileDetails,
     finishedProjects,
     ongoingProjects,
-    updateProfileFromAdmin,
+    updateProfileFromAdminMutation,
   } = useProfile(id);
 
-  // populate form on load / profile change
+  // Populate form data when profileDetails change.
   useEffect(() => {
     if (profileDetails?.employee) {
       reset({
@@ -69,7 +92,7 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
   }, [profileDetails, reset]);
 
   const processForm: SubmitHandler<adminUpdateProfile> = async (data) => {
-    const formatted = {
+    const formattedData = {
       first_name: data.first_name,
       middle_name: data.middle_name,
       last_name: data.last_name,
@@ -81,22 +104,24 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
       position: data.position,
     };
 
-    try {
-      await updateProfileFromAdmin(formatted, id);
-      toast({
-        variant: "default",
-        title: "Notification",
-        description: "You successfully updated the account details",
-      });
-      setEditAccDetails(false);
-      router.refresh();
-    } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "Error!",
-        description: err.message || "Update failed. Please try again.",
-      });
-    }
+    updateProfileFromAdminMutation.mutate(formattedData, {
+      onSuccess: (response: { message: string }) => {
+        toast({
+          variant: "default",
+          title: "Notification",
+          description:
+            response.message || "You successfully updated the account details",
+        });
+        queryClient.invalidateQueries({ queryKey: ["user-details", id] });
+      },
+      onError: (response: { message: string }) => {
+        toast({
+          variant: "destructive",
+          title: "Error!",
+          description: response.message || "Update failed. Please try again.",
+        });
+      },
+    });
   };
 
   const address =
@@ -163,10 +188,12 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                       </div>
                     </div>
                   </div>
-                  {!editAccDetails && (
+                  {/* Ensure the button is explicitly type="button" */}
+                  {!isEdit && (
                     <Button
+                      type="button"
                       className="self-start"
-                      onClick={() => setEditAccDetails(true)}
+                      onClick={handleEdit}
                       size="sm"
                     >
                       <Edit className="text-base mr-2" /> Edit Details
@@ -180,12 +207,12 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                 <div className="flex items-center mb-4">
                   <User
                     className={`h-5 w-5 mr-2 ${
-                      editAccDetails ? "text-primary" : "text-slate-900"
+                      isEdit ? "text-primary" : "text-slate-900"
                     }`}
                   />
                   <h2
                     className={`font-semibold text-lg ${
-                      editAccDetails ? "text-primary" : "text-slate-900"
+                      isEdit ? "text-primary" : "text-slate-900"
                     }`}
                   >
                     Personal Details
@@ -193,7 +220,7 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                 </div>
 
                 {/* Personal Details */}
-                {editAccDetails ? (
+                {isEdit ? (
                   <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
                     <FormInput
                       name="first_name"
@@ -236,7 +263,7 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                     </div>
                     <div className="lg:col-span-3 col-span-1">
                       <USLocationSelector
-                        control={methods}
+                        control={control}
                         stateFieldName="state"
                         cityFieldName="city_town"
                         zipcodeFieldName="zip_code"
@@ -249,6 +276,7 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                         onZipcodeChange={(zipcode) =>
                           console.log("Zipcode changed:", zipcode)
                         }
+                        setValue={setValue}
                       />
                     </div>
 
@@ -273,7 +301,7 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                         </h2>
                       </div>
                     </div>
-                    {/* email as text */}
+                    {/* Email (view-only) */}
                     <div>
                       <p className="text-sm text-slate-500">Email</p>
                       <p className="text-base text-slate-700">{email}</p>
@@ -288,7 +316,6 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                   </div>
                 ) : (
                   <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
-                    {/* Names & Phone */}
                     <div>
                       <p className="text-sm text-slate-500">First Name</p>
                       <p className="text-base text-slate-700">
@@ -312,7 +339,6 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                       <p className="text-base text-slate-700">{phoneNumber}</p>
                     </div>
 
-                    {/* Address */}
                     <div className="lg:col-span-4 col-span-1">
                       <Separator className="my-4" />
                       <div className="flex items-center mb-4">
@@ -334,14 +360,12 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                         {profileDetails?.employee?.city_town || "Not Set"}
                       </p>
                     </div>
-
                     <div>
                       <p className="text-sm text-slate-500">Zip Code</p>
                       <p className="text-base text-slate-700">
                         {profileDetails?.employee?.zip_code || "Not Set"}
                       </p>
                     </div>
-
                     <div>
                       <p className="text-sm text-slate-500">Street</p>
                       <p className="text-base text-slate-700">
@@ -349,7 +373,6 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                       </p>
                     </div>
 
-                    {/* Other Details */}
                     <div className="lg:col-span-4 col-span-1">
                       <Separator className="my-4" />
                       <div className="flex items-center mb-4">
@@ -376,12 +399,12 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                 <div className="flex items-center mb-4">
                   <ListChecks
                     className={`h-5 w-5 mr-2 ${
-                      editAccDetails ? "text-primary" : "text-slate-900"
+                      isEdit ? "text-primary" : "text-slate-900"
                     }`}
                   />
                   <h2
                     className={`font-semibold text-lg ${
-                      editAccDetails ? "text-primary" : "text-slate-900"
+                      isEdit ? "text-primary" : "text-slate-900"
                     }`}
                   >
                     Ongoing Projects
@@ -396,9 +419,9 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                         address={p.location}
                         endDate={String(p.end_date)}
                         id={id}
-                        edit={editAccDetails}
+                        edit={isEdit}
                         canDelete
-                        image={String(p.image_url)}
+                        image={p.image_url}
                       />
                     ))}
                   </div>
@@ -414,12 +437,12 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                 <div className="flex items-center mb-4">
                   <CheckCircle2
                     className={`h-5 w-5 mr-2 ${
-                      editAccDetails ? "text-primary" : "text-slate-900"
+                      isEdit ? "text-primary" : "text-slate-900"
                     }`}
                   />
                   <h2
                     className={`font-semibold text-lg ${
-                      editAccDetails ? "text-primary" : "text-slate-900"
+                      isEdit ? "text-primary" : "text-slate-900"
                     }`}
                   >
                     Finished Projects
@@ -434,9 +457,9 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                         address={p.location}
                         endDate={String(p.end_date)}
                         id={id}
-                        edit={editAccDetails}
+                        edit={isEdit}
                         canDelete
-                        image={String(p.image_url)}
+                        image={p.image_url}
                       />
                     ))}
                   </div>
@@ -446,10 +469,11 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                   </p>
                 )}
 
-                {editAccDetails && (
+                {isEdit && (
                   <div className="flex justify-end items-end gap-2 pt-4">
                     <Button
-                      onClick={() => setEditAccDetails(false)}
+                      type="button"
+                      onClick={closeEdit}
                       variant="outline"
                       className="border-slate-300 text-slate-700 hover:bg-slate-100"
                     >
@@ -462,7 +486,7 @@ export default function EmpAccView({ id, edit }: { id: string; edit: string }) {
                       submitType="submit"
                       submitTitle="Submit"
                       btnTitle="Save Details"
-                      onClick={handleSubmit(processForm)}
+                      onClick={() => handleSubmit(processForm)()}
                       className="text-white"
                       alt="edit account save"
                     />

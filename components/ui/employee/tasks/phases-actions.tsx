@@ -3,7 +3,6 @@ import {
   useGetActivePhases,
   useGetArchivedPhases,
 } from "@/hooks/general/use-project";
-import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { useMemo, useState } from "react";
 import { SearchInput } from "../../input";
 import { IoSearch } from "react-icons/io5";
@@ -62,9 +61,6 @@ const RenderPhasesByStatus = ({
       </div>
       {phases?.map((phase, index) => {
         const createdAt = new Date(phase.created_at as Date)
-          .toISOString()
-          .slice(0, 10);
-        const updatedAt = new Date(phase.updated_at as Date)
           .toISOString()
           .slice(0, 10);
         const finishDate = phase.finish_date
@@ -161,15 +157,14 @@ const RenderPhasesByStatus = ({
   );
 };
 
-export function PhasesArchived() {
-  const { data: projectSelected } = useProjectSelectStore();
-  let projectId = projectSelected[0]?.projectId;
-
+export function PhasesArchived({ projectId }: { projectId: string }) {
   const [filter, setFilter] = useState<string | undefined>("");
-  const [selectedPhaseId, setSelectedPhaseId] = useState<string | undefined>();
 
   //active phases
-  const { data: archivedPhases, isLoading } = useGetArchivedPhases(projectId);
+  const { data: archivedPhases, isLoading } = useGetArchivedPhases(
+    projectId,
+    []
+  );
 
   const filteredPhases = useMemo(() => {
     if (!archivedPhases) return;
@@ -189,7 +184,7 @@ export function PhasesArchived() {
     <div className="flex-grow flex-col-start gap-4 w-full">
       <SearchInput
         onChange={(e) => {
-          let value = e.currentTarget.value;
+          const value = e.currentTarget.value;
           setFilter(value);
         }}
         icon={<IoSearch />}
@@ -207,15 +202,12 @@ export function PhasesArchived() {
   );
 }
 
-export function PhasesActive() {
-  const { data: projectSelected } = useProjectSelectStore();
-  let projectId = projectSelected[0]?.projectId;
-
+export function PhasesActive({ projectId }: { projectId: string }) {
   const [filter, setFilter] = useState<string | undefined>("");
   const [selectedPhaseId, setSelectedPhaseId] = useState<string | undefined>();
 
   //active phases
-  const { data: activePhases, isLoading } = useGetActivePhases(projectId);
+  const { data: activePhases, isLoading } = useGetActivePhases(projectId, []);
 
   const filteredPhases = useMemo(() => {
     if (!activePhases) return;
@@ -306,44 +298,51 @@ export function PhasesActive() {
     <div className="flex-grow flex-col-start gap-4 w-full overflow-y-auto">
       <SearchInput
         onChange={(e) => {
-          let value = e.currentTarget.value;
+          const value = e.currentTarget.value;
           setFilter(value);
         }}
         icon={<IoSearch />}
         placeholder="Search Phase"
       />
-      <div className="flex-col-start gap-4 w-full ">
-        <RenderPhasesByStatus
-          status={"to do"}
-          phases={toDo}
-          handleAction={handleAction}
-        />
-        <RenderPhasesByStatus
-          status={"in progress"}
-          phases={inProgress}
-          handleAction={handleAction}
-        />
-        <RenderPhasesByStatus
-          status={"cancelled"}
-          phases={cancelled}
-          handleAction={handleAction}
-        />
-        <RenderPhasesByStatus
-          status={"paused"}
-          phases={paused}
-          handleAction={handleAction}
-        />
-        <RenderPhasesByStatus
-          status={"archived"}
-          phases={archived}
-          handleAction={handleAction}
-        />
-        <RenderPhasesByStatus
-          status={"finished"}
-          phases={finished}
-          handleAction={handleAction}
-        />
-      </div>
+
+      {filteredPhases?.length === 0 ? (
+        <div className="w-full mt-10 flex-col-center text-slate-500">
+          No phases
+        </div>
+      ) : (
+        <div className="flex-col-start gap-4 w-full ">
+          <RenderPhasesByStatus
+            status={"to do"}
+            phases={toDo}
+            handleAction={handleAction}
+          />
+          <RenderPhasesByStatus
+            status={"in progress"}
+            phases={inProgress}
+            handleAction={handleAction}
+          />
+          <RenderPhasesByStatus
+            status={"cancelled"}
+            phases={cancelled}
+            handleAction={handleAction}
+          />
+          <RenderPhasesByStatus
+            status={"paused"}
+            phases={paused}
+            handleAction={handleAction}
+          />
+          <RenderPhasesByStatus
+            status={"archived"}
+            phases={archived}
+            handleAction={handleAction}
+          />
+          <RenderPhasesByStatus
+            status={"finished"}
+            phases={finished}
+            handleAction={handleAction}
+          />
+        </div>
+      )}
     </div>
   );
 }

@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 body {
-  font-family: 'Roboto', sans-serif;
+  font-family: "Roboto", sans-serif;
 }
 
 @layer base {
@@ -184,6 +184,10 @@ body {
 
   .flex-row-end-start {
     @apply flex flex-row justify-end items-start;
+  }
+
+  .flex-row-end-end {
+    @apply flex flex-row justify-end items-end;
   }
 
   .flex-row-end-center {

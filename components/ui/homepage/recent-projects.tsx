@@ -1,10 +1,10 @@
 "use client";
 import { useAdminSettings } from "@/hooks/general/use-admin-settings";
 import type { Project } from "../admin/settings/admin-tools";
-import { ProjectCarousel } from "../components-to-relocate/recent-project-carousel";
+import { ProjectCarousel } from "./recent-project-carousel";
 
 export default function RecentProjects() {
-  const { recentImagesQuery } = useAdminSettings<any>();
+  const { recentImagesQuery } = useAdminSettings();
   const { data: recentProjectsData } = recentImagesQuery;
   const projects: Project[] = recentProjectsData?.recent_project_images || [];
   const recentProjectsMessage =

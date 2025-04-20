@@ -118,10 +118,7 @@ export default function FormInput<T extends FieldValues>({
               rules={finalRules} // Validation rules go here
               control={control} // Required for Controller to manage state
               name={name} // Field name in the form
-              render={({
-                field: { onChange, value, onBlur },
-                fieldState: { error },
-              }) => (
+              render={({ field: { onChange, value, onBlur } }) => (
                 <div className="w-full">
                   <Input
                     type={dataType}

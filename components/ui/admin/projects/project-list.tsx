@@ -1,4 +1,5 @@
 "use client";
+
 import ProjectsTableHeaderActions from "@/components/ui/admin/projects/table-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Table from "@/components/ui/admin/projects/table";
@@ -20,7 +21,6 @@ export default function ProjectList<T extends ProjectListResponseInterface>({
       defaultValue={"list"}
       className="flex flex-col flex-grow gap-2 h-screen  min-h-0"
     >
-      {/* header actions */}
       <ProjectsTableHeaderActions
         components={
           <>
@@ -41,6 +41,8 @@ export default function ProjectList<T extends ProjectListResponseInterface>({
           </>
         }
       />
+
+      {/* header actions */}
 
       {/* main content view table */}
       <main className="w-full  flex-col-start gap-2 bg-white-primary rounded-b-lg shadow-md system-padding overflow-y-auto flex-1 ">

@@ -23,7 +23,12 @@ export interface ProjectActionSchema {
 export type LoginSchemaType = {
   email: string;
   password: string;
+  // device_token: string;
 };
+
+export interface loginRequest extends LoginSchemaType {
+  device_token?: string;
+}
 
 export interface addEmpAccountRequest {
   email: string;
@@ -93,6 +98,18 @@ export interface adminUpdateProfile {
 }
 
 export interface updateProfile {
+  email: string;
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
+  phone_number?: string;
+  state?: string;
+  city_town?: string;
+  street?: string;
+  zip_code?: string;
+}
+
+export interface firstLogin {
   email: string;
   first_name: string;
   middle_name?: string;

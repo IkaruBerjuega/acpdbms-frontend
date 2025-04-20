@@ -1,5 +1,3 @@
-import { z } from "zod";
-
 export type ProjectFormSchemaType = {
   client_id?: number;
   client_name: string;

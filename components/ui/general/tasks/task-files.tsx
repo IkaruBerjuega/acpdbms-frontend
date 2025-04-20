@@ -8,9 +8,8 @@ import { Separator } from "../../separator";
 import { BtnDialog, Button, ButtonIconTooltipDialog } from "../../button";
 import { bytesToMb } from "@/lib/utils";
 import { toast } from "@/hooks/use-toast";
-import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { FileIcon } from "../file-icon";
-import { UseMutateFunction, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   TaskFile,
   TaskFilesApproval,
@@ -38,7 +37,6 @@ function FileView({
   review,
   handleSetApproval,
   role,
-  tab,
   handleToggleArchiveFile,
 }: {
   files: TaskFile[];
@@ -63,6 +61,7 @@ function FileView({
     return { btnSrc: toggleArchiveBtnSrc, className: toggleArchiveBtnClass };
   };
 
+  console.log(files);
   return (
     <>
       {!files ||
@@ -137,7 +136,7 @@ function FileView({
                   <div className="text-slate-400 "></div>
                 </div>
               </div>
-              {!reviewMode && (
+              {!reviewMode && role === "manager" && (
                 <div className="h-full flex-row-center min-w-10">
                   <ButtonIconTooltipDialog
                     tooltipContent={"Archive file"}
@@ -151,7 +150,7 @@ function FileView({
                       handleToggleArchiveFile(String(attachedFile.id))
                     }
                     alt={"archive uploaded file button"}
-                    dialogTitle={"archive Uploaded File"}
+                    dialogTitle={"Archive Uploaded File"}
                     dialogDescription={
                       "Do you confirm on archiving this uploaded file?"
                     }
@@ -264,8 +263,6 @@ export default function TaskFiles({
     attachedFiles.map((attachedFileSize) => (size += attachedFileSize.size));
     return size;
   }, [attachedFiles]);
-
-  if (!taskId) return null;
 
   const { data: taskVersions, isLoading: versionLoading } =
     useGetSpecificTaskVersions({
@@ -425,16 +422,7 @@ export default function TaskFiles({
 
   const isLoading = uploadDeliverablesIsLoading || uploadReferencesIsLoading;
 
-  const actionConfig: Record<
-    string,
-    {
-      title: string;
-      mutate: UseMutateFunction<any, Error, FormData | undefined, unknown>;
-      successMessagePlaceholder: string;
-      isLoading: boolean;
-      dragAndDropDesc: string;
-    } | null
-  > = {
+  const actionConfig = {
     deliverables: {
       title: !reviewMode ? "Upload Deliverables" : "Review Files",
       mutate: uploadDeliverablesMutate,
@@ -705,20 +693,22 @@ export default function TaskFiles({
                   <FileView
                     files={deliverablesFiles}
                     onFileClick={selectFile}
-                    reviewMode={reviewMode}
+                    reviewMode={false}
                     selectedFile={selectedfile}
                     review={undefined}
                     handleSetApproval={undefined}
                     handleToggleArchiveFile={handleArchiveFiles}
+                    role={role}
                   />
                 )}
                 {isViewReferences && (
                   <FileView
                     files={referencesFiles}
                     onFileClick={selectFile}
-                    reviewMode={reviewMode}
+                    reviewMode={false}
                     selectedFile={selectedfile}
                     review={undefined}
+                    role={role}
                     handleToggleArchiveFile={handleArchiveFiles}
                   />
                 )}
@@ -734,6 +724,7 @@ export default function TaskFiles({
                     reviewMode={reviewMode}
                     selectedFile={selectedfile}
                     review={review}
+                    role={role}
                     handleSetApproval={handleSetApproval}
                     handleToggleArchiveFile={handleArchiveFiles}
                   />
@@ -767,21 +758,11 @@ export default function TaskFiles({
                         reviewMode={reviewMode}
                         selectedFile={selectedfile}
                         review={undefined}
+                        role={role}
                         handleToggleArchiveFile={handleArchiveFiles}
                       />
                     </div>
                   </>
-                )}
-
-                {isViewArchived && (
-                  <FileView
-                    files={archivedFiles}
-                    onFileClick={selectFile}
-                    reviewMode={reviewMode}
-                    selectedFile={selectedfile}
-                    review={undefined}
-                    handleToggleArchiveFile={handleArchiveFiles}
-                  />
                 )}
 
                 {isViewRejected && (
@@ -812,6 +793,7 @@ export default function TaskFiles({
                         onFileClick={selectFile}
                         reviewMode={reviewMode}
                         selectedFile={selectedfile}
+                        role={role}
                         review={undefined}
                         handleToggleArchiveFile={handleArchiveFiles}
                       />
@@ -819,6 +801,18 @@ export default function TaskFiles({
                   </>
                 )}
               </>
+            )}
+
+            {isViewArchived && (
+              <FileView
+                files={archivedFiles}
+                onFileClick={selectFile}
+                reviewMode={reviewMode}
+                selectedFile={selectedfile}
+                review={undefined}
+                role={role}
+                handleToggleArchiveFile={handleArchiveFiles}
+              />
             )}
           </div>
         </div>

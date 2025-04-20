@@ -8,7 +8,7 @@ export interface BasicInfo {
   street: string;
   city_town: string;
   state: string;
-  zip_code: string;
+  zip_code?: string;
   position?: string;
 }
 
@@ -20,7 +20,7 @@ export interface UpdateUserInfoRequest {
   street: string;
   city_town: string;
   state: string;
-  zip_code: string;
+  zip_code?: string;
 }
 
 export interface UserInfoInterface {
@@ -60,4 +60,22 @@ export interface PasswordChangeFormProps {
 export interface PasswordChangeRequest {
   current_password: string;
   new_password: string;
+  new_password_confirmation: string;
+}
+
+export interface ResetPasswordRequestByUser {
+  email: string;
+  token: string;
+  password: string;
+  password_confirmation: string;
+}
+
+export interface ValidateTokenRequest {
+  email: string;
+  token: string;
+}
+
+export interface ChangePassByUserFormProps {
+  new_pass: string;
+  confirm_new_pass: string;
 }

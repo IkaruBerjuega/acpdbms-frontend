@@ -46,8 +46,8 @@ export default function FileViewer({ file }: FileViewerProps) {
   const imageFormats = ["jpg", "png", "webp", "gif"];
   const isImage = imageFormats.includes(fileType);
   const isPdf = fileType === "pdf";
-  const cadFormats = ["dwg", "dxf", "dwf", "iges", "step", "stl"];
-  const isCad = cadFormats.includes(fileType);
+  // const cadFormats = ["dwg", "dxf", "dwf", "iges", "step", "stl"];
+  // const isCad = cadFormats.includes(fileType);
 
   const isNotViewable = !isPdf && !isImage;
 

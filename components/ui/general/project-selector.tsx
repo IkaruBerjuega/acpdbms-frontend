@@ -24,7 +24,13 @@ import { useCallback, useEffect, useState } from "react";
 import { useCheckViceManagerPermission } from "@/hooks/general/use-project";
 import { useQueryParams } from "@/hooks/use-query-params";
 
-export function ProjectSelector({ role }: { role: "employee" | "client" }) {
+export function ProjectSelector({
+  role,
+  projId,
+}: {
+  role: "employee" | "client";
+  projId: string | null;
+}) {
   const { data: projects } = useAssociatedProjects({ role: role });
   const { data: projectSelected, setData, resetData } = useProjectSelectStore();
 
@@ -33,10 +39,9 @@ export function ProjectSelector({ role }: { role: "employee" | "client" }) {
   const { data } = useCheckViceManagerPermission(projectId);
   const hasVicePermission = data?.vice_manager_permission === true;
 
-  // Function to update query parameters without modifying params directly
-  const { params, paramsKey } = useQueryParams();
+  const { params } = useQueryParams();
 
-  const hasProjectId = !!paramsKey["projectId"];
+  const hasProjectId = !!projId;
   const pathname = usePathname();
   const { replace } = useRouter();
 
@@ -60,7 +65,7 @@ export function ProjectSelector({ role }: { role: "employee" | "client" }) {
         createQueryString(projectQueryParam);
       }
     }
-  }, []);
+  }, [hasProjectId]);
 
   function onSelect(
     projectId?: string,

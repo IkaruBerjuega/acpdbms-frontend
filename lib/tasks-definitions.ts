@@ -40,7 +40,7 @@ export interface TaskVersionsResponse {
 
 export interface TaskComment {
   id: number;
-  team_member_name: string | undefined;
+  name: string | undefined;
   profile_picture_url: string | undefined;
   status: string;
   content: string;
@@ -50,7 +50,7 @@ export interface TaskComment {
 
 export interface TaskCommentInterface {
   id: number;
-  team_member_name?: string;
+  name?: string;
   profile_picture_url?: string;
   status: string;
   content: string;
@@ -134,4 +134,18 @@ export interface ReviewTaskRequest {
   approved: boolean;
   new_task_description: string;
   new_duration: number;
+}
+
+// Interface for a single task in the request
+export interface TaskRequest {
+  phase_id: string; // Required, must exist in phases table
+  phase_name: string;
+  task_name: string; // Required string
+  task_description?: string; // Optional (nullable) string
+  duration?: string; // Optional (nullable) integer
+}
+
+// Interface for the full request body
+export interface StoreTaskRequest {
+  tasks: TaskRequest[]; // Required array of TaskRequest objects
 }

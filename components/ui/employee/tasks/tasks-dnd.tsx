@@ -9,7 +9,6 @@ import {
   useTaskActions,
 } from "@/hooks/api-calls/employee/use-tasks";
 import { useCreateTableColumns } from "../../general/data-table-components/create-table-columns";
-import { useSearchParams } from "next/navigation";
 import { useCustomTable } from "../../general/data-table-components/custom-tanstack";
 import { getPhaseBadgeColor, requireError } from "@/lib/utils";
 import FilterPopOver from "../../general/data-table-components/filter-components/filter-popover";
@@ -25,8 +24,7 @@ import {
   TaskItemProps,
   TaskStatuses,
 } from "@/lib/tasks-definitions";
-import { useQueryParams } from "@/hooks/use-query-params";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import FormInput from "../../general/form-components/form-input";
 
 export default function TasksDND({
@@ -128,15 +126,10 @@ export default function TasksDND({
     "Projects"
   );
 
-  const searchParams = useSearchParams();
-  const query = searchParams.get("query") || "";
-
   const { table, filterComponents, filters } = useCustomTable<TaskItem>(
-    query,
     tasks ?? [],
     transformedColumns,
-    undefined,
-    searchParams
+    undefined
   );
 
   const plainTasks = table.getRowModel().rows.map((row) => row.original);
@@ -159,16 +152,7 @@ export default function TasksDND({
     });
 
   //for making a new version when the recent status is in needs review
-  const {
-    register,
-    reset,
-    handleSubmit,
-    watch,
-    control,
-    trigger,
-    setValue,
-    formState: { errors },
-  } = useForm<ReviewTaskRequest>({
+  const { register, watch, setValue } = useForm<ReviewTaskRequest>({
     defaultValues: {
       approved: undefined,
       new_task_description: undefined,
@@ -374,11 +358,11 @@ export default function TasksDND({
   };
 
   if (isLoading) {
-    return <>Loading Tasks...</>;
+    return <div className="py-2">Loading Tasks...</div>;
   }
 
   if (tasks?.length === 0) {
-    return <>No Tasks </>;
+    return <div className="py-2">No Tasks </div>;
   }
 
   return (

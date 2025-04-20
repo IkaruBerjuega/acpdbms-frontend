@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-
+import { usePathname, useRouter } from "next/navigation";
+import { useQueryClient } from "@tanstack/react-query";
 import FormInput from "@/components/ui/general/form-components/form-input";
 import { Card, CardContent } from "@/components/ui/card";
 import { toast } from "@/hooks/use-toast";
@@ -26,13 +26,14 @@ import USLocationSelector from "@/components/ui/general/location-selector";
 
 export default function ClientAccView({
   id,
-  edit,
+  isEdit,
 }: {
   id: string;
-  edit: string;
+  isEdit: boolean;
 }) {
+  const queryClient = useQueryClient();
   const router = useRouter();
-  const [editAccDetails, setEditAccDetails] = useState<boolean>(false);
+  const pathname = usePathname();
 
   // The form type is strictly adminUpdateProfile, so only its fields can be set.
   const methods = useForm<adminUpdateProfile>({
@@ -44,18 +45,33 @@ export default function ClientAccView({
     register,
     reset,
     formState: { errors },
+    control,
+    setValue,
   } = methods;
-
-  useEffect(() => {
-    setEditAccDetails(edit === "true");
-  }, [edit]);
 
   const {
     profileDetails,
     finishedProjects,
     ongoingProjects,
-    updateProfileFromAdmin,
+    updateProfileFromAdminMutation,
   } = useProfile(id);
+
+  // Function to update query parameters without modifying params directly
+  const handleEdit = () => {
+    const params = new URLSearchParams();
+    params.set("edit", "true");
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+    router.replace(newUrl);
+  };
+
+  const closeEdit = () => {
+    const params = new URLSearchParams();
+    params.delete("edit");
+    const queryString = params.toString();
+    const newUrl = queryString ? `${pathname}?${queryString}` : pathname;
+    router.replace(newUrl);
+  };
 
   // Populate form with existing values
   useEffect(() => {
@@ -75,22 +91,25 @@ export default function ClientAccView({
   }, [profileDetails, reset]);
 
   const processForm: SubmitHandler<adminUpdateProfile> = async (data) => {
-    try {
-      await updateProfileFromAdmin(data, id);
-      toast({
-        variant: "default",
-        title: "Notification",
-        description: "You successfully updated the account details",
-      });
-      setEditAccDetails(false);
-      router.refresh(); // re-fetch data so view mode shows updates immediately
-    } catch (error: any) {
-      toast({
-        variant: "destructive",
-        title: "Error!",
-        description: error.message || "Update failed. Please try again.",
-      });
-    }
+    updateProfileFromAdminMutation.mutate(data, {
+      onSuccess: (response: { message: string }) => {
+        toast({
+          variant: "default",
+          title: "Notification",
+          description:
+            response.message || "You successfully updated the account details",
+        });
+        queryClient.invalidateQueries({ queryKey: ["user-details", id] });
+        closeEdit();
+      },
+      onError: (response: { message: string }) => {
+        toast({
+          variant: "destructive",
+          title: "Error!",
+          description: response.message || "Update failed. Please try again.",
+        });
+      },
+    });
   };
 
   const address =
@@ -159,12 +178,8 @@ export default function ClientAccView({
                       </div>
                     </div>
                   </div>
-                  {!editAccDetails && (
-                    <Button
-                      className="self-start"
-                      onClick={() => setEditAccDetails(true)}
-                      size="sm"
-                    >
+                  {!isEdit && (
+                    <Button type="button" onClick={handleEdit} size="sm">
                       <Edit className="text-base mr-2" /> Edit Details
                     </Button>
                   )}
@@ -176,19 +191,19 @@ export default function ClientAccView({
                 <div className="flex items-center mb-4">
                   <User
                     className={`h-5 w-5 mr-2 ${
-                      editAccDetails ? "text-maroon-600" : "text-slate-900"
+                      isEdit ? "text-maroon-600" : "text-slate-900"
                     }`}
                   />
                   <h2
                     className={`font-semibold text-lg ${
-                      editAccDetails ? "text-maroon-600" : "text-slate-900"
+                      isEdit ? "text-maroon-600" : "text-slate-900"
                     }`}
                   >
                     Personal Details
                   </h2>
                 </div>
 
-                {editAccDetails ? (
+                {isEdit ? (
                   /* Edit Mode */
                   <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 gap-4">
                     <FormInput
@@ -233,7 +248,8 @@ export default function ClientAccView({
 
                     <div className="lg:col-span-3 col-span-1">
                       <USLocationSelector
-                        control={methods}
+                        control={control}
+                        setValue={setValue}
                         stateFieldName="state"
                         cityFieldName="city_town"
                         zipcodeFieldName="zip_code"
@@ -359,21 +375,20 @@ export default function ClientAccView({
                 <Separator className="my-6" />
 
                 {/* Ongoing Projects */}
-                {editAccDetails ? (
-                  <div className="flex items-center mb-4">
-                    <ListChecks className="h-5 w-5 text-primary mr-2" />
-                    <h2 className="font-semibold text-lg text-primary">
-                      Ongoing Projects
-                    </h2>
-                  </div>
-                ) : (
-                  <div className="flex items-center mb-4">
-                    <ListChecks className="h-5 w-5 text-slate-900 mr-2" />
-                    <h2 className="font-semibold text-lg text-slate-900">
-                      Ongoing Projects
-                    </h2>
-                  </div>
-                )}
+                <div className="flex items-center mb-4">
+                  <ListChecks
+                    className={`h-5 w-5 mr-2 ${
+                      isEdit ? "text-primary" : "text-slate-900"
+                    }`}
+                  />
+                  <h2
+                    className={`font-semibold text-lg ${
+                      isEdit ? "text-primary" : "text-slate-900"
+                    }`}
+                  >
+                    Ongoing Projects
+                  </h2>
+                </div>
                 {ongoingProjects && ongoingProjects.length > 0 ? (
                   <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
                     {ongoingProjects.map((project) => (
@@ -383,7 +398,7 @@ export default function ClientAccView({
                         address={project.location}
                         endDate={String(project.end_date)}
                         id={id}
-                        edit={editAccDetails}
+                        edit={isEdit}
                         canDelete={true}
                         image={project.image_url}
                       />
@@ -398,21 +413,20 @@ export default function ClientAccView({
                 <Separator className="my-6" />
 
                 {/* Finished Projects */}
-                {editAccDetails ? (
-                  <div className="flex items-center mb-4">
-                    <CheckCircle2 className="h-5 w-5 text-primary mr-2" />
-                    <h2 className="font-semibold text-lg text-primary">
-                      Finished Projects
-                    </h2>
-                  </div>
-                ) : (
-                  <div className="flex items-center mb-4">
-                    <CheckCircle2 className="h-5 w-5 text-slate-900 mr-2" />
-                    <h2 className="font-semibold text-lg text-slate-900">
-                      Finished Projects
-                    </h2>
-                  </div>
-                )}
+                <div className="flex items-center mb-4">
+                  <CheckCircle2
+                    className={`h-5 w-5 mr-2 ${
+                      isEdit ? "text-primary" : "text-slate-900"
+                    }`}
+                  />
+                  <h2
+                    className={`font-semibold text-lg ${
+                      isEdit ? "text-primary" : "text-slate-900"
+                    }`}
+                  >
+                    Finished Projects
+                  </h2>
+                </div>
                 {finishedProjects && finishedProjects.length > 0 ? (
                   <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
                     {finishedProjects.map((project) => (
@@ -422,7 +436,7 @@ export default function ClientAccView({
                         address={project.location}
                         endDate={String(project.end_date)}
                         id={id}
-                        edit={editAccDetails}
+                        edit={isEdit}
                         canDelete={true}
                         image={project.image_url}
                       />
@@ -434,10 +448,11 @@ export default function ClientAccView({
                   </p>
                 )}
 
-                {editAccDetails && (
+                {isEdit && (
                   <div className="flex justify-end items-end gap-2 pt-4">
                     <Button
-                      onClick={() => setEditAccDetails(false)}
+                      type="button"
+                      onClick={closeEdit}
                       variant="outline"
                       className="border-slate-300 text-slate-700 hover:bg-slate-100"
                     >

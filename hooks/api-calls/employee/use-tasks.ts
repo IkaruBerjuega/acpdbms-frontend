@@ -1,5 +1,5 @@
 import { useApiMutation, useApiQuery } from "@/hooks/tanstack-query";
-import { StoreTaskRequest } from "@/lib/definitions";
+import { StoreTaskRequest } from "@/lib/tasks-definitions";
 import {
   AssignTaskRequest,
   CancelTaskAssignmentRequest,

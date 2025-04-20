@@ -17,7 +17,7 @@ import { useSelectedTaskStatus } from "@/hooks/states/create-store";
 
 export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
   // setup for adding params when the button for viewing  the phases is the one used
-  const { paramsKey, params } = useQueryParams();
+  const { params } = useQueryParams();
   const { replace } = useRouter();
 
   const pathname = usePathname();

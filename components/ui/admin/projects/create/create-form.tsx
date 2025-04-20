@@ -5,12 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FormProvider, useForm, SubmitHandler } from "react-hook-form";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  BtnDialog,
-  Button,
-  ButtonIconTooltipDialog,
-} from "@/components/ui/button";
-
+import { BtnDialog, Button } from "@/components/ui/button";
 import { ProjectFormSchemaType } from "@/lib/form-constants/project-constants";
 import StepperIndicator from "./stepper";
 import ProjectDetails from "./project-details";
@@ -60,7 +55,7 @@ function getStepContent(step: number) {
   return "Unknown step";
 }
 
-export default function HookMultiStepForm() {
+export default function AddNewProject() {
   const [currentStep, setCurrentStep] = useState(0);
   const constRouter = useRouter();
 
@@ -75,14 +70,6 @@ export default function HookMultiStepForm() {
     watch,
     formState: { errors, isValid },
   } = methods;
-
-  const resetForm = () => {
-    constRouter.push("/admin/projects");
-    toast({
-      title: "Notification",
-      description: "New Project Added.",
-    });
-  };
 
   const { addProject } = useProjectActions();
 
@@ -108,11 +95,22 @@ export default function HookMultiStepForm() {
     console.log("Formatted data:", Array.from(formData.entries()));
 
     mutate(formData, {
-      onSuccess: () => {
-        resetForm();
+      onSuccess: (response: { message: string }) => {
+        {
+          constRouter.push("/admin/projects");
+          toast({
+            title: "Notification",
+            description: response.message || "New Project Added.",
+          });
+        }
       },
-      onError: (error: any) => {
-        console.error("Error adding project", error);
+      onError: (response: { message: string }) => {
+        toast({
+          variant: "destructive",
+          title: "Notification",
+          description:
+            response.message || "There was an error processing the request",
+        });
       },
     });
   };
@@ -123,12 +121,9 @@ export default function HookMultiStepForm() {
   const next = async () => {
     // determine fields to validate for the current step
     const fields: FieldPath[] = steps[currentStep].fields as FieldPath[];
-    const values = methods.getValues(fields);
-    console.log("Field Values:", values);
+    // const values = methods.getValues(fields);
 
     const output = await trigger(fields, { shouldFocus: true });
-    console.log("Validation Output:", output);
-    console.log("Validation Errors:", methods.formState.errors);
 
     if (!output) return;
 

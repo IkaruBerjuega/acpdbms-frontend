@@ -1,21 +1,19 @@
-'use client';
+"use client";
 
-import TooltipBtnIcon from '@/components/ui/general/tooltip-custom';
-import { Button, ButtonLink } from '@/components/ui/button';
-import { MouseEventHandler } from 'react';
-import { IoAddOutline } from 'react-icons/io5';
-import { IoArchiveOutline } from 'react-icons/io5';
-import { IoDocumentTextOutline } from 'react-icons/io5';
-import { MdOutlineEdit, MdOutlineRemoveRedEye } from 'react-icons/md';
-import { SlDrawer } from 'react-icons/sl';
-import { FcCancel } from 'react-icons/fc';
+import TooltipBtnIcon from "@/components/ui/general/tooltip-custom";
+import { ButtonLink } from "@/components/ui/button";
+import { IoAddOutline } from "react-icons/io5";
+import { IoArchiveOutline } from "react-icons/io5";
+import { IoDocumentTextOutline } from "react-icons/io5";
+import { MdOutlineEdit, MdOutlineRemoveRedEye } from "react-icons/md";
+import { SlDrawer } from "react-icons/sl";
+import { FcCancel } from "react-icons/fc";
 
 export function BtnAdd({
   label,
   href,
   onClick,
   classname,
-  textColor,
   variant,
 }: {
   label?: string;
@@ -24,28 +22,28 @@ export function BtnAdd({
   classname?: string;
   textColor?: string;
   variant?:
-    | 'default'
-    | 'destructive'
-    | 'outline'
-    | 'secondary'
-    | 'ghost'
-    | 'link'
+    | "default"
+    | "destructive"
+    | "outline"
+    | "secondary"
+    | "ghost"
+    | "link"
     | null
     | undefined;
 }) {
   return (
     <ButtonLink
       className={`bg-red-800 hover:bg-red-900 space-x-1 h-8 sm:h-11 sm:p-2 ${classname}`}
-      size={'sm'}
-      href={href || ''}
+      size={"sm"}
+      href={href || ""}
       onClick={onClick}
       variant={variant}
     >
-      <IoAddOutline className='text-xs md:text-lg' />
-      <p className={'hidden md:flex text-xs md:text-sm font-semibold'}>
+      <IoAddOutline className="text-xs md:text-lg" />
+      <p className={"hidden md:flex text-xs md:text-sm font-semibold"}>
         {label}
       </p>
-      <p className={'flex md:hidden text-xs md:text-sm font-semibold '}>
+      <p className={"flex md:hidden text-xs md:text-sm font-semibold "}>
         {label}
       </p>
     </ButtonLink>
@@ -56,9 +54,9 @@ export function BtnArchivedItems({ label }: { label: string }) {
   return (
     <TooltipBtnIcon
       tooltipContent={label}
-      variant='outline'
-      className='h-9 rounded-md px-2 sm:h-11 sm:rounded-md sm:px-4 flex-1 md:flex-none'
-      icon={<SlDrawer className='text-base md:text-xl text-black-primary' />}
+      variant="outline"
+      className="h-9 rounded-md px-2 sm:h-11 sm:rounded-md sm:px-4 flex-1 md:flex-none"
+      icon={<SlDrawer className="text-base md:text-xl text-black-primary" />}
     />
   );
 }
@@ -67,10 +65,10 @@ export function BtnGenerateReport({ label }: { label: string }) {
   return (
     <TooltipBtnIcon
       tooltipContent={label}
-      variant='outline'
-      className='h-9 rounded-md px-2 lg:h-11 sm:h-11 sm:rounded-md sm:px-4 flex-1 md:flex-none'
+      variant="outline"
+      className="h-9 rounded-md px-2 lg:h-11 sm:h-11 sm:rounded-md sm:px-4 flex-1 md:flex-none"
       icon={
-        <IoDocumentTextOutline className='text-base md:text-xl text-black-primary' />
+        <IoDocumentTextOutline className="text-base md:text-xl text-black-primary" />
       }
     />
   );
@@ -86,13 +84,13 @@ export function BtnArchive({
   return (
     <TooltipBtnIcon
       tooltipContent={label}
-      variant='outline'
+      variant="outline"
       // onClick={onClick}
-      className='bg-red-500 hover:bg-red-700 h-9 rounded-md px-2 sm:h-11 sm:rounded-md sm:px-4 '
+      className="bg-red-500 hover:bg-red-700 h-9 rounded-md px-2 sm:h-11 sm:rounded-md sm:px-4 "
       icon={
-        <IoArchiveOutline className='text-base md:text-xl text-white-primary' />
+        <IoArchiveOutline className="text-base md:text-xl text-white-primary" />
       }
-      textColor='text-white-primary'
+      textColor="text-white-primary"
     />
   );
 }
@@ -101,10 +99,10 @@ export function BtnWithinArchive({ label }: { label: string }) {
   return (
     <TooltipBtnIcon
       tooltipContent={label}
-      variant='outline'
-      className='bg-red-500 hover:bg-red-700 p-2 flex-1 md:flex-none'
-      textColor='text-white'
-      icon={<IoArchiveOutline className='text-base text-white-primary' />}
+      variant="outline"
+      className="bg-red-500 hover:bg-red-700 p-2 flex-1 md:flex-none"
+      textColor="text-white"
+      icon={<IoArchiveOutline className="text-base text-white-primary" />}
     />
   );
 }
@@ -122,9 +120,9 @@ export function BtnWithinEdit({
   return (
     <TooltipBtnIcon
       tooltipContent={label}
-      variant='outline'
+      variant="outline"
       className={` p-2 ${className}`}
-      icon={<MdOutlineEdit className='text-base ' />}
+      icon={<MdOutlineEdit className="text-base " />}
       href={href}
       onClick={onClick}
     />
@@ -146,9 +144,9 @@ export function BtnWithinView({
     <TooltipBtnIcon
       onClick={onClick}
       tooltipContent={label}
-      variant='outline'
+      variant="outline"
       className={` p-2 ${className}`}
-      icon={<MdOutlineRemoveRedEye className='text-base ' />}
+      icon={<MdOutlineRemoveRedEye className="text-base " />}
       href={href}
     />
   );
@@ -169,9 +167,9 @@ export function BtnWithinCancel({
     <TooltipBtnIcon
       onClick={onClick}
       tooltipContent={label}
-      variant='outline'
+      variant="outline"
       className={` p-2 ${className}`}
-      icon={<FcCancel className='text-base text-red-500' />}
+      icon={<FcCancel className="text-base text-red-500" />}
       href={href}
     />
   );

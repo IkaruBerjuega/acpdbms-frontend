@@ -4,8 +4,6 @@ import type React from "react";
 
 import { useEffect, useState } from "react";
 import { FormProvider, type SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import {
   ProjectFormSchemaType,
   ProjectUpdateRequest,
@@ -21,8 +19,6 @@ import {
   FileText,
   Home,
   Map,
-  Calendar1Icon,
-  CalendarCheck,
   CalendarDaysIcon,
 } from "lucide-react";
 import Image from "next/image";
@@ -32,7 +28,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getStatusColor } from "./data-table-components/create-table-columns";
 import { toast } from "@/hooks/use-toast";
-import { useQueryParams } from "@/hooks/use-query-params";
 import { usePathname, useRouter } from "next/navigation";
 import {
   Phase,
@@ -50,37 +45,18 @@ import {
   useViewProject,
 } from "@/hooks/general/use-project";
 import { AiOutlineMail, AiOutlineTeam } from "react-icons/ai";
-import { Avatar, AvatarFallback, AvatarImage } from "../avatar";
-import {
-  getInitialsFallback,
-  requireError,
-  statusNoticeConfig,
-  titleCase,
-} from "@/lib/utils";
+import { requireError, statusNoticeConfig, titleCase } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import { error } from "console";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "../accordion";
-import {
-  MdOutlineMarkEmailRead,
-  MdOutlinePhoneEnabled,
-  MdPhoneEnabled,
-  MdSecurity,
-} from "react-icons/md";
-import { IoPhonePortraitOutline } from "react-icons/io5";
+import { MdOutlinePhoneEnabled, MdSecurity } from "react-icons/md";
 import { LiaTasksSolid } from "react-icons/lia";
-import { FaCrown } from "react-icons/fa6";
 import { Checkbox } from "../checkbox";
 import Profile from "./profile";
-import {
-  LuCalendarCheck,
-  LuCalendarMinus,
-  LuCalendarPlus,
-} from "react-icons/lu";
 import { StatusNotice } from "../hover-card";
 
 interface ProjectDetails {
@@ -90,7 +66,7 @@ interface ProjectDetails {
   isAdmin?: boolean;
 }
 
-function ProjectDetails<T>({
+function ProjectDetails({
   id,
   edit,
   projectDetailsInitialData,
@@ -108,14 +84,14 @@ function ProjectDetails<T>({
     control,
     reset,
     watch,
-    formState: { errors, isValid },
+    formState: { errors },
   } = methods;
 
-  const { paramsKey, params } = useQueryParams();
+  const params = new URLSearchParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const isEdit = paramsKey["edit"] === "true";
+  const isEdit = edit === "true";
 
   const closeEdit = () => {
     params.delete("edit");
@@ -135,7 +111,10 @@ function ProjectDetails<T>({
 
   const queryClient = useQueryClient();
 
-  const { project: projectDetails } = useViewProject(id);
+  const { project: projectDetails } = useViewProject(
+    id,
+    projectDetailsInitialData
+  );
   const { editDetails, uploadPhoto } = useEditProject(id);
 
   const processForm: SubmitHandler<ProjectUpdateRequest> = async (data) => {
@@ -183,15 +162,14 @@ function ProjectDetails<T>({
         street: projectDetails.street,
         city_town: projectDetails.city_town,
         state: projectDetails.state,
-        finish_date: projectDetails.finish_date,
-        zip_code: projectDetails.zip_code,
+        finish_date: projectDetails.finish_date as string,
+        zip_code: String(projectDetails.zip_code),
         status: projectDetails.status,
         image_url: projectDetails.image_url ?? undefined,
       });
     }
   }, [projectDetails, reset]);
 
-  const details = watch();
   const projectLocation = `${projectDetails?.state}, ${projectDetails?.city_town}`;
   const projectDescription = projectDetails?.project_description;
   const title = projectDetails?.project_title;
@@ -229,8 +207,6 @@ function ProjectDetails<T>({
       });
     }
   };
-
-  const phasesIconSrc = "/button-svgs/tasks-header-phases.svg";
 
   return (
     <Card className="border-none shadow-md  h-fit ">
@@ -356,7 +332,9 @@ function ProjectDetails<T>({
                           Client Name
                         </span>
                       </div>
-                      <p className="text-base pl-6">{details?.client_name}</p>
+                      <p className="text-base pl-6">
+                        {projectDetails?.client_name}
+                      </p>
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center">
@@ -365,7 +343,9 @@ function ProjectDetails<T>({
                           Project Title
                         </span>
                       </div>
-                      <p className="text-base pl-6">{details?.project_title}</p>
+                      <p className="text-base pl-6">
+                        {projectDetails?.project_title}
+                      </p>
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center">
@@ -375,7 +355,7 @@ function ProjectDetails<T>({
                         </span>
                       </div>
                       <p className="text-base pl-6">
-                        {details?.project_description}
+                        {projectDetails?.project_description}
                       </p>
                     </div>
                   </>
@@ -437,7 +417,7 @@ function ProjectDetails<T>({
                           State
                         </span>
                       </div>
-                      <p className="text-base pl-6">{details?.state}</p>
+                      <p className="text-base pl-6">{projectDetails?.state}</p>
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center">
@@ -446,7 +426,9 @@ function ProjectDetails<T>({
                           City/Town
                         </span>
                       </div>
-                      <p className="text-base pl-6">{details?.city_town}</p>
+                      <p className="text-base pl-6">
+                        {projectDetails?.city_town}
+                      </p>
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center">
@@ -455,7 +437,7 @@ function ProjectDetails<T>({
                           Street
                         </span>
                       </div>
-                      <p className="text-base pl-6">{details?.street}</p>
+                      <p className="text-base pl-6">{projectDetails?.street}</p>
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center">
@@ -464,7 +446,9 @@ function ProjectDetails<T>({
                           Zip Code
                         </span>
                       </div>
-                      <p className="text-base pl-6">{details?.zip_code}</p>
+                      <p className="text-base pl-6">
+                        {projectDetails?.zip_code}
+                      </p>
                     </div>
                   </>
                 )}
@@ -551,7 +535,9 @@ function ProjectDetails<T>({
                         </span>
                       </div>
                       <p className="text-base pl-6">
-                        {details?.start_date ? details.start_date : ""}
+                        {projectDetails?.start_date
+                          ? projectDetails.start_date
+                          : ""}
                       </p>
                     </div>
                     <div className="space-y-1">
@@ -562,7 +548,9 @@ function ProjectDetails<T>({
                         </span>
                       </div>
                       <p className="text-base pl-6">
-                        {details?.end_date ? details.end_date : ""}
+                        {projectDetails?.end_date
+                          ? projectDetails.end_date
+                          : ""}
                       </p>
                     </div>
                     {projectDetails?.finish_date && (
@@ -576,7 +564,9 @@ function ProjectDetails<T>({
                           </span>
                         </div>
                         <p className="text-base pl-6">
-                          {details?.finish_date ? details.finish_date : ""}
+                          {projectDetails?.finish_date
+                            ? projectDetails.finish_date
+                            : ""}
                         </p>
                       </div>
                     )}
@@ -627,7 +617,6 @@ function Member({
 }) {
   const isProjectManager = props.role === "Project Manager";
   const isViceManager = props.role === "Vice Manager";
-  const isManager = isProjectManager || isViceManager;
 
   return (
     <Card className="">
@@ -751,7 +740,7 @@ function TeamMembers({
   id: string;
   teamInitialData: TeamMemberDashboardResponse;
 }) {
-  const { data, isLoading } = useTeamDetailsForDashboard(id);
+  const { data, isLoading } = useTeamDetailsForDashboard(id, teamInitialData);
   const { data: hasPermission } = useCheckViceManagerPermission(id);
   const { toggleVicePermission } = useProjectActions(id);
 
@@ -803,7 +792,7 @@ function TeamMembers({
 
   if (!teamMembers || teamMembers.length === 0) {
     return (
-      <Card className="border-none shadow-md w-full h-full">
+      <Card>
         <CardContent className="p-6">No members yet</CardContent>
       </Card>
     );
@@ -921,11 +910,25 @@ function PhasesMapping({
   );
 }
 
-function Phases({ id }: { id: string }) {
+function Phases({
+  id,
+  activePhasesInitialData,
+  archivedPhasesInitialData,
+}: {
+  id: string;
+  activePhasesInitialData: Phase[];
+  archivedPhasesInitialData: Phase[];
+}) {
   const phasesIconSrc = "/button-svgs/tasks-header-phases.svg";
 
-  const { data: activePhases } = useGetActivePhases(id);
-  const { data: archivedPhases } = useGetArchivedPhases(id);
+  const { data: activePhases } = useGetActivePhases(
+    id,
+    activePhasesInitialData
+  );
+  const { data: archivedPhases } = useGetArchivedPhases(
+    id,
+    archivedPhasesInitialData
+  );
 
   return (
     <Card className="shadow-md h-fit border-none ">
@@ -958,12 +961,16 @@ export default function ProjectView({
   edit,
   projectDetailsInitialData,
   teamInitialData,
+  activePhaseInitialData,
+  archivedPhasesInitialData,
   isAdmin = true,
 }: {
   id: string;
   edit: string;
   projectDetailsInitialData: ProjectDetailsInterface;
   teamInitialData: TeamMemberDashboardResponse;
+  activePhaseInitialData: Phase[];
+  archivedPhasesInitialData: Phase[];
   isAdmin?: boolean;
 }) {
   return (
@@ -975,7 +982,11 @@ export default function ProjectView({
           projectDetailsInitialData={projectDetailsInitialData}
           isAdmin={isAdmin}
         />
-        <Phases id={id} />
+        <Phases
+          id={id}
+          activePhasesInitialData={activePhaseInitialData}
+          archivedPhasesInitialData={archivedPhasesInitialData}
+        />
       </div>
       <div className="flex-grow h-full ">
         <TeamMembers id={id} teamInitialData={teamInitialData} />

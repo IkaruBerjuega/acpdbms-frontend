@@ -1,9 +1,7 @@
-import { Suspense } from "react";
-import Files from "@/components/ui/components-to-relocate/file-management/files";
-import { Skeleton } from "@/components/ui/skeleton";
+import Files from "@/components/ui/general/file-management/files";
+
 import type { Breadcrumbs } from "@/lib/definitions";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import serverRequestAPI from "@/hooks/server-request";
 import { FilesPageProps } from "@/lib/files-definitions";
 
 export default async function Page({

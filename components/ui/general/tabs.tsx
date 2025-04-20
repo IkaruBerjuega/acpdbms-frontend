@@ -9,16 +9,23 @@ interface TabsInterface {
     element?: JSX.Element;
     action: () => void;
   }[];
+  containerClassName?: string;
 }
 
-export default function Tabs({ activeTab, tabItems }: TabsInterface) {
+export default function Tabs({
+  activeTab,
+  tabItems,
+  containerClassName,
+}: TabsInterface) {
   return (
-    <div className="rounded-md flex-row-between-center bg-gray-200 h-full px-1.5 py-1 w-fit ">
+    <div
+      className={`rounded-md flex-row-between-center bg-gray-200 px-1 py-1 w-fit ${containerClassName}`}
+    >
       {tabItems.map(({ item, element, action }, index) => {
         return (
           <button
             key={index}
-            className={`p-1 lg:p-2 rounded-md text-xs h-full w-fit ${
+            className={`p-1 lg:p-2 rounded-sm text-xs h-full w-fit ${
               titleCase(activeTab) === titleCase(item) && "bg-white-primary"
             } `}
             onClick={action}

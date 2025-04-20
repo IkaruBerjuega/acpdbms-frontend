@@ -4,7 +4,6 @@ import TasksDND from "@/components/ui/employee/tasks/tasks-dnd";
 import { ProjectSelector } from "@/components/ui/general/project-selector";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Breadcrumbs } from "@/lib/definitions";
-import { CiNoWaitingSign } from "react-icons/ci";
 
 export default async function Page({
   searchParams,
@@ -38,7 +37,7 @@ export default async function Page({
       <div className="flex-col-start gap-4 sm:flex-row-between-center sm:gap-0 w-full">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
         <div className="flex-1 sm:flex-none flex-row-start">
-          <ProjectSelector role="employee" />
+          <ProjectSelector role="employee" projId={projectId} />
         </div>
       </div>
 
@@ -50,7 +49,8 @@ export default async function Page({
           <TaskSheetContainer
             sheetParamValue={sheet}
             taskId={taskId}
-            version={undefined}
+            version={""}
+            projectId={_projectId}
           />
         </>
       ) : (

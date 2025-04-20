@@ -84,7 +84,7 @@ const DropdownMenuItem = React.forwardRef<
   <DropdownMenuPrimitive.Item
     ref={ref}
     className={cn(
-      "relative flex cursor-default select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+      "relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
       inset && "pl-8",
       className
     )}
@@ -185,9 +185,9 @@ DropdownMenuShortcut.displayName = "DropdownMenuShortcut";
 interface ItemProps {
   label: string;
   onClick?: () => void;
-  iconSrc: string;
+  iconSrc?: string;
   className?: string;
-  alt: string;
+  alt?: string;
   dialogContent?: JSX.Element;
   dialogDescription?: string;
   dialogTitle?: string;
@@ -213,9 +213,10 @@ interface CustomDropdownMenuProps {
   btnLabel?: string;
   btnSrc?: string;
   btnSrcAlt: string;
-  menuLabel: string;
+  menuLabel?: string;
   items: ItemProps[];
   btnVariant: "ghost" | "outline" | "default";
+  className?: string;
 }
 const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
   const { items } = props;
@@ -230,7 +231,10 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant={props.btnVariant} className="p-2 h-8">
+        <Button
+          variant={props.btnVariant}
+          className={`p-2 h-8 ${props.className}`}
+        >
           {props.btnSrc && props.btnSrcAlt && (
             <Image
               src={props.btnSrc}
@@ -244,8 +248,12 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className="w-48" align="end" side="bottom">
-        <DropdownMenuLabel>{props.menuLabel}</DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        {props.menuLabel && (
+          <>
+            <DropdownMenuLabel>{props.menuLabel}</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+          </>
+        )}
         {items.map((item, index) => (
           <React.Fragment key={index}>
             {item.isDialog ? (
@@ -264,12 +272,14 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
                       variant="ghost"
                       className={`w-full h-full flex justify-start items-center gap-2  ${item.className} px-2`}
                     >
-                      <Image
-                        src={item.iconSrc}
-                        alt={`${item.iconSrc} button`}
-                        width={16}
-                        height={16}
-                      />
+                      {item.iconSrc && (
+                        <Image
+                          src={item.iconSrc}
+                          alt={`${item.iconSrc} button`}
+                          width={16}
+                          height={16}
+                        />
+                      )}
                       <span>{item.label}</span>
                     </Button>
                   </DropdownMenuItem>
@@ -299,16 +309,36 @@ const CustomDropdownMenu = (props: CustomDropdownMenuProps) => {
                   href={item.href}
                   className={`w-full h-full flex justify-start items-center gap-2 ${item.className} px-2`}
                 >
+                  {item.iconSrc && (
+                    <Image
+                      src={item.iconSrc}
+                      alt={`${item.iconSrc} button`}
+                      width={16}
+                      height={16}
+                    />
+                  )}
+
+                  <span>{item.label}</span>
+                </Link>
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem
+                onSelect={(e) => e.preventDefault()}
+                onClick={() => onClick(item)}
+                className="h-7 p-0 px-2"
+              >
+                {item.iconSrc && (
                   <Image
                     src={item.iconSrc}
                     alt={`${item.iconSrc} button`}
                     width={16}
                     height={16}
                   />
-                  <span>{item.label}</span>
-                </Link>
+                )}
+
+                <span>{item.label}</span>
               </DropdownMenuItem>
-            ) : null}
+            )}
           </React.Fragment>
         ))}
       </DropdownMenuContent>
