@@ -7,9 +7,9 @@ import { useCustomTable } from "./custom-tanstack";
 import { useRouter } from "next/navigation";
 import { Pagination } from "./Pagination";
 import { ColumnDef } from "@tanstack/react-table";
-import { ProjectListResponseInterface } from "@/lib/definitions";
+import { RevisionInterface } from "@/lib/definitions";
 
-export default function ProjectCards<T extends ProjectListResponseInterface>({
+export default function ProjectCards<T extends RevisionInterface>({
   columns,
   data,
 }: {

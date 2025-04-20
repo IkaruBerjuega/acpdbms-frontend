@@ -1,14 +1,29 @@
 "use client";
 
-import { TaskVersionsResponse } from "@/lib/tasks-definitions";
-import SidepanelDrawerComponent from "./sidepanel-drawer";
-import TaskFiles from "./tasks/task-files";
-import { useCallback, useState } from "react";
-import { TaskFile, TaskFilesApprovalRequest } from "@/lib/files-definitions";
-import FileViewer from "../file-viewer";
+import { useCallback, useMemo, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
-
 import { Button } from "../button";
+import FileViewer from "../file-viewer";
+import TaskComments from "../employee/tasks/task-comments";
+import TaskFiles from "./tasks/task-files";
+import SidepanelDrawerComponent from "./sidepanel-drawer";
+
+import { useQueryParams } from "@/hooks/use-query-params";
+import { TaskVersionsResponse } from "@/lib/tasks-definitions";
+import { TaskFile, TaskFilesApprovalRequest } from "@/lib/files-definitions";
+
+const sidepanelConfig = {
+  true: {
+    title: "Files to review",
+    descManager: "Approve or reject files as the project manager",
+    descClient: "Approve or reject files as the client",
+  },
+  false: {
+    title: "Files",
+    descManager: "View files and manage files",
+    descClient: "View files as the client",
+  },
+};
 
 export default function FileReview({
   taskId,
@@ -18,6 +33,7 @@ export default function FileReview({
   reviewMode,
   projectId,
   view_files,
+  view_comments,
 }: {
   taskId: string;
   version: string | null;
@@ -26,51 +42,90 @@ export default function FileReview({
   reviewMode: boolean;
   projectId: string;
   view_files: string | null;
+  view_comments: string | null;
 }) {
   const [selectedFile, setSelectedFile] = useState<TaskFile>();
-
-  const params = new URLSearchParams();
-  const filePanelIsOpen = view_files === "true";
-
+  const [review, setReview] = useState<TaskFilesApprovalRequest["approvals"]>();
+  const { params } = useQueryParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  // Function to update query parameters
+  const filePanelIsOpen = !!view_files;
+  const commentsIsOpen = !!view_comments;
+
+  const activeTab = useMemo(
+    () => (filePanelIsOpen ? "view_files" : "view_comments"),
+    [filePanelIsOpen]
+  );
+
+  const isInReviewMode = useMemo(
+    () => (reviewMode ? "true" : "false"),
+    [reviewMode]
+  );
+
   const createQueryString = useCallback(
     (parameter: string, value: string) => {
-      const newParams = new URLSearchParams(params);
+      const newParams = new URLSearchParams(params.toString());
+      if (parameter === "view_files") {
+        newParams.delete("view_comments");
+      } else {
+        newParams.delete("view_files");
+      }
       newParams.set(parameter, value);
       replace(`${pathname}?${newParams.toString()}`);
     },
-    [pathname, replace, params.toString()]
+    [params, pathname, replace]
   );
 
-  //(projectId, 1)
-
-  const openFiles = () => {
+  const openFiles = useCallback(() => {
     createQueryString("view_files", "true");
-  };
+  }, [createQueryString]);
 
-  const sidepanelConfig = {
-    true: {
-      title: "Files to review",
-      desc:
-        role === "manager"
-          ? "Approve or reject files as the project manager"
-          : "Approve or reject files as the client",
-    },
-    false: {
-      title: "Files",
-      desc:
-        role === "manager"
-          ? "View files and manage files"
-          : "View files as the client",
-    },
-  };
+  const openComments = useCallback(() => {
+    createQueryString("view_comments", "true");
+  }, [createQueryString]);
 
-  const isInReviewMode = reviewMode === true ? "true" : "false";
+  const sidePanelTitle = useMemo(() => {
+    return filePanelIsOpen ? sidepanelConfig[isInReviewMode].title : "Comments";
+  }, [filePanelIsOpen, isInReviewMode]);
 
-  const [review, setReview] = useState<TaskFilesApprovalRequest["approvals"]>();
+  const sidePanelDesc = useMemo(() => {
+    if (filePanelIsOpen) {
+      return role === "manager"
+        ? sidepanelConfig[isInReviewMode].descManager
+        : sidepanelConfig[isInReviewMode].descClient;
+    }
+    return "Comments made by team members and client are displayed here";
+  }, [filePanelIsOpen, isInReviewMode, role]);
+
+  const sidePanelContent = useMemo(() => {
+    return filePanelIsOpen ? (
+      <TaskFiles
+        taskId={taskId}
+        reviewMode={reviewMode}
+        version={version!}
+        initialData={initialData}
+        getSelectedFileUrl={({ file }: { file: TaskFile }) => {
+          setSelectedFile(file);
+        }}
+        role={role}
+        review={review}
+        setReview={setReview}
+        projectId={projectId}
+      />
+    ) : (
+      <TaskComments taskId={taskId} projectId={projectId} />
+    );
+  }, [
+    filePanelIsOpen,
+    taskId,
+    reviewMode,
+    version,
+    initialData,
+    role,
+    review,
+    projectId,
+  ]);
 
   if (!version) {
     return (
@@ -81,40 +136,39 @@ export default function FileReview({
   }
 
   return (
-    <div className="flex-1 xl:flex-row-start-center gap-2 min-h-0">
-      <div className="h-full flex-grow rounded-md shadow-md flex-col-center bg-white-primary  relative">
-        {!filePanelIsOpen && (
-          <Button
-            className="text-sm absolute bottom-4 right-4 z-50"
-            variant={"outline"}
-            size={"sm"}
-            onClick={openFiles}
-          >
-            View Files
-          </Button>
-        )}
-        <FileViewer file={selectedFile} />
+    <>
+      <div className="flex-1 xl:flex-row-start-center gap-2 min-h-0">
+        <div className="h-full flex-grow relative flex-col-start gap-2">
+          <div className="w-full flex-row-end-center gap-2">
+            <Button
+              className={`border-none shadow-md ${
+                !filePanelIsOpen && "bg-gray-100"
+              }`}
+              variant="outline"
+              onClick={openFiles}
+            >
+              View Files
+            </Button>
+            <Button
+              className={`border-none shadow-md ${
+                !commentsIsOpen && "bg-gray-100"
+              }`}
+              variant="outline"
+              onClick={openComments}
+            >
+              Comments
+            </Button>
+          </div>
+          <FileViewer file={selectedFile} />
+        </div>
+
+        <SidepanelDrawerComponent
+          paramKey={activeTab}
+          title={sidePanelTitle}
+          description={sidePanelDesc}
+          content={sidePanelContent}
+        />
       </div>
-      <SidepanelDrawerComponent
-        paramKey={"view_files"}
-        title={sidepanelConfig[isInReviewMode].title}
-        description={sidepanelConfig[isInReviewMode].desc}
-        content={
-          <TaskFiles
-            taskId={taskId}
-            reviewMode={reviewMode}
-            version={version}
-            initialData={initialData}
-            getSelectedFileUrl={({ file }: { file: TaskFile }) => {
-              setSelectedFile(file);
-            }}
-            role={role}
-            review={review}
-            setReview={setReview}
-            projectId={projectId}
-          />
-        }
-      />
-    </div>
+    </>
   );
 }

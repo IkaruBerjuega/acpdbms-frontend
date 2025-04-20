@@ -82,7 +82,7 @@ export default function TaskCard(props: TaskCardProps) {
     const projectId = paramsKey["projectId"];
     if (status === "needs review") {
       goTo(
-        `/client/approval/${id}/review-files?view_files&version=${version}&projectId=${projectId}`
+        `/client/approval/${id}/review-files?view_files=true&version=${version}&projectId=${projectId}`
       );
 
       return;

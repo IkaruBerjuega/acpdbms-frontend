@@ -46,6 +46,7 @@ export interface TaskComment {
   content: string;
   reply_to: number | null;
   created_at: string;
+  role: "employee" | "client";
 }
 
 export interface TaskCommentInterface {
@@ -56,6 +57,7 @@ export interface TaskCommentInterface {
   content: string;
   children?: TaskCommentInterface[]; // Optional replies
   created_at: string;
+  role: "employee" | "client";
 }
 
 export interface TaskCommentsResponse {

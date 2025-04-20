@@ -2,23 +2,18 @@ import Image from "next/image";
 import { Calendar, MapPin, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getStatusColor } from "./general/data-table-components/create-table-columns";
-
 import { flexRender, Row } from "@tanstack/react-table";
-import { ProjectListResponseInterface } from "@/lib/definitions";
+import { RevisionInterface } from "@/lib/definitions";
 
 export default function Card({
   row,
   fn,
   data,
 }: {
-  data?: ProjectListResponseInterface;
-  row?: Row<ProjectListResponseInterface>;
+  data?: RevisionInterface;
+  row?: Row<RevisionInterface>;
   isClient?: boolean;
-  fn?: (
-    projectId?: string,
-    projectName?: string,
-    userRole?: "Project Manager" | "Vice Manager" | "Member"
-  ) => void;
+  fn?: (project: RevisionInterface) => void;
 }) {
   let actionsCell;
 
@@ -28,7 +23,7 @@ export default function Card({
       .find((cell: { column: { id: string } }) => cell.column.id === "actions");
   }
 
-  const id = data?.id ?? row?.getValue("id");
+  // const id = data?.id ?? row?.getValue("id");
   const projectTitle = data?.project_title ?? row?.getValue("project_title");
   const projectImgSrc = "/system-component-images/project-src-placeholder.webp";
 
@@ -41,12 +36,16 @@ export default function Card({
   const location = data?.location ?? row?.getValue("location") ?? "N/A";
   const role = data?.user_role;
 
+  const project = row?.original || data;
+
   return (
     <div
       className="group flex flex-col h-full bg-white rounded-xl overflow-hidden border border-slate-200 shadow-sm hover:shadow-md cursor-pointer transition-all duration-200"
       onClick={() => {
         if (fn) {
-          fn(id, projectTitle, role);
+          if (project) {
+            fn(project);
+          }
         }
       }}
     >

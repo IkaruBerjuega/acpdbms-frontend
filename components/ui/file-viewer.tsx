@@ -39,7 +39,11 @@ export default function FileViewer({ file }: FileViewerProps) {
   const [zoom, setZoom] = useState<number>(100);
 
   if (!file) {
-    return <div className="w-full flex-row-center">No File Selected</div>;
+    return (
+      <div className=" flex-row-center flex-grow  bg-white-primary rounded-md shadow-md">
+        No File Selected
+      </div>
+    );
   }
 
   const fileType = getFileExtension(file.type);
@@ -69,12 +73,16 @@ export default function FileViewer({ file }: FileViewerProps) {
   };
 
   if (isNotViewable) {
-    return <DownloadFileOption fileName={file.name} fileUrl={file.path} />;
+    return (
+      <div className="flex-row-center flex-grow  bg-white-primary rounded-md shadow-md">
+        <DownloadFileOption fileName={file.name} fileUrl={file.path} />
+      </div>
+    );
   }
 
   if (isImage) {
     return (
-      <div className="w-full h-full flex-col-center bg-black-primary overflow-auto">
+      <div className="flex-grow flex-col-center bg-black-primary overflow-auto">
         <div className="flex-row-end-center w-full gap-2 text-4xl absolute z-50 top-4 px-4">
           <MdOutlineZoomIn
             className="text-white-primary hover:text-slate-400 cursor-pointer"
@@ -106,7 +114,7 @@ export default function FileViewer({ file }: FileViewerProps) {
   }
 
   return (
-    <div className="w-full h-full flex-col-center ">
+    <div className="flex-grow flex-col-center ">
       <iframe src={fileUrl} className="w-full h-full" />
     </div>
   );

@@ -22,10 +22,10 @@ export default async function Page({
           <ProjectSelector role="client" projId={projectId} />
         </div>
       </div>
-      <Suspense fallback={<></>}>
-        <TasksHeaderActions isEmployee={false} view={view} />
-        <ClientTasksView view={view} />
+      <Suspense>
+        <TasksHeaderActions isEmployee={false} />
       </Suspense>
+      <ClientTasksView view={view} />
     </>
   );
 }

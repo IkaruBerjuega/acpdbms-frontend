@@ -182,8 +182,11 @@ export default function ProjectDetails() {
                   const startDate = new Date(value);
                   const endDate = new Date(String(watch("end_date")));
 
-                  if (startDate < new Date()) {
-                    return "Start Date must be in the future";
+                  if (
+                    new Date(startDate).setHours(0, 0, 0, 0) <
+                    new Date().setHours(0, 0, 0, 0)
+                  ) {
+                    return "Start Date must be today or in the future";
                   }
 
                   if (watch("end_date") && startDate >= endDate) {

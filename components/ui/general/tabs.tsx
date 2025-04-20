@@ -25,7 +25,7 @@ export default function Tabs({
         return (
           <button
             key={index}
-            className={`p-1 lg:p-2 rounded-sm text-xs h-full w-fit ${
+            className={`p-2 rounded-sm text-xs h-full w-fit ${
               titleCase(activeTab) === titleCase(item) && "bg-white-primary"
             } `}
             onClick={action}

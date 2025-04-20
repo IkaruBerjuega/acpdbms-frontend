@@ -574,7 +574,7 @@ export default function TaskFiles({
   const isViewRejected = reviewViewStatus === "rejected";
 
   return (
-    <div className="h-full flex-col-start min-h-0 ">
+    <div className="h-full flex-col-start min-h-0 flex-grow">
       <div
         className={`${
           !reviewMode && taskStatus !== "done" ? "h-1/2" : "flex-grow"
