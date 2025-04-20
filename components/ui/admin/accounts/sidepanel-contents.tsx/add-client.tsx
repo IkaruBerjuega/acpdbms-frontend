@@ -10,7 +10,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { SubmitHandler } from "react-hook-form";
 
-export default function AddClient({ isOpen }: { isOpen: boolean }) {
+export default function AddClient() {
   const {
     register,
     reset,
@@ -75,7 +75,7 @@ export default function AddClient({ isOpen }: { isOpen: boolean }) {
   return (
     <form
       onSubmit={handleSubmit(processSubmit)}
-      className="w-full mt-10 flex-grow flex-col-start gap-2"
+      className="w-full mt-10 flex-grow flex-col-start gap-2 px-1"
     >
       <FormInput
         name={"email"}

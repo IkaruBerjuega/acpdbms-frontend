@@ -4,26 +4,22 @@ import FilterPopOver from "./filter-components/filter-popover";
 import { LuFilter } from "react-icons/lu";
 import Card from "../../project-card";
 import { useCustomTable } from "./custom-tanstack";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Pagination } from "./Pagination";
 import { ColumnDef } from "@tanstack/react-table";
+import { ProjectListResponseInterface } from "@/lib/definitions";
 
-export default function ProjectCards<T>({
+export default function ProjectCards<T extends ProjectListResponseInterface>({
   columns,
   data,
 }: {
   columns: ColumnDef<T>[];
   data: T[];
 }) {
-  const searchParams = useSearchParams();
-  const query = searchParams.get("query") || "";
-
   const { table, filterComponents, filters, pagination } = useCustomTable<T>(
-    query,
     data,
     columns,
-    12,
-    searchParams
+    12
   );
 
   const router = useRouter();
@@ -45,7 +41,7 @@ export default function ProjectCards<T>({
       </div>
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 2xl:grid-cols-4 lg:grid-cols-3 gap-12 sm:gap-4 ">
         {table.getRowModel().rows.length ? (
-          table.getRowModel().rows.map((row, index) => {
+          table.getRowModel().rows.map((row) => {
             const projectId = row.getValue("id") as string | undefined;
             return (
               <Card

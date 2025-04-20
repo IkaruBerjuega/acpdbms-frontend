@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { ButtonIconTooltipDialog, ButtonTooltip } from "../../button";
 import { Search } from "./search";
 import { useCallback } from "react";
@@ -64,7 +64,7 @@ export default function DataTableHeader({
     ? "Do you confirm on unarchiving the accounts"
     : "Do you confirm on archiving the accounts";
 
-  let isBtnArchiveUnarchiveDisabled =
+  const isBtnArchiveUnarchiveDisabled =
     data.length > 0 &&
     data.some(
       (item) => item.status === "deactivated" || item.status === "finished"

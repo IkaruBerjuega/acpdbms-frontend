@@ -9,13 +9,13 @@ export default async function Page({
   searchParams,
 }: {
   searchParams: Promise<{
-    role?: "employee" | "client";
-    archived?: "true" | "false";
-    add?: "true" | "false";
-    grant_access?: "true" | "false";
+    role: "employee" | "client";
+    archived: "true" | null;
+    add: "true" | "false";
+    grant_access: "true" | "false";
   }>;
 }) {
-  const { role = "employee", archived, add, grant_access } = await searchParams;
+  const { role = "employee", archived, add } = await searchParams;
   const isArchived = archived === "true";
 
   const urlMap = {
@@ -63,15 +63,14 @@ export default async function Page({
   ];
 
   const isAddOpen = add === "true";
-  const isGrant = grant_access === "true";
+
   const activeKey = isAddOpen ? "add" : "grant_access";
   const isEmployee = role === "employee";
-  const isOpen = isAddOpen || isGrant;
 
   return (
     <>
       <SidebarTrigger breadcrumbs={breadcrumbs} />
-      <AccountsTableHeaderActions />
+      <AccountsTableHeaderActions roleValue={role} archived={archived} />
 
       <div className="flex-grow flex-row-start gap-2 relative flex-1  min-h-0  min-w-0">
         <div className="rounded-bl-lg bg-white-primary shadow-md  h-full w-full overflow-hidden min-w-0">
@@ -83,11 +82,7 @@ export default async function Page({
             />
           </div>
         </div>
-        <Sidepanel
-          activeKey={activeKey}
-          isEmployee={isEmployee}
-          isOpen={isOpen}
-        />
+        <Sidepanel activeKey={activeKey} isEmployee={isEmployee} />
       </div>
     </>
   );

@@ -46,6 +46,7 @@ export default async function SettingsPage({
       <div className="flex items-center">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
       </div>
+
       <AdminSettings activeTab={activeTab} />
     </main>
   );

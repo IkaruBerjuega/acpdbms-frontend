@@ -1,8 +1,4 @@
 "use client";
-import { useSearchParams } from "next/navigation";
-
-import { useEffect } from "react";
-
 import { useCustomTable } from "../../general/data-table-components/custom-tanstack";
 import FilterPopOver from "../../general/data-table-components/filter-components/filter-popover";
 import { LuFilter } from "react-icons/lu";
@@ -11,23 +7,27 @@ import { Pagination } from "../../general/data-table-components/Pagination";
 import { useCreateTableColumns } from "../../general/data-table-components/create-table-columns";
 import { columns } from "./project-columns";
 import { useProjectList } from "@/hooks/general/use-project";
+import { ProjectListResponseInterface } from "@/lib/definitions";
 
-export default function ProjectCards<T>({
+export default function ProjectCards<T extends ProjectListResponseInterface>({
   isArchived,
   initialData,
 }: {
   isArchived: boolean;
   initialData: T[];
 }) {
-  const searchParams = useSearchParams();
-  const query = searchParams.get("query") || "";
-
   const transformedColumns = useCreateTableColumns<T>(columns, "Projects");
 
-  const { data: projectList, isLoading } = useProjectList<T>({
+  const { data: projectList, isLoading } = useProjectList({
     isArchived: isArchived,
     initialData: initialData,
   });
+
+  const { table, filterComponents, filters, pagination } = useCustomTable(
+    projectList || [],
+    transformedColumns,
+    12
+  );
 
   if (isLoading) {
     return <>Loading</>;
@@ -36,14 +36,6 @@ export default function ProjectCards<T>({
   if (!projectList || projectList.length === 0) {
     return <>{isArchived ? "No Archived Projects Yet" : "No Projects Yet"} </>;
   }
-
-  const { table, filterComponents, filters, pagination } = useCustomTable(
-    query,
-    projectList,
-    transformedColumns,
-    12,
-    searchParams
-  );
 
   //Rendered TSX after fetching
   return (

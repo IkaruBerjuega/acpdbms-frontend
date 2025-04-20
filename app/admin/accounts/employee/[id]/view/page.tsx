@@ -6,12 +6,13 @@ export default async function Page({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams?: Promise<{ edit?: string }>;
+  searchParams: Promise<{ edit: "true" | null }>;
 }) {
   // await the route parameters before using them
   const { id } = await params;
-  const { edit = "" } = (await Promise.resolve(searchParams)) || { edit: "" };
+  const { edit } = await searchParams;
 
+  const isEditMode = edit === "true" ? true : false;
   return (
     <>
       <SidebarTrigger
@@ -28,8 +29,9 @@ export default async function Page({
           },
         ]}
       />
+
       <div className="flex-1 overflow-y-auto min-h-0">
-        <EmpAccView id={id} edit={edit} />
+        <EmpAccView id={id} isEdit={isEditMode} />
       </div>
     </>
   );

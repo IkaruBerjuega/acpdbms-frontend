@@ -5,7 +5,6 @@ import { ChevronRight, MoreHorizontal } from "lucide-react";
 import { cn, titleCase } from "@/lib/utils";
 import { Breadcrumbs } from "@/lib/definitions";
 import { Fragment } from "react";
-import { Separator } from "@radix-ui/react-select";
 
 const Breadcrumb = React.forwardRef<
   HTMLElement,

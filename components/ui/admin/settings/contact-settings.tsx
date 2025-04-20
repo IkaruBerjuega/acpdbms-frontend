@@ -1,26 +1,16 @@
 "use client";
+
 import { useMemo } from "react";
-import {
-  useAdminSettings,
-  useSettingsActions,
-} from "@/hooks/general/use-admin-settings";
-import type { ContactDetails, DynamicContactSchema } from "@/lib/definitions";
-import { SocMedSettings } from "../../components-to-relocate/contact-settings/socmed-settings";
-import { ContactNoSettings } from "../../components-to-relocate/contact-settings/contactno-settings";
-import { EmailSettings } from "../../components-to-relocate/contact-settings/email-settings";
+import { useAdminSettings } from "@/hooks/general/use-admin-settings";
+import type { ContactDetails } from "@/lib/definitions";
+import { SocMedSettings } from "../contact-settings/socmed-settings";
+import { ContactNoSettings } from "../contact-settings/contactno-settings";
+import { EmailSettings } from "../contact-settings/email-settings";
 import { Skeleton } from "../../skeleton";
 
-interface DeleteContactPayload {
-  ids: number[];
-}
-
 export function ContactSettings() {
-  const { contactDetailsQuery } = useAdminSettings<DynamicContactSchema>();
+  const { contactDetailsQuery } = useAdminSettings();
   const { data: contactDetailsData, error, isLoading } = contactDetailsQuery;
-
-  const { storeContactDetails, deleteContactDetail } = useSettingsActions<
-    { contact_details: ContactDetails[] } | DeleteContactPayload
-  >();
 
   // Ensure data is properly typed and memoized
   const contactDetails: ContactDetails[] = useMemo(
@@ -69,14 +59,9 @@ export function ContactSettings() {
 
   return (
     <div className="grid gap-6">
-      <ContactNoSettings
-        storeContactDetails={storeContactDetails}
-        deleteContactDetail={deleteContactDetail}
-        contactNumbers={contactNumbers}
-      />
-      <EmailSettings storeContactDetails={storeContactDetails} email={email} />
+      <ContactNoSettings contactNumbers={contactNumbers} />
+      <EmailSettings email={email} />
       <SocMedSettings
-        storeContactDetails={storeContactDetails}
         facebook={facebook}
         instagram={instagram}
         linkedIn={linkedIn}

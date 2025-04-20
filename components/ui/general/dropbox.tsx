@@ -1,5 +1,5 @@
 import { bytesToMb } from "@/lib/utils";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { useDropzone, DropzoneOptions } from "react-dropzone";
 import { FileIcon } from "./file-icon";
 import { ButtonTooltip } from "../button";
@@ -32,7 +32,6 @@ export default function Dropbox({
   });
 
   const removeFile = (index: number) => {
-    // eslint-disable-next-line no-unused-vars
     const newFiles = state.attachedFiles.filter((_, i) => i !== index);
     state.setAttachedFiles(newFiles);
   };

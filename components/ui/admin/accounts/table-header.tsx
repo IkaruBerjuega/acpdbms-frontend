@@ -4,7 +4,6 @@ import { useCallback } from "react";
 import DataTableHeader from "../../general/data-table-components/table-header";
 import { usePathname, useRouter } from "next/navigation";
 import Tabs from "../../general/tabs";
-import { useQueryParams } from "@/hooks/use-query-params";
 import { useCheckboxStore } from "@/hooks/states/create-store";
 import { AccountsTableType } from "@/lib/definitions";
 import { useAccountActions } from "@/hooks/api-calls/admin/use-account";
@@ -13,17 +12,23 @@ import { useQueryClient } from "@tanstack/react-query";
 import { AddBtn } from "../../button";
 import { titleCase } from "@/lib/utils";
 
-export default function AccountsTableHeaderActions() {
-  const { paramsKey, params } = useQueryParams();
-  const pathname = usePathname();
+export default function AccountsTableHeaderActions({
+  roleValue,
+  archived,
+}: {
+  roleValue: "employee" | "client";
+  archived: string | null;
+}) {
+  const params = new URLSearchParams();
   const { replace } = useRouter();
+  const pathname = usePathname();
   const queryClient = useQueryClient();
 
   const tabParameter = "role";
-  const role = paramsKey[tabParameter] || "employee";
+  const role = roleValue || "employee";
   const isClient = role === "client";
   const tableName = isClient ? "Client" : "Employee";
-  const isArchived = paramsKey["archived"] === "true";
+  const isArchived = archived === "true";
 
   // Function to update query parameters without modifying params directly
   const createQueryString = useCallback(

@@ -20,7 +20,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { useLogout } from "@/hooks/general/use-login";
-import { useToken } from "@/hooks/general/use-token";
+import { useRole, useToken } from "@/hooks/general/use-token";
 
 import { useRouter } from "next/navigation";
 import { useUserBasicInfo } from "@/hooks/api-calls/admin/use-account";
@@ -37,6 +37,7 @@ export function NavUser({
   const { mutate } = useLogout();
 
   const { deleteToken } = useToken();
+  const { deleteRole } = useRole();
 
   const router = useRouter();
 
@@ -58,6 +59,7 @@ export function NavUser({
     mutate(null, {
       onSuccess: async () => {
         await deleteToken();
+        await deleteRole();
 
         router.push("/login");
         resetData();

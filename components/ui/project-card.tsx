@@ -1,14 +1,10 @@
-import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { Calendar, MapPin, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getStatusColor } from "./general/data-table-components/create-table-columns";
 
-import { flexRender } from "@tanstack/react-table";
-import {
-  ProjectDetailsInterface,
-  ProjectListResponseInterface,
-} from "@/lib/definitions";
+import { flexRender, Row } from "@tanstack/react-table";
+import { ProjectListResponseInterface } from "@/lib/definitions";
 
 export default function Card({
   row,
@@ -16,7 +12,7 @@ export default function Card({
   data,
 }: {
   data?: ProjectListResponseInterface;
-  row?: any;
+  row?: Row<ProjectListResponseInterface>;
   isClient?: boolean;
   fn?: (
     projectId?: string,

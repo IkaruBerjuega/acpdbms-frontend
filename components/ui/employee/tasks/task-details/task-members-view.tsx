@@ -2,7 +2,6 @@ import {
   useGetTaskAssignedMembers,
   useTaskActions,
 } from "@/hooks/api-calls/employee/use-tasks";
-import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { ButtonIconTooltipDialog } from "../../../button";
@@ -12,15 +11,16 @@ import { SearchInput } from "@/components/ui/input";
 import { IoSearch } from "react-icons/io5";
 import { useMemo, useState } from "react";
 
-export default function Members({ taskId }: { taskId?: string }) {
-  if (!taskId) return;
-
+export default function Members({
+  taskId,
+  projectId,
+}: {
+  taskId?: string;
+  projectId: string;
+}) {
   const { data: membersAssigned } = useGetTaskAssignedMembers({
-    taskId: taskId,
+    taskId: taskId || "",
   });
-
-  const { data: projectSelected } = useProjectSelectStore();
-  const projectId = projectSelected[0]?.projectId;
 
   const queryClient = useQueryClient();
 

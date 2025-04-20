@@ -10,15 +10,15 @@ export default async function serverRequestAPI({
   url,
   auth,
 }: ServerRequestAPI) {
-  const userDataCookie = (await cookies()).get("user-info-with-token")?.value;
+  const tokenResponse = (await cookies()).get("token")?.value;
 
-  if (!userDataCookie) {
+  if (!tokenResponse) {
     if (auth) return null;
     return null;
   }
 
-  const userData = JSON.parse(userDataCookie);
-  const { token } = userData;
+  const tokenParsed = JSON.parse(tokenResponse);
+  const { token } = tokenParsed;
 
   const res = await fetch(`${API_URL}${url}`, {
     method: "GET",

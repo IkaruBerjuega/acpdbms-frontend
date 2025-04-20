@@ -8,13 +8,17 @@ import { SlPaperClip } from "react-icons/sl";
 import { IoTimer, IoTimerOutline } from "react-icons/io5";
 import { useQueryParams } from "@/hooks/use-query-params";
 import { usePathname, useRouter } from "next/navigation";
-import { useCallback } from "react";
-import { useSelectedTaskStatus } from "@/hooks/states/create-store";
+import { LegacyRef, useCallback } from "react";
+import {
+  useProjectSelectStore,
+  useSelectedTaskStatus,
+} from "@/hooks/states/create-store";
 import { TaskItem, TaskItemProps, TaskStatuses } from "@/lib/tasks-definitions";
 import { ItemTypes } from "@/lib/definitions";
 import { Button } from "../../button";
 import { CustomDropdownMenu } from "../../dropdown-menu";
 import Profile from "../profile";
+import { toast } from "@/hooks/use-toast";
 
 interface IconWithTextInfoProps {
   icon: JSX.Element;
@@ -73,7 +77,7 @@ export default function TaskCard(props: TaskCardProps) {
   const [{ isDragging }, drag] = useDrag<
     TaskItemProps, // Dragged item type
     { columnStatus: string }, // Drop result type
-    { isDragging: boolean } // Collected props type
+    { isDragging: boolean } // Collected props type,
   >(() => {
     const item: TaskItemProps = {
       id,
@@ -139,7 +143,6 @@ export default function TaskCard(props: TaskCardProps) {
       : `${remainingDuration} day${isDaysPlural ? "s" : ""} remaining`;
 
   const shouldDisplayRemaining = status !== "done" && status !== "to do";
-  const detailsLink = `tasks/${id}/details`;
 
   const { params, paramsKey } = useQueryParams();
   const pathname = usePathname();
@@ -156,7 +159,6 @@ export default function TaskCard(props: TaskCardProps) {
   );
 
   const isInNeedsReview = status === "needs review";
-  const { setData: setStatus } = useSelectedTaskStatus();
 
   function onMembersClick() {
     createQueryString("sheet", "members");
@@ -168,10 +170,23 @@ export default function TaskCard(props: TaskCardProps) {
     createQueryString("taskId", String(id));
   }
 
+  const { data: projectSelected } = useProjectSelectStore();
+  const isUserMember = projectSelected[0]?.userRole === "Member";
+
+  //check if there is projectId url parameter
+  const projectId = paramsKey["projectId"];
+
   function goToFiles() {
-    //check if there is projectId url parameter
-    const projectId = paramsKey["projectId"];
     if (status === "needs review") {
+      if (isUserMember) {
+        toast({
+          title: "Warning",
+          description: "Only user with manager role can review a task",
+          variant: "destructive",
+        });
+        return;
+      }
+
       goTo(
         `/employee/tasks/${id}/review-files?view_files=true&version=${version}&projectId=${projectId}`
       );
@@ -183,6 +198,10 @@ export default function TaskCard(props: TaskCardProps) {
     localStorage.setItem("selectedTaskStatus", status);
   }
 
+  //link to go to task details
+  const detailsLink = `tasks/${id}/details?projectId=${projectId}`;
+
+  //function to add open message sheet with adding search parameters
   function onMessagesClick() {
     createQueryString("sheet", "comments");
     createQueryString("taskId", String(id));
@@ -241,7 +260,7 @@ export default function TaskCard(props: TaskCardProps) {
       className={`bg-white-primary system-padding cursor-grab shadow-md min-h-[250px] transition-all duration-300 rounded-sm flex-col-start gap-2  ${
         isDragging && "hidden"
       } ${className}`}
-      ref={drag as any}
+      ref={drag as unknown as LegacyRef<HTMLDivElement> | undefined}
     >
       <div className="w-full flex-row-between-center">
         <div className="flex-row-start-center">

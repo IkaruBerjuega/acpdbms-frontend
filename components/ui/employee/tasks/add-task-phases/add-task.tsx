@@ -10,18 +10,18 @@ import { toast } from "@/hooks/use-toast";
 import FormInput from "@/components/ui/general/form-components/form-input";
 import { requireError } from "@/lib/utils";
 import { usePhases } from "@/hooks/general/use-project";
-import {
-  usePhaseTransfer,
-  useProjectSelectStore,
-} from "@/hooks/states/create-store";
+import { usePhaseTransfer } from "@/hooks/states/create-store";
 import { ItemInterface } from "@/lib/filter-types";
 import { useEffect, useState } from "react";
-import { Phase, StoreTaskRequest } from "@/lib/definitions";
+import { AddPhaseShortcut } from "@/lib/definitions";
 import { useTaskActions } from "@/hooks/api-calls/employee/use-tasks";
+import { StoreTaskRequest } from "@/lib/tasks-definitions";
 export default function AddTask({
   paramKey,
+  projectId,
 }: {
   paramKey: "show_phases" | "add_phases";
+  projectId: string;
 }) {
   // setup for adding params when the button for viewing  the phases is the one used
   const { paramsKey, params } = useQueryParams();
@@ -34,11 +34,7 @@ export default function AddTask({
     params.set(paramKey, "true");
     replace(`${pathname}?${params.toString()}`);
   };
-  const btnOpenSrc = "/button-svgs/sidepanel-collapse.svg";
 
-  //get phases list for phases input
-  let { data: projectSelected } = useProjectSelectStore();
-  let projectId = projectSelected[0]?.projectId;
   const { data: phases } = usePhases(projectId);
 
   const transformedPhasesList: ItemInterface[] =
@@ -51,18 +47,17 @@ export default function AddTask({
   const { data: phasesToStore } = usePhaseTransfer();
 
   const [recentAddedPopulatedTasks, setRecentAddedPopulatedTasks] = useState<
-    Phase[]
+    AddPhaseShortcut[]
   >([]);
 
   //form setup here
   const {
     register,
     control,
-    watch,
     reset,
     handleSubmit,
     setValue,
-    formState: { errors, isValid },
+    formState: { errors },
   } = useForm<StoreTaskRequest>({
     mode: "onBlur",
     defaultValues: {
@@ -129,7 +124,6 @@ export default function AddTask({
       const indexToRemove = fields.findIndex(
         (field) => field.phase_id === task.id
       );
-      console.log(indexToRemove);
 
       if (indexToRemove !== -1) {
         // -1 means not found

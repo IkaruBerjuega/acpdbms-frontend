@@ -15,6 +15,8 @@ export interface UserInterface {
 export interface LoginResponseInterface {
   token: string;
   user: UserInterface;
+  message: string;
+  remaining_seconds?: number;
 }
 
 export interface UserBasicInfo {
@@ -62,6 +64,27 @@ export interface TeamDetailsResponse {
   other_employees: EmployeeInterface[];
 }
 
+export interface RevisionInterface {
+  id: string;
+  client_name: string;
+  project_title: string;
+  start_date: string;
+  end_date: string;
+  finish_date?: string | null;
+  status:
+    | "finished"
+    | "on-hold"
+    | "ongoing"
+    | "cancelled"
+    | "archived"
+    | "pending";
+  location: string;
+  image_url: string | null;
+  project_manager: string;
+  revision?: number | null;
+  revision_of?: number | null;
+}
+
 export interface ProjectListResponseInterface {
   id: string;
   client_name: string;
@@ -81,6 +104,9 @@ export interface ProjectListResponseInterface {
   project_manager: string;
   project_description: string;
   user_role?: "Project Manager" | "Vice Manager" | "Member";
+  revision?: number | null;
+  revision_of?: number | null;
+  revisions?: RevisionInterface[];
 }
 
 export interface ProjectDetailsInterface {
@@ -199,7 +225,7 @@ export interface Phase {
   created_at?: Date;
   finish_date?: Date;
   project_id?: string;
-  status?:
+  status:
     | "to do"
     | "in progress"
     | "cancelled"
@@ -209,12 +235,39 @@ export interface Phase {
   updated_at?: Date;
 }
 
+export interface AddPhaseShortcut {
+  id: string;
+  category: string;
+}
+
 export interface PhaseInput {
   category: string;
 }
 
 export interface PhaseRequest {
   phases: PhaseInput[];
+}
+
+export interface DuplicateProjectRequest {
+  duplicate_phases?: boolean;
+  duplicate_team_members?: boolean;
+  project_description?: string;
+}
+
+export interface DuplicateProjectForm extends DuplicateProjectRequest {
+  project_id: string;
+  project_name: string;
+}
+
+export interface DuplicatedProjectResponse {
+  message: string;
+  project: {
+    id: number;
+    project_title: string;
+    status: "draft" | "pending" | "ongoing" | "finished"; // assuming all possible statuses
+    revision: number;
+    revision_of: number;
+  };
 }
 
 export type SupportedTableTypes =
@@ -295,12 +348,6 @@ export interface TaskCountData {
   done: number;
 }
 
-export type TaskCountIntervalTypes =
-  | "7_days"
-  | "4_weeks"
-  | "12_months"
-  | "3_years";
-
 export type TaskCountByInterval = {
   period: string;
   in_progress: number;
@@ -338,3 +385,104 @@ export type EmpWorkHoursDate = {
   empSelectedMonth: string;
   empSelectedYear: string;
 };
+
+export interface CustomTabsProps {
+  activeTab: string | null;
+  tabItems: {
+    item: string;
+    action: () => void;
+  }[];
+}
+
+// Type for logo upload
+export interface UploadLogoType {
+  logo: FileList;
+}
+
+export interface RecentProject {
+  id: number;
+  project_title: string;
+  image_url: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LogoResponse {
+  message: string;
+  logo_url?: string;
+}
+
+export interface RecentProjectsResponse {
+  message: string;
+  recent_project_images?: RecentProject[] | null;
+}
+
+export interface MaintenanceModeResponse {
+  message: string;
+  maintenance_mode: boolean;
+}
+
+export interface ContactDetails {
+  id?: number;
+  type: string;
+  value: string;
+}
+
+export interface DynamicContactSchema {
+  contact_details: ContactDetails[];
+  removedIds: number[];
+}
+
+// Type for logo upload
+export interface UploadLogoType {
+  logo: FileList;
+}
+
+// Type for recent projects upload
+export interface UploadRecentProjectsType {
+  project_titles: string[];
+  project_images: File[];
+}
+
+export interface UploadImage {
+  file?: File | string;
+}
+
+export interface UploadData {
+  content: string;
+  images?: UploadImage[];
+}
+
+export interface DeleteRecentProjectImageRequest {
+  image_ids: number[];
+}
+
+export interface DeleteContactPayload {
+  ids: number[];
+}
+
+export interface StoreContactDetailsRequest {
+  contact_details: ContactDetails[];
+}
+
+export interface Verify2FARequest {
+  email: string;
+  code: string;
+  trust_device: boolean;
+}
+
+export interface Verify2FAResponse {
+  token: string;
+  token_type: string;
+  expires_in: number;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    role: "client" | "employee" | "admin"; // adjust if more roles exist
+    is_admin: boolean;
+    profile_complete: boolean;
+    must_change_password: boolean;
+  };
+  device_token?: string; // optional, only included if trust_device is true
+}

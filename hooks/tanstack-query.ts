@@ -1,11 +1,6 @@
 "use client";
 
-import {
-  Enabled,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { Enabled, useMutation, useQuery } from "@tanstack/react-query";
 import { useToken } from "./general/use-token";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -27,7 +22,12 @@ export const requestAPI = async ({
   additionalHeaders?: Record<string, string>;
 }) => {
   const { getToken } = useToken();
-  const userData = auth ? await getToken() : null; // Fetch token before making request
+
+  let userData;
+
+  if (auth) {
+    userData = await getToken();
+  }
 
   const isFormData = body instanceof FormData;
 

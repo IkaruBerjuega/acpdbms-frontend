@@ -8,7 +8,7 @@ import { NavMain } from "./nav-main";
 import { NavUser } from "./nav-user";
 import { TeamHeader } from "@/components/ui/general/sidebar/team-header";
 import { Notifications } from "./notifications";
-import { useAdminSettings } from "@/hooks/general/use-admin-settings";
+import { Suspense } from "react";
 
 // Menu items.
 const data = {
@@ -30,10 +30,14 @@ export function AppSidebar({
         <SidebarHeader>
           <TeamHeader info={data.info} />
         </SidebarHeader>
-        <NavMain role={role} />
+        <Suspense>
+          <NavMain role={role} />
+        </Suspense>
       </SidebarContent>
       <SidebarFooter>
-        <Notifications />
+        <Suspense>
+          <Notifications role={role} />
+        </Suspense>
         <NavUser role={role} />
       </SidebarFooter>
     </Sidebar>

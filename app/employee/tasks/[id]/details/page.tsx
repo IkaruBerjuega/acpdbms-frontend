@@ -10,12 +10,12 @@ export default async function Page({
   params: Promise<{ id: string }>;
   searchParams: Promise<{
     sheet: "files" | "comments" | undefined;
-
-    version: string | undefined;
+    version: string | null;
+    projectId: string | null;
   }>;
 }) {
   const { id: taskId } = await params;
-  const { sheet, version } = await searchParams;
+  const { sheet, version, projectId } = await searchParams;
 
   const breadcrumbs: Breadcrumbs[] = [
     {
@@ -29,14 +29,31 @@ export default async function Page({
       active: true,
     },
   ];
+
+  const _projectId = projectId?.split("_")[0];
+
   return (
     <main className="relative min-h-full w-full ">
       <div className="absolute inset-0 flex flex-col space-y-2">
         <div className="flex-row-between-center w-full">
           <SidebarTrigger breadcrumbs={breadcrumbs} />
-          <ProjectSelector role="employee" />
+          <ProjectSelector role="employee" projId={projectId} />
         </div>
-        <Tasks taskId={taskId} activeSheet={sheet} version={version} />
+
+        <>
+          {_projectId ? (
+            <Tasks
+              taskId={taskId}
+              activeSheet={sheet}
+              version={version}
+              projectId={_projectId}
+            />
+          ) : (
+            <div className="flex-grow bg-white-primary rounded-md shadow-md">
+              Select a project...
+            </div>
+          )}
+        </>
       </div>
     </main>
   );

@@ -2,6 +2,10 @@
 
 import { useApiMutation, useApiQuery } from "@/hooks/tanstack-query";
 import { UserBasicInfo } from "@/lib/definitions";
+import {
+  ResetPasswordRequestByUser,
+  ValidateTokenRequest,
+} from "@/lib/user-definitions";
 
 export const useAccounts = <T>({
   role,
@@ -40,13 +44,6 @@ export const useUserBasicInfo = () => {
 };
 
 export const useAccountActions = <T>() => {
-  const sendReset = useApiMutation<T>({
-    url: "/password-reset/send-link",
-    method: "POST",
-    contentType: "application/json",
-    auth: true,
-  });
-
   const deactivateAcc = useApiMutation<T>({
     url: "/users/deactivate",
     method: "PATCH",
@@ -84,6 +81,27 @@ export const useAccountActions = <T>() => {
     auth: true,
   });
 
+  const sendReset = useApiMutation<T>({
+    url: "/password-reset/send-link",
+    method: "POST",
+    contentType: "application/json",
+    auth: false,
+  });
+
+  const verifyToken = useApiMutation<ValidateTokenRequest>({
+    url: "/password-reset/verify-token",
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+  });
+
+  const resetPassword = useApiMutation<ResetPasswordRequestByUser>({
+    url: "/password-reset/reset",
+    method: "POST",
+    contentType: "application/json",
+    auth: false,
+  });
+
   return {
     sendReset,
     deactivateAcc,
@@ -91,5 +109,7 @@ export const useAccountActions = <T>() => {
     activateAcc,
     addClient,
     addEmployee,
+    verifyToken,
+    resetPassword,
   };
 };

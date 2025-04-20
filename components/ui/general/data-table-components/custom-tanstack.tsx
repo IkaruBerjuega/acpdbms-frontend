@@ -18,15 +18,17 @@ import {
 } from "@tanstack/react-table";
 import FilterUi from "./filter-components/filter-cards";
 import { FilterType } from "@/lib/filter-types";
+import { useSearchParams } from "next/navigation";
 
 export const useCustomTable = <T,>(
-  query: string,
   data: T[],
   columns: ColumnDef<T>[],
   pageSize?: number,
-  searchParams?: URLSearchParams,
   isTable?: boolean
 ) => {
+  const searchParams = useSearchParams();
+  const query = searchParams.get("query") || "";
+
   const columnsToExclude = {
     image_url: false,
     employee_id: false,

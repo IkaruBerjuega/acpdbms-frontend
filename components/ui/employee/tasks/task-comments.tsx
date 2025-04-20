@@ -14,7 +14,6 @@ import {
   TaskCommentRequest,
 } from "@/lib/tasks-definitions";
 import { toast } from "@/hooks/use-toast";
-import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { useQueryClient } from "@tanstack/react-query";
 import { Separator } from "../../separator";
 
@@ -26,7 +25,7 @@ function transformComments(comments: TaskComment[]): TaskCommentInterface[] {
   comments.forEach((comment) => {
     commentMap.set(comment.id, {
       id: comment.id,
-      team_member_name: comment.team_member_name,
+      name: comment.name,
       profile_picture_url: comment.profile_picture_url,
       status: comment.status,
       content: comment.content,
@@ -69,7 +68,6 @@ function MessageInput({
   const [message, setMessage] = useState<string>("");
   const name = userInfo?.full_name || "Admin";
   const profileSrc = userInfo?.profile_picture_url;
-  const email = userInfo?.email;
   const initialsAsProfileSrcFallback = getInitialsFallback(name);
 
   return (
@@ -115,10 +113,10 @@ function Message({ comment, onClick }: MessageInterfaceProps) {
         <Avatar className="border-[1px] h-7 w-7">
           <AvatarImage src={comment.profile_picture_url} />
           <AvatarFallback>
-            {getInitialsFallback(comment.team_member_name ?? "")}
+            {getInitialsFallback(comment.name ?? "")}
           </AvatarFallback>
         </Avatar>
-        <p className="text-black-primary">{comment.team_member_name}</p>
+        <p className="text-black-primary">{comment.name}</p>
         <p>•</p>
         <p>{comment.created_at}</p>
       </div>
@@ -153,15 +151,13 @@ function Message({ comment, onClick }: MessageInterfaceProps) {
 
 export default function TaskComments({
   taskId,
+  projectId,
 }: {
   taskId: string | undefined;
+  projectId: string;
 }) {
-  if (!taskId) return null;
-
-  const { data: projectSelected } = useProjectSelectStore();
   const [replyReference, setReplyReference] = useState<TaskCommentInterface>();
   const [focusOnMessageInput, setFocusOnMessageInput] = useState<boolean>(true);
-  const projectId = projectSelected[0]?.projectId;
 
   const { storeComment } = useTaskActions({
     taskId: taskId,
@@ -169,7 +165,7 @@ export default function TaskComments({
   });
 
   const { data: commentsResponse, isLoading } = useGetSpecificTaskComments({
-    taskId: taskId,
+    taskId: taskId || "",
   });
 
   const onReply = (props: TaskCommentInterface) => {
@@ -264,7 +260,7 @@ export default function TaskComments({
         {replyReference && (
           <div className="flex-col-start text-xs gap-2  border-b-[1px] p-2 relative">
             <div className="text-black-primary font-semibold">
-              Replying to {replyReference.team_member_name}
+              Replying to {replyReference.name}
             </div>
             <div className="text-slate-500">{replyReference.content}</div>
             <ButtonTooltip

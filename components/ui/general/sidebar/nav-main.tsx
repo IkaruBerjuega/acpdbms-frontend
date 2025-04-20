@@ -2,14 +2,9 @@
 import Link from "next/link";
 import { IconType } from "react-icons";
 import { AiOutlineProject } from "react-icons/ai";
-import {
-  MdOutlineDashboard,
-  MdOutlineRateReview,
-  MdPeopleOutline,
-} from "react-icons/md";
-import { RiAccountCircleLine, RiInfoCardLine } from "react-icons/ri";
+import { MdOutlineDashboard, MdOutlineRateReview } from "react-icons/md";
+import { RiAccountCircleLine } from "react-icons/ri";
 import { LiaFileSolid } from "react-icons/lia";
-import { BiNews } from "react-icons/bi";
 import { usePathname } from "next/navigation";
 
 const isActive = (pathname: string, navUrl: string) => {
@@ -64,7 +59,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { VscGithubProject } from "react-icons/vsc";
 import { useQueryParams } from "@/hooks/use-query-params";
 
@@ -79,8 +73,6 @@ interface NavigationInterface {
 export function NavMain({ role }: { role: "admin" | "employee" | "client" }) {
   const pathname = usePathname();
   let navs: NavigationInterface[];
-
-  const { data } = useProjectSelectStore();
 
   const adminNavs: NavigationInterface[] = [
     {

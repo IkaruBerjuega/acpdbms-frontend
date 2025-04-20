@@ -1,10 +1,9 @@
-import { Suspense } from "react";
-import Files from "@/components/ui/components-to-relocate/file-management/files";
-import { Skeleton } from "@/components/ui/skeleton";
+import Files from "@/components/ui/general/file-management/files";
 import type { Breadcrumbs } from "@/lib/definitions";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { FilesPageProps } from "@/lib/files-definitions";
 import { ProjectSelector } from "@/components/ui/general/project-selector";
+import { Suspense } from "react";
 
 export default async function Page({
   searchParams,
@@ -30,9 +29,11 @@ export default async function Page({
     <>
       <div className="flex-row-between-center w-full">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
-        <ProjectSelector role="client" />
+        <ProjectSelector role="client" projId={queries.projectId} />
       </div>
-      <Files {...queries} isAdmin={false} />
+      <Suspense fallback={<></>}>
+        <Files {...queries} isAdmin={false} />
+      </Suspense>
     </>
   );
 }

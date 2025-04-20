@@ -1,16 +1,15 @@
 import { useApiMutation, useApiQuery } from "../tanstack-query";
 import {
+  DuplicateProjectRequest,
   Phase,
   PhaseRequest,
+  ProjectDetailsInterface,
   ProjectListResponseInterface,
   TeamDetailsResponse,
   TeamMemberDashboardResponse,
   ViceManagerPermissionResponse,
 } from "@/lib/definitions";
-import {
-  ProjectFormSchemaType,
-  ProjectUpdateRequest,
-} from "@/lib/form-constants/project-constants";
+import { ProjectUpdateRequest } from "@/lib/form-constants/project-constants";
 
 interface useProjectListProps<T> {
   isArchived?: boolean;
@@ -25,15 +24,19 @@ export const useProjectList = <T extends ProjectListResponseInterface>({
   return useApiQuery<T[]>({
     key: !isArchived ? "projects" : "projects-archived",
     url: !isArchived ? "/project-list" : "/projects/archived",
-    initialData: initialData,
+    initialData,
   });
 };
 
 // Hook for fetching project details
-export const useViewProject = (id: string) => {
-  const projectDetails = useApiQuery<ProjectFormSchemaType>({
+export const useViewProject = (
+  id: string,
+  initialData?: ProjectDetailsInterface
+) => {
+  const projectDetails = useApiQuery<ProjectDetailsInterface>({
     key: ["project-view", id],
     url: `/project-view/${id}`,
+    initialData,
   });
   return {
     project: projectDetails.data ?? null,
@@ -85,11 +88,15 @@ export const useTeamDetails = (projectId: string) => {
 };
 
 // Hook for fetching team details for project manager dashboard
-export const useTeamDetailsForDashboard = (projectId: string) => {
+export const useTeamDetailsForDashboard = (
+  projectId: string,
+  initialData?: TeamMemberDashboardResponse
+) => {
   return useApiQuery<TeamMemberDashboardResponse>({
     key: [`team-details-dashboard`, projectId],
     url: `/projects/${projectId}/team-members`,
     enabled: !!projectId, // Prevent fetching if no projectId
+    initialData: initialData,
   });
 };
 
@@ -102,19 +109,24 @@ export const usePhases = (projectId: string) => {
   });
 };
 
-export const useGetActivePhases = (projectId: string) => {
+export const useGetActivePhases = (projectId: string, initialData: Phase[]) => {
   return useApiQuery<Phase[]>({
     key: ["phases-active", projectId],
     url: `/phases-active/${projectId}`,
     enabled: !!projectId, // Prevent fetching if no projectId
+    initialData,
   });
 };
 
-export const useGetArchivedPhases = (projectId: string) => {
+export const useGetArchivedPhases = (
+  projectId: string,
+  initialData: Phase[]
+) => {
   return useApiQuery<Phase[]>({
     key: ["phases-archived", projectId],
     url: `/phases-archived/${projectId}`,
     enabled: !!projectId, // Prevent fetching if no projectId
+    initialData,
   });
 };
 
@@ -172,14 +184,21 @@ export const useProjectActions = <T>(projectId?: string) => {
   const toggleVicePermission = useApiMutation<null>({
     url: `/projects/${projectId}/toggle-vice-permission`,
     method: "PATCH",
-    contentType: "application/json", // For FormData
+    contentType: "application/json",
     auth: true, // Assuming auth is required
   });
 
   const addPhases = useApiMutation<PhaseRequest>({
     url: `/phases/${projectId}`,
     method: "POST",
-    contentType: "application/json", // For FormData
+    contentType: "application/json",
+    auth: true, // Assuming auth is required
+  });
+
+  const duplicateProject = useApiMutation<DuplicateProjectRequest>({
+    url: `/project-duplicate/${projectId}`,
+    method: "POST",
+    contentType: "application/json",
     auth: true, // Assuming auth is required
   });
 
@@ -193,5 +212,6 @@ export const useProjectActions = <T>(projectId?: string) => {
     continueProject,
     toggleVicePermission,
     addPhases,
+    duplicateProject,
   };
 };

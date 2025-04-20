@@ -6,7 +6,6 @@ import GrantAccess from "./sidepanel-contents.tsx/grant-access";
 interface SidepanelProps {
   activeKey: "add" | "grant_access";
   isEmployee: boolean;
-  isOpen: boolean;
 }
 
 interface ConfigProps {
@@ -15,26 +14,18 @@ interface ConfigProps {
   desc: string;
 }
 
-export default function Sidepanel({
-  activeKey,
-  isEmployee,
-  isOpen,
-}: SidepanelProps) {
+export default function Sidepanel({ activeKey, isEmployee }: SidepanelProps) {
   const config: Record<string, ConfigProps> = {
     add: {
       title: isEmployee ? "Add Employee" : "Add Client",
-      content: isEmployee ? (
-        <AddEmployee isOpen={isOpen} />
-      ) : (
-        <AddClient isOpen={isOpen} />
-      ),
+      content: isEmployee ? <AddEmployee /> : <AddClient />,
       desc: isEmployee
         ? "Create a new Employee Account"
         : "Create a new Client Account",
     },
     grant_access: {
       title: "Grant Project Access",
-      content: <GrantAccess isOpen={isOpen} />,
+      content: <GrantAccess />,
       desc: "Grant Project Access to Employees",
     },
   };

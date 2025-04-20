@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useSearchParams } from "next/navigation";
+
 import FilterPopOver from "./filter-components/filter-popover";
 import { LuFilter } from "react-icons/lu";
 
@@ -39,22 +39,16 @@ export default function DataTable<T>({
   hidden?: boolean;
   id?: string;
 }) {
-  const searchParams = useSearchParams();
-
-  // Extract the query from searchParams
-
-  const query = searchParams.get("query") || "";
-
   const { table, filterComponents, filters, pagination } = useCustomTable<T>(
-    query,
     data,
     columns,
-    10,
-    searchParams
+    10
   );
 
   return (
-    <div className={`flex w-full flex-col gap-2 ${hidden && "hidden"} min-w-0`}>
+    <div
+      className={`flex w-full flex-col gap-2 ${hidden && "hidden"} min-w-0 `}
+    >
       <div className="flex flex-wrap flex-col w-full h-auto gap-2">
         <div>
           <FilterPopOver
@@ -70,7 +64,7 @@ export default function DataTable<T>({
         </div>
       </div>
       <div className="rounded-lg border min-w-0">
-        <TableRoot id={id} className={`w-full table-auto ${tableClassName} `}>
+        <TableRoot id={id} className={`w-full table-auto ${tableClassName} ]`}>
           <TableHeader>
             {table?.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup?.id} className="text-sm">
@@ -225,7 +219,7 @@ export default function DataTable<T>({
                           cell.column.id === "select"
                             ? "justify-start"
                             : " w-full"
-                        }   header.column.id === "select" && "w-[15px] px-2"`}
+                        }   header.column.id === "select" && "w-[15px] px-2 text-sm`}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,

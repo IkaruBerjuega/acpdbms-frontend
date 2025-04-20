@@ -38,11 +38,6 @@ const TableActions = <T extends SupportedTableTypes>({
     );
   }
 
-  // if (tableName === 'Files') {
-  //   return (
-  //     <FileActions<FileListResponseInterface> attrs={attrs as FileListResponseInterface} />
-  //   );
-  // }
   return <div>There is no table {tableName}</div>;
 };
 
@@ -106,7 +101,7 @@ const RowCheckbox = <T,>({ row, rowData }: RowCheckboxProps<T>) => {
   );
 };
 
-export const getStatusColor = (status: string) => {
+export const getStatusColor = (status: string | undefined) => {
   const green = "bg-green-200 text-green-700";
   const lightGray = "bg-gray-200 text-gray-700";
   const dark = "bg-black-secondary text-white-secondary";
@@ -126,7 +121,13 @@ export const getStatusColor = (status: string) => {
     paused: lightGray,
   };
 
-  return colorMap[status] || "bg-gray-200 text-gray-700";
+  const defaultColor = "bg-gray-200 text-gray-700";
+
+  if (!status) {
+    return defaultColor;
+  }
+
+  return colorMap[status] || defaultColor;
 };
 
 export const useCreateTableColumns = <T,>(
@@ -144,18 +145,24 @@ export const useCreateTableColumns = <T,>(
       accessorKey: column.accessorKey as keyof T | string,
       header: (() => {
         if (isSelect) {
-          return ({ table }) => (
+          const SelectHeader = ({ table }: { table: Table<T> }) => (
             <div>
               <SelectAllCheckbox table={table} />
             </div>
           );
+          SelectHeader.displayName = "SelectHeader";
+          return SelectHeader;
         }
 
         if (!enableHiding) {
-          return () => <p>{column.header}</p>;
+          const Header = () => <p>{column.header}</p>;
+          Header.displayName = "ColumnHeader";
+          return Header;
         }
 
-        return () => <></>;
+        const EmptyHeader = () => <></>;
+        EmptyHeader.displayName = "EmptyHeader";
+        return EmptyHeader;
       })(),
       ...(column.meta && { meta: column.meta }),
       cell: !enableHiding
@@ -167,6 +174,7 @@ export const useCreateTableColumns = <T,>(
                 </div>
               );
             }
+
             const value: string = column.accessorKey
               ? row.getValue(column.accessorKey)
               : column.id
@@ -195,7 +203,7 @@ export const useCreateTableColumns = <T,>(
               );
             }
 
-            return <div>{value || "N/A"}</div>;
+            return <div>{value ? String(value) : "N/A"}</div>;
           }
         : undefined,
 

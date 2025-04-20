@@ -83,7 +83,7 @@ export default function Table<T extends AccountsTableType>({
             header: "Has Ongoing Tasks",
             meta: {
               filter_name: "Status",
-              filter_type: "select" as "select",
+              filter_type: "select" as const,
               filter_options: hasOngoinTasksOptions,
               filter_columnAccessor: "status",
             },

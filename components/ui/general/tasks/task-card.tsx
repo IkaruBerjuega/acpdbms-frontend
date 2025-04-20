@@ -5,9 +5,7 @@ import { LuFileCheck, LuFileX } from "react-icons/lu";
 import { SlPaperClip } from "react-icons/sl";
 import { IoTimer, IoTimerOutline } from "react-icons/io5";
 import { useQueryParams } from "@/hooks/use-query-params";
-import { usePathname, useRouter } from "next/navigation";
-import { useCallback } from "react";
-import { useSelectedTaskStatus } from "@/hooks/states/create-store";
+import { useRouter } from "next/navigation";
 import { TaskItemProps, TaskStatuses } from "@/lib/tasks-definitions";
 
 import { Button } from "../../button";
@@ -42,28 +40,19 @@ interface TaskCardProps extends TaskItemProps {
 }
 
 export default function TaskCard(props: TaskCardProps) {
-  const { setData } = useSelectedTaskStatus();
   const {
     id = 0, // Default values applied here instead
     phase_category = "",
-    task_comments_count = 0,
     status = "to do",
     task_name = "Unnamed Task",
     task_description = "",
     total_duration,
-    assigned_team_members = [],
     approved_files_count,
     rejected_files_count,
     phaseColor,
-    created_at,
-    finish_date,
-    updated_at,
     version,
-    className,
     task_files_count,
     remaining_duration,
-    start_date,
-    moveTask = () => {},
   } = props || {};
 
   const totalDuration = total_duration ? total_duration.toFixed(0) : 0;
@@ -85,21 +74,9 @@ export default function TaskCard(props: TaskCardProps) {
 
   const shouldDisplayRemaining = status !== "done" && status !== "to do";
 
-  const { params, paramsKey } = useQueryParams();
-  const pathname = usePathname();
-  const { replace, push: goTo } = useRouter();
+  const { paramsKey } = useQueryParams();
 
-  // Function to update query parameters without modifying params directly
-  const createQueryString = useCallback(
-    (parameter: string, value: string) => {
-      params.set(parameter, value);
-      setData([status]);
-      replace(`${pathname}?${params.toString()}`);
-    },
-    [pathname, params, replace]
-  );
-
-  const { setData: setStatus } = useSelectedTaskStatus();
+  const { push: goTo } = useRouter();
 
   function goToFiles() {
     const projectId = paramsKey["projectId"];
@@ -117,8 +94,6 @@ export default function TaskCard(props: TaskCardProps) {
   }
 
   const isInNeedsReview = status === "needs review";
-
-  const hasMembers = assigned_team_members.length > 0;
 
   const approvedFiles = approved_files_count !== null;
   const rejectedFiles = rejected_files_count !== null;

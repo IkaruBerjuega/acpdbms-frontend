@@ -7,7 +7,7 @@ import ProjectLocations from "./project-locations";
 import TaskCards from "./task-project-cards";
 import UserComponent from "./online-users";
 
-export default function Page() {
+export default function Dashboard() {
   return (
     <div className="w-full p-4 space-y-4 min-h-0 overflow-y-auto">
       {/* Header */}

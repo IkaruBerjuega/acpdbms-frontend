@@ -3,12 +3,10 @@ import { ProjectSelector } from "@/components/ui/general/project-selector";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import serverRequestAPI from "@/hooks/server-request";
 import {
+  Phase,
   ProjectDetailsInterface,
-  TeamMemberDashboard,
   TeamMemberDashboardResponse,
 } from "@/lib/definitions";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 interface PageProps {
   searchParams: Promise<{ edit?: string; projectId: string | null }>;
@@ -18,19 +16,6 @@ export default async function Page({ searchParams }: PageProps) {
   //await search params to destructure it
 
   const { edit = "false", projectId } = await searchParams;
-
-  //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
-  const projectDetailsInitialData: ProjectDetailsInterface =
-    await serverRequestAPI({
-      url: `${API_URL}/projects/${projectId}`,
-      auth: true,
-    });
-
-  //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
-  const teamMembers: TeamMemberDashboardResponse = await serverRequestAPI({
-    url: `${API_URL}/projects/${projectId}/team-members`,
-    auth: true,
-  });
 
   const pageRoute = `/employee/project-details/${projectId}/view`;
 
@@ -49,18 +34,42 @@ export default async function Page({ searchParams }: PageProps) {
 
   const _projectId = projectId?.split("_")[0];
 
+  //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
+  const initialData: ProjectDetailsInterface = await serverRequestAPI({
+    url: `/project-view/${_projectId}`,
+    auth: true,
+  });
+
+  //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
+  const teamMembers: TeamMemberDashboardResponse = await serverRequestAPI({
+    url: `/projects/${_projectId}/team-members`,
+    auth: true,
+  });
+
+  const activePhases: Phase[] = await serverRequestAPI({
+    url: `/phases-active/${_projectId}`,
+    auth: true,
+  });
+
+  const archivedPhases: Phase[] = await serverRequestAPI({
+    url: `/phases-archived/${_projectId}`,
+    auth: true,
+  });
+
   return (
     <>
       <div className="flex-row-between-center w-full">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
-        <ProjectSelector role="employee" />
+        <ProjectSelector role="employee" projId={projectId} />
       </div>
       {_projectId ? (
         <ProjectView
           id={_projectId}
           edit={edit}
-          projectDetailsInitialData={projectDetailsInitialData}
+          projectDetailsInitialData={initialData}
           teamInitialData={teamMembers}
+          activePhaseInitialData={activePhases}
+          archivedPhasesInitialData={archivedPhases}
           isAdmin={false}
         />
       ) : (

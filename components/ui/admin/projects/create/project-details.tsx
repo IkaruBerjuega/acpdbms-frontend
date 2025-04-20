@@ -2,13 +2,14 @@ import { useFormContext } from "react-hook-form";
 import { useAccounts } from "@/hooks/api-calls/admin/use-account";
 import FormInput from "../../../general/form-components/form-input";
 import { ProjectFormSchemaType } from "@/lib/form-constants/project-constants";
-import { ClientInterface } from "@/lib/definitions"; // Adjust the path if needed
+import { ClientInterface } from "@/lib/definitions";
 import { requireError } from "@/lib/utils";
+import USLocationSelector from "@/components/ui/general/location-selector";
 
 type StepInputs = ProjectFormSchemaType;
 
 interface ClientItem {
-  value: string;
+  value: string | number;
   label: string;
 }
 
@@ -134,49 +135,26 @@ export default function ProjectDetails() {
               Project Location
             </p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 w-full">
-            {/* State */}
-            <FormInput
-              name={"state"}
-              label={"State"}
-              inputType={"default"}
-              placeholder="Ex. California"
-              register={register}
-              validationRules={{ required: requireError("State") }}
-              required={true}
+          <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-4 gap-4 w-full">
+            <USLocationSelector
+              control={control}
+              setValue={setValue}
+              stateFieldName="state"
+              cityFieldName="city_town"
+              zipcodeFieldName="zip_code"
+              onStateChange={(state) => console.log("State changed:", state)}
+              onCityChange={(city) => console.log("City changed:", city)}
+              onZipcodeChange={(zipcode) =>
+                console.log("Zipcode changed:", zipcode)
+              }
             />
-            {/* City/Town */}
             <FormInput
-              name={"city_town"}
-              label={"City/Town"}
-              inputType={"default"}
-              register={register}
-              placeholder="Ex. Los Angeles"
-              validationRules={{ required: requireError("City/Town") }}
-              required={true}
-            />
-            {/* Street */}
-            <FormInput
-              name={"street"}
-              label={"Street"}
-              inputType={"default"}
-              register={register}
+              name="street"
+              label="Street"
+              inputType="default"
               placeholder="Ex. 123 Sunset Blvd"
-              validationRules={{ required: requireError("Streets") }}
-              required={true}
-            />
-            {/* Zip Code */}
-            <FormInput
-              name={"zip_code"}
-              label={"Zip Code"}
-              inputType={"default"}
               register={register}
-              errorMessage={errors.zip_code?.message}
-              placeholder="90028"
-              validationRules={{
-                valueAsNumber: true,
-                required: requireError("Zip Code"),
-              }}
+              required
             />
           </div>
         </div>

@@ -11,10 +11,12 @@ export default function TaskMembers({
   taskId,
   activeTab,
   activeParamKey,
+  projectId,
 }: {
   taskId: string;
   activeTab: "Assign Members" | "Members";
   activeParamKey: "assign_members" | "members";
+  projectId: string;
 }) {
   const { params } = useQueryParams();
   const pathname = usePathname();
@@ -35,7 +37,7 @@ export default function TaskMembers({
     [pathname, params, replace]
   );
 
-  let tabs = {
+  const tabs = {
     activeTab: activeTab,
     tabItems: [
       {
@@ -53,16 +55,16 @@ export default function TaskMembers({
     ],
   };
 
-  let titleAndDescription = {
+  const titleAndDescription = {
     members: {
       title: "Members",
       description: "List of members assigned in this task",
-      content: <Members taskId={taskId} />,
+      content: <Members taskId={taskId} projectId={projectId} />,
     },
     assign_members: {
       title: "Assign Members",
       description: "Assign multiple members in this task",
-      content: <AssignMembers taskId={taskId} />,
+      content: <AssignMembers taskId={taskId} projectId={projectId} />,
     },
   };
 

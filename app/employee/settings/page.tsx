@@ -1,6 +1,7 @@
-import AccountSettings from "@/components/ui/components-to-relocate/account-settings-wrapper";
+import AccountSettings from "@/components/ui/general/account-settings/account-settings-wrapper";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Breadcrumbs } from "@/lib/definitions";
+import { Suspense } from "react";
 
 export default async function SettingsPage({
   searchParams,
@@ -53,7 +54,9 @@ export default async function SettingsPage({
       <div className="flex items-center">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
       </div>
-      <AccountSettings activeTab={activeTab} role="employee" />
+      <Suspense>
+        <AccountSettings activeTab={activeTab} role="employee" />
+      </Suspense>
     </main>
   );
 }

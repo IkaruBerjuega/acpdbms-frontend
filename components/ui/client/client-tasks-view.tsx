@@ -4,7 +4,6 @@ import { useGetTasks } from "@/hooks/api-calls/employee/use-tasks";
 import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { TaskItem, TaskItemProps } from "@/lib/tasks-definitions";
 import { useCustomTable } from "../general/data-table-components/custom-tanstack";
-import { useSearchParams } from "next/navigation";
 import { useCreateTableColumns } from "../general/data-table-components/create-table-columns";
 import { ColumnInterfaceProp } from "@/lib/definitions";
 import { getPhaseBadgeColor } from "@/lib/utils";
@@ -12,7 +11,7 @@ import FilterPopOver from "../general/data-table-components/filter-components/fi
 import { LuFilter } from "react-icons/lu";
 import TaskCard from "../general/tasks/task-card";
 
-export default function ClientTasksView() {
+export default function ClientTasksView({ view }: { view: string | null }) {
   //get selected project id
   const { data: projectSelected } = useProjectSelectStore();
 
@@ -100,16 +99,12 @@ export default function ClientTasksView() {
     "Projects"
   );
 
-  const searchParams = useSearchParams();
-  const query = searchParams.get("query") || "";
-  const activeTabIsToReview = searchParams.get("view") === "to review";
+  const activeTabIsToReview = view === "to review";
 
   const { table, filterComponents, filters } = useCustomTable<TaskItem>(
-    query,
     tasks ?? [],
     transformedColumns,
-    undefined,
-    searchParams
+    undefined
   );
 
   const plainTasks = table.getRowModel().rows.map((row) => row.original);
@@ -144,42 +139,48 @@ export default function ClientTasksView() {
         </div>
       </div>
       <div className="mt-4 flex-grow grid grid-cols-4 gap-2 ">
-        {activeTabIsToReview ? (
+        {!isLoading ? (
           <>
-            {tasksInNeedsReview.length > 0 ? (
+            {activeTabIsToReview ? (
               <>
-                {tasksInNeedsReview.map((taskToReview) => {
-                  return (
-                    <TaskCard
-                      key={taskToReview.id}
-                      className={""}
-                      {...taskToReview}
-                    />
-                  );
-                })}
+                {tasksInNeedsReview.length > 0 ? (
+                  <>
+                    {tasksInNeedsReview.map((taskToReview) => {
+                      return (
+                        <TaskCard
+                          key={taskToReview.id}
+                          className={""}
+                          {...taskToReview}
+                        />
+                      );
+                    })}
+                  </>
+                ) : (
+                  <>No Tasks to Review </>
+                )}
               </>
             ) : (
-              <>No Tasks to Review </>
+              <>
+                {tasksDone.length > 0 ? (
+                  <>
+                    {tasksDone.map((taskToReview) => {
+                      return (
+                        <TaskCard
+                          key={taskToReview.id}
+                          className={""}
+                          {...taskToReview}
+                        />
+                      );
+                    })}
+                  </>
+                ) : (
+                  <>No Tasks Done Yet </>
+                )}
+              </>
             )}
           </>
         ) : (
-          <>
-            {tasksDone.length > 0 ? (
-              <>
-                {tasksDone.map((taskToReview) => {
-                  return (
-                    <TaskCard
-                      key={taskToReview.id}
-                      className={""}
-                      {...taskToReview}
-                    />
-                  );
-                })}
-              </>
-            ) : (
-              <>No Tasks Done Yet </>
-            )}
-          </>
+          <>Loading....</>
         )}
       </div>
     </div>
