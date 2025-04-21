@@ -36,7 +36,6 @@ export default async function Page({
   return (
     <>
       <SidebarTrigger breadcrumbs={breadCrumbs} />
-
       <ProjectList isArchived={isArchived} initialData={initialData} />
     </>
   );

@@ -9,25 +9,27 @@ import { columns } from "./project-columns";
 import { useProjectList } from "@/hooks/general/use-project";
 import { ProjectListResponseInterface } from "@/lib/definitions";
 
-export default function ProjectCards<T extends ProjectListResponseInterface>({
+export default function ProjectCards({
   isArchived,
   initialData,
 }: {
   isArchived: boolean;
-  initialData: T[];
+  initialData: ProjectListResponseInterface[];
 }) {
-  const transformedColumns = useCreateTableColumns<T>(columns, "Projects");
+  const transformedColumns =
+    useCreateTableColumns<ProjectListResponseInterface>(columns, "Projects");
 
   const { data: projectList, isLoading } = useProjectList({
     isArchived: isArchived,
     initialData: initialData,
   });
 
-  const { table, filterComponents, filters, pagination } = useCustomTable<T>(
-    projectList || [],
-    transformedColumns,
-    12
-  );
+  const { table, filterComponents, filters, pagination } =
+    useCustomTable<ProjectListResponseInterface>(
+      projectList || [],
+      transformedColumns,
+      12
+    );
 
   if (isLoading) {
     return <>Loading</>;
