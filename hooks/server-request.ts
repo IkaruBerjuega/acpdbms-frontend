@@ -34,5 +34,5 @@ export default async function serverRequestAPI({
     responseData = await res.json();
   } catch {}
 
-  return responseData;
+  return responseData || [];
 }

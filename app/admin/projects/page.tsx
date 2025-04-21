@@ -6,19 +6,20 @@ import { ProjectListResponseInterface } from "@/lib/definitions";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: {
+  searchParams: Promise<{
     archived?: "true" | "false";
-  };
+  }>;
 }) {
-  const { archived } = searchParams;
+  const { archived } = await searchParams;
   const isArchived = archived === "true";
 
   const url = isArchived ? "/projects-archived" : "/project-list";
 
-  const initialData: ProjectListResponseInterface[] = await serverRequestAPI({
-    url: url,
-    auth: true,
-  });
+  const initialData: ProjectListResponseInterface[] =
+    (await serverRequestAPI({
+      url: url,
+      auth: true,
+    })) || [];
 
   const breadCrumbs = [
     {
@@ -36,6 +37,7 @@ export default async function Page({
   return (
     <>
       <SidebarTrigger breadcrumbs={breadCrumbs} />
+
       <ProjectList isArchived={isArchived} initialData={initialData} />
     </>
   );
