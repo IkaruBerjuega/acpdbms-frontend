@@ -3,17 +3,17 @@ import { Calendar, MapPin, User } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { getStatusColor } from "./general/data-table-components/create-table-columns";
 import { flexRender, Row } from "@tanstack/react-table";
-import { RevisionInterface } from "@/lib/definitions";
+import { ProjectListResponseInterface } from "@/lib/definitions";
 
 export default function Card({
   row,
   fn,
   data,
 }: {
-  data?: RevisionInterface;
-  row?: Row<RevisionInterface>;
+  data?: ProjectListResponseInterface;
+  row?: Row<ProjectListResponseInterface>;
   isClient?: boolean;
-  fn?: (project: RevisionInterface) => void;
+  fn?: (project: ProjectListResponseInterface) => void;
 }) {
   let actionsCell;
 

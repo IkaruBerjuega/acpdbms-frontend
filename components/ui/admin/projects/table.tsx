@@ -3,7 +3,6 @@
 import {
   ColumnInterfaceProp,
   ProjectListResponseInterface,
-  RevisionInterface,
 } from "@/lib/definitions";
 import { useProjectList } from "@/hooks/general/use-project";
 import { useCreateTableColumns } from "../../general/data-table-components/create-table-columns";
@@ -106,10 +105,7 @@ export default function Table<T extends ProjectListResponseInterface>({
       header: "Actions",
     },
   ];
-  const transformedColumns = useCreateTableColumns<RevisionInterface>(
-    columns,
-    "Projects"
-  );
+  const transformedColumns = useCreateTableColumns<T>(columns, "Projects");
 
   const { data: projectList, isLoading } = useProjectList<T>({
     isArchived: isArchived,

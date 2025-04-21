@@ -108,7 +108,6 @@ export interface ProjectListResponseInterface {
   user_role?: "Project Manager" | "Vice Manager" | "Member";
   revision?: number | null;
   revision_of?: number | null;
-  revisions?: RevisionInterface[];
   can_be_finished: boolean;
 }
 
