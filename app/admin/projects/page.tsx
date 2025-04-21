@@ -6,11 +6,11 @@ import { ProjectListResponseInterface } from "@/lib/definitions";
 export default async function Page({
   searchParams,
 }: {
-  searchParams: Promise<{
+  searchParams: {
     archived?: "true" | "false";
-  }>;
+  };
 }) {
-  const { archived } = await searchParams;
+  const { archived } = searchParams;
   const isArchived = archived === "true";
 
   const url = isArchived ? "/projects-archived" : "/project-list";
