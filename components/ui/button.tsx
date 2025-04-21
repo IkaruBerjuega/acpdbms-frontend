@@ -183,6 +183,8 @@ interface ButtonIconTooltipDialog {
   className?: string;
   onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
   disabled?: boolean;
+  iconHeight?: number;
+  iconWidth?: number;
 }
 
 const ButtonIconTooltipDialog = ({
@@ -197,6 +199,8 @@ const ButtonIconTooltipDialog = ({
   className,
   onClick,
   disabled,
+  iconHeight,
+  iconWidth,
 }: ButtonIconTooltipDialog) => {
   const [open, setOpen] = useState(false);
 
@@ -211,7 +215,7 @@ const ButtonIconTooltipDialog = ({
         asChild
         className={` min-w-[35px] flex-col-center  ${
           disabled ? "pointer-events-none opacity-50" : ""
-        }`}
+        } ${className}`}
       >
         <button
           className={`border-[1px] px-2 py-1  rounded-md hover:bg-white-secondary cursor-pointer flex-col-center ${
@@ -223,7 +227,12 @@ const ButtonIconTooltipDialog = ({
           <TooltipProvider>
             <Tooltip delayDuration={1}>
               <TooltipTrigger asChild>
-                <Image src={iconSrc} alt={alt} width={18} height={18} />
+                <Image
+                  src={iconSrc}
+                  alt={alt}
+                  width={iconWidth || 18}
+                  height={iconHeight || 18}
+                />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{tooltipContent}</p>

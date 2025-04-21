@@ -205,9 +205,9 @@ export default function ProjectDetails() {
               label="End Date"
               register={register}
               control={control}
+              required={false}
               errorMessage={errors.end_date?.message}
               validationRules={{
-                required: requireError("End Date is required"),
                 validate: (value: string | number | Date) => {
                   const startDate = new Date(String(watch("start_date")));
                   const endDate = new Date(value);

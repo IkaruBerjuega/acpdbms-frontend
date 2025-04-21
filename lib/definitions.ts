@@ -84,6 +84,7 @@ export interface RevisionInterface {
   revision?: number | null;
   user_role?: "Project Manager" | "Vice Manager" | "Member";
   revision_of?: number | null;
+  can_be_finished: boolean;
 }
 
 export interface ProjectListResponseInterface {
@@ -108,6 +109,7 @@ export interface ProjectListResponseInterface {
   revision?: number | null;
   revision_of?: number | null;
   revisions?: RevisionInterface[];
+  can_be_finished: boolean;
 }
 
 export interface ProjectDetailsInterface {
@@ -166,6 +168,7 @@ export type ProjectActions =
   | "cancel"
   | "remove"
   | "onhold"
+  | "finish"
   | "continue"
   | undefined;
 
@@ -253,6 +256,8 @@ export interface DuplicateProjectRequest {
   duplicate_phases?: boolean;
   duplicate_team_members?: boolean;
   project_description?: string;
+  start_date: string;
+  end_date?: string;
 }
 
 export interface DuplicateProjectForm extends DuplicateProjectRequest {

@@ -6,6 +6,7 @@ import { toast } from "@/hooks/use-toast";
 import { useProjectActions } from "@/hooks/general/use-project";
 import { ProjectActionSchema } from "@/lib/form-constants/form-constants";
 import { ProjectActions as Actions } from "@/lib/definitions";
+import { ButtonIconTooltipDialog } from "../../button";
 
 interface ProjectActionsProps<T> {
   attrs: T;
@@ -14,7 +15,7 @@ interface ProjectActionsProps<T> {
 export default function ProjectActions<T extends ProjectListResponseInterface>({
   attrs,
 }: ProjectActionsProps<T>): JSX.Element {
-  const { id, status, project_title } = attrs;
+  const { id, status, project_title, can_be_finished } = attrs;
 
   // const isOngoing = status === "ongoing";
   const isArchived = status === "archived";
@@ -71,6 +72,7 @@ export default function ProjectActions<T extends ProjectListResponseInterface>({
   const {
     cancelProject,
     archiveUnarchiveProject,
+    finishProject,
     removeProject,
     onholdProject,
     continueProject,
@@ -95,12 +97,12 @@ export default function ProjectActions<T extends ProjectListResponseInterface>({
       successMessage: "The selected project is now archived",
       queryKey: "projects",
     },
-    // unarchive: {
-    //   action: archiveUnarchiveProject,
-    //   title: "Unarchive Project",
-    //   successMessage: "The selected project is now unarchived",
-    //   queryKey: "projects-archived",
-    // },
+    finish: {
+      action: finishProject,
+      title: "Finish Project",
+      successMessage: "The selected project is now finished",
+      queryKey: "projects",
+    },
     onhold: {
       action: onholdProject,
       title: "On-hold Project",
@@ -140,130 +142,147 @@ export default function ProjectActions<T extends ProjectListResponseInterface>({
   };
 
   return (
-    <CustomDropdownMenu
-      menuLabel={"Project Actions"}
-      btnVariant={"ghost"}
-      btnSrc={"/button-svgs/table-action-threedot.svg"}
-      btnSrcAlt="dropdown menu button trigger for project actions "
-      items={[
-        {
-          label: "View Project",
-          onClick: () => {},
-          iconSrc: "/button-svgs/table-action-view.svg",
-          alt: "view project button",
-          href: `/admin/projects/${id}/view`,
-        },
-        {
-          label: "Edit Project",
-          onClick: () => {},
-          iconSrc: "/button-svgs/table-action-edit.svg",
-          alt: "edit project button",
-          href: `/admin/projects/${id}/view?edit=true`,
-        },
+    <div className="flex-row-start-center gap-1 ">
+      {can_be_finished && !isFinished && (
+        <ButtonIconTooltipDialog
+          iconSrc={"/button-svgs/check.svg"}
+          alt={"finish project button icon"}
+          tooltipContent={"Finish Project"}
+          dialogTitle={"Finish Project"}
+          className="py-2 max-h-[28px] max-w-[28px] "
+          dialogContent={<DialogContent />}
+          iconHeight={12}
+          iconWidth={12}
+          dialogDescription={"Do you confirm on finishing this project?"}
+          submitType={"button"}
+          onClick={() => onClick({ action: "finish" })}
+        />
+      )}
+      <CustomDropdownMenu
+        menuLabel={"Project Actions"}
+        btnVariant={"ghost"}
+        btnSrc={"/button-svgs/table-action-threedot.svg"}
+        btnSrcAlt="dropdown menu button trigger for project actions "
+        items={[
+          {
+            label: "View Project",
+            onClick: () => {},
+            iconSrc: "/button-svgs/table-action-view.svg",
+            alt: "view project button",
+            href: `/admin/projects/${id}/view`,
+          },
+          {
+            label: "Edit Project",
+            onClick: () => {},
+            iconSrc: "/button-svgs/table-action-edit.svg",
+            alt: "edit project button",
+            href: `/admin/projects/${id}/view?edit=true`,
+          },
 
-        ...(canOnhold
-          ? [
-              {
-                dialogTitle: "On-hold Project",
-                label: "Set to on-hold",
-                onClick: () => onClick({ action: "onhold" }),
-                iconSrc: "/button-svgs/table-action-onhold.svg",
-                alt: "on-hold project button",
-                dialogContent: <DialogContent />,
-                dialogBtnSubmitLabel: "Confirm",
-                dialogDescription:
-                  "Are you sure you want to set this project to on-hold? If this project is on-hold, the project team will not be able to create and finish tasks",
-                isDialog: true,
-              },
-            ]
-          : []),
-        ...(canContinue
-          ? [
-              {
-                dialogTitle: "Continue Project",
-                label: "Continue",
-                onClick: () => onClick({ action: "continue" }),
-                iconSrc: "/button-svgs/table-action-continue.svg",
-                alt: "unarchive project button",
-                dialogContent: <DialogContent />,
-                dialogBtnSubmitLabel: "Confirm",
-                dialogDescription:
-                  "Are you sure you want to continue this project?",
-                isDialog: true,
-              },
-            ]
-          : []),
-        ...(canCancel
-          ? [
-              {
-                dialogTitle: "Cancel Project",
-                label: "Cancel",
-                onClick: () => onClick({ action: "cancel" }),
-                iconSrc: "/button-svgs/table-action-cancel-black.svg",
-                alt: "cancel project button",
-                dialogContent: <DialogContent />,
-                dialogBtnSubmitLabel: "Confirm",
-                dialogDescription:
-                  "Are you sure you want to cancel this project?",
-                isDialog: true,
-              },
-            ]
-          : []),
-        ...(canArchive
-          ? [
-              {
-                dialogTitle: "Archive Project",
-                label: "Archive",
-                onClick: () => onClick({ action: "archive" }),
-                iconSrc: "/button-svgs/table-action-archive-black.svg",
-                alt: "archive project button",
-                dialogContent: <DialogContent />,
-                dialogBtnSubmitLabel: "Confirm",
-                dialogDescription:
-                  "Are you sure you want to archive this finished project?",
-                // className:
-                //   "bg-gray-400 hover:!bg-gray-600 text-white-primary hover:!text-white-secondary",
-                isDialog: true,
-              },
-            ]
-          : []),
-        ...(canDestroy
-          ? [
-              {
-                dialogTitle: "Remove Project",
-                label: "Remove",
-                onClick: () => onClick({ action: "remove" }),
-                iconSrc: "/button-svgs/table-action-remove.svg",
-                alt: "remove project button",
-                dialogContent: <DialogContent />,
-                dialogBtnSubmitLabel: "Confirm",
-                dialogDescription:
-                  "Are you sure you want to remove this project?",
-                // className:
-                //   "bg-gray-400 hover:!bg-gray-600 text-white-primary hover:!text-white-secondary",
-                isDialog: true,
-              },
-            ]
-          : []),
-        // ...(canUnarchive
-        //   ? [
-        //       {
-        //         dialogTitle: "Unarchive Project",
-        //         label: "Unarchive",
-        //         onClick: () => onClick({ action: "unarchive" }),
-        //         iconSrc: "/button-svgs/table-action-unarchive.svg",
-        //         alt: "unarchive project button",
-        //         dialogContent: <DialogContent />,
-        //         dialogBtnSubmitLabel: "Confirm",
-        //         dialogDescription:
-        //           "Are you sure you want to remove this project?",
-        //         className:
-        //           "bg-green-500 hover:!bg-green-600 text-white-primary hover:!text-white-secondary",
-        //         isDialog: true,
-        //       },
-        //     ]
-        //   : []),
-      ]}
-    />
+          ...(canOnhold
+            ? [
+                {
+                  dialogTitle: "On-hold Project",
+                  label: "Set to on-hold",
+                  onClick: () => onClick({ action: "onhold" }),
+                  iconSrc: "/button-svgs/table-action-onhold.svg",
+                  alt: "on-hold project button",
+                  dialogContent: <DialogContent />,
+                  dialogBtnSubmitLabel: "Confirm",
+                  dialogDescription:
+                    "Are you sure you want to set this project to on-hold? If this project is on-hold, the project team will not be able to create and finish tasks",
+                  isDialog: true,
+                },
+              ]
+            : []),
+          ...(canContinue
+            ? [
+                {
+                  dialogTitle: "Continue Project",
+                  label: "Continue",
+                  onClick: () => onClick({ action: "continue" }),
+                  iconSrc: "/button-svgs/table-action-continue.svg",
+                  alt: "unarchive project button",
+                  dialogContent: <DialogContent />,
+                  dialogBtnSubmitLabel: "Confirm",
+                  dialogDescription:
+                    "Are you sure you want to continue this project?",
+                  isDialog: true,
+                },
+              ]
+            : []),
+          ...(canCancel
+            ? [
+                {
+                  dialogTitle: "Cancel Project",
+                  label: "Cancel",
+                  onClick: () => onClick({ action: "cancel" }),
+                  iconSrc: "/button-svgs/table-action-cancel-black.svg",
+                  alt: "cancel project button",
+                  dialogContent: <DialogContent />,
+                  dialogBtnSubmitLabel: "Confirm",
+                  dialogDescription:
+                    "Are you sure you want to cancel this project?",
+                  isDialog: true,
+                },
+              ]
+            : []),
+          ...(canArchive
+            ? [
+                {
+                  dialogTitle: "Archive Project",
+                  label: "Archive",
+                  onClick: () => onClick({ action: "archive" }),
+                  iconSrc: "/button-svgs/table-action-archive-black.svg",
+                  alt: "archive project button",
+                  dialogContent: <DialogContent />,
+                  dialogBtnSubmitLabel: "Confirm",
+                  dialogDescription:
+                    "Are you sure you want to archive this finished project?",
+                  // className:
+                  //   "bg-gray-400 hover:!bg-gray-600 text-white-primary hover:!text-white-secondary",
+                  isDialog: true,
+                },
+              ]
+            : []),
+          ...(canDestroy
+            ? [
+                {
+                  dialogTitle: "Remove Project",
+                  label: "Remove",
+                  onClick: () => onClick({ action: "remove" }),
+                  iconSrc: "/button-svgs/table-action-remove.svg",
+                  alt: "remove project button",
+                  dialogContent: <DialogContent />,
+                  dialogBtnSubmitLabel: "Confirm",
+                  dialogDescription:
+                    "Are you sure you want to remove this project?",
+                  // className:
+                  //   "bg-gray-400 hover:!bg-gray-600 text-white-primary hover:!text-white-secondary",
+                  isDialog: true,
+                },
+              ]
+            : []),
+          // ...(canUnarchive
+          //   ? [
+          //       {
+          //         dialogTitle: "Unarchive Project",
+          //         label: "Unarchive",
+          //         onClick: () => onClick({ action: "unarchive" }),
+          //         iconSrc: "/button-svgs/table-action-unarchive.svg",
+          //         alt: "unarchive project button",
+          //         dialogContent: <DialogContent />,
+          //         dialogBtnSubmitLabel: "Confirm",
+          //         dialogDescription:
+          //           "Are you sure you want to remove this project?",
+          //         className:
+          //           "bg-green-500 hover:!bg-green-600 text-white-primary hover:!text-white-secondary",
+          //         isDialog: true,
+          //       },
+          //     ]
+          //   : []),
+        ]}
+      />
+    </div>
   );
 }

@@ -8,7 +8,7 @@ export interface BasicInfo {
   street: string;
   city_town: string;
   state: string;
-  zip_code?: string;
+  zip_code: string | null;
   position?: string;
 }
 
@@ -20,7 +20,7 @@ export interface UpdateUserInfoRequest {
   street: string;
   city_town: string;
   state: string;
-  zip_code?: string;
+  zip_code: string | null;
 }
 
 export interface UserInfoInterface {
