@@ -23,7 +23,7 @@ export default function ProjectCards<T extends ProjectListResponseInterface>({
     initialData: initialData,
   });
 
-  const { table, filterComponents, filters, pagination } = useCustomTable(
+  const { table, filterComponents, filters, pagination } = useCustomTable<T>(
     projectList || [],
     transformedColumns,
     12
