@@ -98,7 +98,7 @@ export default function Card({
           {!data && (
             <div
               onClick={(e) => e.stopPropagation()}
-              className="ml-2 rotate-90"
+              className={`${project?.can_be_finished && "w-[150px]"}`}
             >
               {actionsCell
                 ? flexRender(

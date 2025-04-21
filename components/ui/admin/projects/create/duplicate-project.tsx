@@ -1,7 +1,10 @@
 import { BtnDialog } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import FormInput from "@/components/ui/general/form-components/form-input";
-import { useProjectActions, useProjectList } from "@/hooks/general/use-project";
+import {
+  useEligibleProjectsForDuplication,
+  useProjectActions,
+} from "@/hooks/general/use-project";
 import { toast } from "@/hooks/use-toast";
 import {
   DuplicatedProjectResponse,
@@ -14,7 +17,7 @@ import { SubmitHandler, useForm } from "react-hook-form";
 
 export default function DuplicateProject() {
   const methods = useForm<DuplicateProjectForm>({
-    mode: "onSubmit",
+    mode: "onBlur",
     defaultValues: {
       project_id: "",
       duplicate_phases: false,
@@ -25,21 +28,27 @@ export default function DuplicateProject() {
 
   const router = useRouter();
 
-  const { data } = useProjectList({ isArchived: false });
-
-  const finishedProjects = data?.filter(
-    (project) => project.status === "finished"
-  );
+  const { data } = useEligibleProjectsForDuplication();
 
   const projectItems: ItemInterface[] =
-    finishedProjects?.map((project) => {
+    data?.map((project) => {
       return {
         value: project.id,
         label: project.project_title,
       };
     }) || [];
 
-  const { watch, setValue, handleSubmit, register, control } = methods;
+  console.log(projectItems);
+
+  const {
+    watch,
+    setValue,
+    handleSubmit,
+    register,
+    control,
+    formState: { errors },
+  } = methods;
+
   const { duplicateProject } = useProjectActions(watch("project_id"));
 
   const isDuplicatePhasesChecked = watch("duplicate_phases");
@@ -50,30 +59,29 @@ export default function DuplicateProject() {
       duplicate_phases: data.duplicate_phases,
       duplicate_team_members: data.duplicate_team_members,
       project_description: data.project_description,
+      start_date: data.start_date,
+      end_date: data.end_date || "",
     };
-    duplicateProject.mutate(
-      formattedData,
 
-      {
-        onSuccess: (response: DuplicatedProjectResponse) => {
-          toast({
-            title: "Duplicate Project",
-            description:
-              response.message ||
-              `Created a new version for project ${watch("project_name")}`,
-          });
-          router.push("/admin/projects");
-        },
-        onError: (error: { message: string }) => {
-          toast({
-            title: "Duplicate Project",
-            description:
-              error.message || "There was an error processing the request",
-            variant: "destructive",
-          });
-        },
-      }
-    );
+    duplicateProject.mutate(formattedData, {
+      onSuccess: (response: DuplicatedProjectResponse) => {
+        toast({
+          title: "Duplicate Project",
+          description:
+            response.message ||
+            `Created a new version for project ${watch("project_name")}`,
+        });
+        router.push("/admin/projects");
+      },
+      onError: (error: { message: string }) => {
+        toast({
+          title: "Duplicate Project",
+          description:
+            error.message || "There was an error processing the request",
+          variant: "destructive",
+        });
+      },
+    });
   };
 
   return (
@@ -94,15 +102,80 @@ export default function DuplicateProject() {
           setValue("project_id", item.value as string);
           setValue("project_name", item.label);
         }}
+        errorMessage={errors?.project_name?.message}
       />
+      {/* project description */}
       <FormInput
         name={"project_description"}
-        label={"New Project Description"}
+        label={"Project Description"}
         inputType={"textArea"}
-        register={register}
+        control={control}
         className="lg:w-1/2"
-        required={false}
+        required={true}
+        validationRules={{ required: requireError("Project Description") }}
+        errorMessage={errors?.project_description}
       />
+
+      <div className="w-full lg:w-1/2 flex-col-start gap-4 lg:flex-row-start ">
+        {/* Start Date */}
+        <FormInput
+          name="start_date"
+          label="Start Date"
+          register={register}
+          control={control}
+          className="lg:w-1/2"
+          errorMessage={errors.start_date?.message}
+          validationRules={{
+            required: requireError("Start Date is required"),
+            validate: (value: string | number | Date) => {
+              const startDate = new Date(value);
+              const endDate = new Date(String(watch("end_date")));
+
+              if (
+                new Date(startDate).setHours(0, 0, 0, 0) <
+                new Date().setHours(0, 0, 0, 0)
+              ) {
+                return "Start Date must be today or in the future";
+              }
+
+              if (watch("end_date") && startDate >= endDate) {
+                return "Start Date must be before End Date";
+              }
+
+              return true;
+            },
+          }}
+          inputType="date"
+        />
+        {/* End Date */}
+        <FormInput
+          name="end_date"
+          label="End Date"
+          register={register}
+          control={control}
+          required={false}
+          className="lg:w-1/2"
+          errorMessage={errors.end_date?.message}
+          validationRules={{
+            validate: (value: string | number | Date) => {
+              const startDate = new Date(String(watch("start_date")));
+              const endDate = new Date(value);
+
+              if (endDate < new Date()) {
+                return "End Date must be in the future";
+              }
+
+              if (startDate && startDate >= endDate) {
+                return "End Date must be after Start Date";
+              }
+
+              return true;
+            },
+          }}
+          inputType="date"
+        />
+      </div>
+
       <div className="flex-row-start gap-4">
         <div className="flex-row-start-center gap-2">
           <Checkbox

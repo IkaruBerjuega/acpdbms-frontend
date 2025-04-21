@@ -116,17 +116,6 @@ export default function Table<T extends ProjectListResponseInterface>({
     initialData: initialData,
   });
 
-  //transform the data so that the project revisions can be in the main display
-  const transformedProjectList =
-    projectList?.flatMap((project) => {
-      const { revisions, ...mainProjectWithoutRevisions } = project;
-
-      // Just return the revisions as-is; they already don't have the `revisions` field
-      const flattenedRevisions = revisions ?? [];
-
-      return [mainProjectWithoutRevisions, ...flattenedRevisions];
-    }) || [];
-
   if (isLoading) {
     return <>Loading</>;
   }
@@ -136,6 +125,10 @@ export default function Table<T extends ProjectListResponseInterface>({
   }
 
   return (
-    <DataTable columns={transformedColumns} data={transformedProjectList} />
+    <DataTable
+      columns={transformedColumns}
+      data={projectList}
+      tableClassName="min-w-[1600px]"
+    />
   );
 }

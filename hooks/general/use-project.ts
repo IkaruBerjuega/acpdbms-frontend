@@ -28,6 +28,15 @@ export const useProjectList = <T extends ProjectListResponseInterface>({
   });
 };
 
+export const useEligibleProjectsForDuplication = <
+  T extends ProjectListResponseInterface
+>() => {
+  return useApiQuery<T[]>({
+    key: "eligible-for-duplication",
+    url: "/projects/eligible-for-duplication",
+  });
+};
+
 // Hook for fetching project details
 export const useViewProject = (
   id: string,
@@ -174,6 +183,13 @@ export const useProjectActions = <T>(projectId?: string) => {
     auth: true,
   });
 
+  const finishProject = useApiMutation<T>({
+    url: `/projects/${projectId}/finish`,
+    method: "POST",
+    contentType: "application/json",
+    auth: true,
+  });
+
   const continueProject = useApiMutation<T>({
     url: `/projects/continue`,
     method: "POST",
@@ -212,6 +228,7 @@ export const useProjectActions = <T>(projectId?: string) => {
     continueProject,
     toggleVicePermission,
     addPhases,
+    finishProject,
     duplicateProject,
   };
 };

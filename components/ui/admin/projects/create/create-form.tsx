@@ -86,7 +86,10 @@ export default function AddNewProject() {
       "start_date",
       new Date(data.start_date || "").toISOString()
     );
-    formData.append("end_date", new Date(data.end_date || "").toISOString());
+    formData.append(
+      "end_date",
+      data.end_date ? new Date(data.end_date || "").toISOString() : ""
+    );
     formData.append("street", data.street);
     formData.append("city_town", data.city_town);
     formData.append("state", data.state);
