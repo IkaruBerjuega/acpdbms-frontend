@@ -1,7 +1,6 @@
 "use client";
 
 import { useGetTasks } from "@/hooks/api-calls/employee/use-tasks";
-import { useProjectSelectStore } from "@/hooks/states/create-store";
 import { TaskItem, TaskItemProps } from "@/lib/tasks-definitions";
 import { useCustomTable } from "../general/data-table-components/custom-tanstack";
 import { useCreateTableColumns } from "../general/data-table-components/create-table-columns";
@@ -11,13 +10,16 @@ import FilterPopOver from "../general/data-table-components/filter-components/fi
 import { LuFilter } from "react-icons/lu";
 import TaskCard from "../general/tasks/task-card";
 
-export default function ClientTasksView({ view }: { view: string | null }) {
-  //get selected project id
-  const { data: projectSelected } = useProjectSelectStore();
-
+export default function ClientTasksView({
+  view,
+  projectId,
+}: {
+  view: string | null;
+  projectId: string | null;
+}) {
   //tasks
   const { data: taskList, isLoading } = useGetTasks({
-    projectId: projectSelected[0]?.projectId,
+    projectId: projectId ?? "",
     initialData: { tasks: [] },
     isGeneral: true,
   });

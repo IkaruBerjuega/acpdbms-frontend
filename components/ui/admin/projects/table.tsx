@@ -69,7 +69,6 @@ export default function Table<T extends ProjectListResponseInterface>({
       accessorKey: "start_date",
       header: "Start Date",
     },
-
     {
       accessorKey: "end_date",
       header: "End Date",

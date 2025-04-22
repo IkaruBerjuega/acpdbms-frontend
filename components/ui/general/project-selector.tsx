@@ -20,7 +20,7 @@ import {
   ProjectSelector as ProjectSelectorProps,
   ProjectListResponseInterface,
 } from "@/lib/definitions";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useCheckViceManagerPermission } from "@/hooks/general/use-project";
 import { useQueryParams } from "@/hooks/use-query-params";
 
@@ -32,20 +32,17 @@ export function ProjectSelector({
   projId: string | null;
 }) {
   const { data: projects } = useAssociatedProjects({ role: role });
-  const { data: projectSelected, setData, resetData } = useProjectSelectStore();
-  // const [projectVersions, setprojectVersions] = useState<RevisionInterface[]>(
-  //   []
-  // );
+  const { setData } = useProjectSelectStore();
 
-  const [projectId, setProjectId] = useState<string>("");
-
-  const { data } = useCheckViceManagerPermission(projectId);
+  const { data } = useCheckViceManagerPermission(projId ?? "");
   const hasVicePermission = data?.vice_manager_permission === true;
 
   const { params } = useQueryParams();
 
   const hasProjectId = !!projId;
+
   const pathname = usePathname();
+
   const { replace } = useRouter();
 
   const createQueryString = useCallback(
@@ -56,12 +53,18 @@ export function ProjectSelector({
     [pathname, params, replace]
   );
 
+  const deleteProjectIdQuery = useCallback(() => {
+    params.delete("projectId");
+    replace(`${pathname}?${params.toString()}`);
+  }, [pathname, params, replace]);
+
+  const [open, setOpen] = useState<boolean>(true);
+
   useEffect(() => {
     const savedProject = localStorage.getItem("projectSelected");
     if (savedProject) {
       const parsedProject: ProjectSelectorProps = JSON.parse(savedProject);
       setData([{ ...parsedProject }]);
-      setProjectId(parsedProject.projectId);
 
       if (!hasProjectId) {
         const projectQueryParam = `${parsedProject.projectId}_${parsedProject.projectName}`;
@@ -69,6 +72,11 @@ export function ProjectSelector({
       }
     }
   }, [hasProjectId]);
+
+  const mustOpen = useMemo(() => {
+    console.log("in memo", open);
+    return !projId && open;
+  }, [projId, open]);
 
   function onSelect(project: ProjectListResponseInterface) {
     if (project.id && project.project_title) {
@@ -79,30 +87,38 @@ export function ProjectSelector({
         userRole,
         hasVicePermission,
       };
-      setProjectId(projectId); // Updates asynchronously
+
       localStorage.setItem("projectSelected", JSON.stringify(data));
-      setData([{ ...data }]); // Sync store with localStorage
+      setData([{ ...data }]);
       createQueryString(project.id + "_" + project.project_title);
 
       return;
     }
   }
 
+  const projectName = projId?.split("_")[1];
+
   return (
     <Sheet
-      open={!projectSelected[0]}
+      open={mustOpen}
       onOpenChange={(isOpen) => {
+        //reset data if opening and set open to true as secondary basis for opening the sheet
         if (isOpen) {
-          resetData();
+          localStorage.removeItem("projectSelected");
+          deleteProjectIdQuery();
+          setOpen(true);
+          return;
         }
+        //if the user closes the sheet
+        setOpen(false);
       }}
     >
       <SheetTrigger asChild>
         <Button variant="ghost" className="flex-row-between-center p-0 h-5">
-          {projectSelected[0]?.projectName || "Select A Project"}
+          {projectName || "Select A Project"}
           <MdOutlineKeyboardArrowUp
             className={`${
-              projectSelected[0] ? "-rotate-180" : "rotate-0"
+              projId ? "-rotate-180" : "rotate-0"
             } transition-all duration-500`}
           />
         </Button>
