@@ -9,12 +9,12 @@ import { VscListSelection } from "react-icons/vsc";
 import { PiCardsThreeLight } from "react-icons/pi";
 import Cards from "./project-cards-wrapper";
 
-export default function ProjectList<T extends ProjectListResponseInterface>({
+export default function ProjectList({
   isArchived,
   initialData,
 }: {
   isArchived: boolean;
-  initialData: T[];
+  initialData: ProjectListResponseInterface[];
 }) {
   return (
     <Tabs

@@ -11,6 +11,8 @@ import SidepanelDrawerComponent from "./sidepanel-drawer";
 import { useQueryParams } from "@/hooks/use-query-params";
 import { TaskVersionsResponse } from "@/lib/tasks-definitions";
 import { TaskFile, TaskFilesApprovalRequest } from "@/lib/files-definitions";
+import { LiaFileSolid } from "react-icons/lia";
+import { LuMessageSquareMore } from "react-icons/lu";
 
 const sidepanelConfig = {
   true: {
@@ -141,22 +143,24 @@ export default function FileReview({
         <div className="h-full flex-grow relative flex-col-start gap-2">
           <div className="w-full flex-row-end-center gap-2">
             <Button
-              className={`border-none shadow-md ${
+              className={`border-none shadow-md flex-row-center gap-2 ${
                 !filePanelIsOpen && "bg-gray-100"
               }`}
               variant="outline"
               onClick={openFiles}
             >
-              View Files
+              <LiaFileSolid />
+              <span>View Files</span>
             </Button>
             <Button
-              className={`border-none shadow-md ${
+              className={`border-none shadow-md flex-row-center gap-2 ${
                 !commentsIsOpen && "bg-gray-100"
               }`}
               variant="outline"
               onClick={openComments}
             >
-              Comments
+              <LuMessageSquareMore />
+              <span>Comments</span>
             </Button>
           </div>
           <FileViewer file={selectedFile} />

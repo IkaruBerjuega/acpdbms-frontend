@@ -57,7 +57,7 @@ export default function SidepanelDrawerComponent({
             ` w-1/3 lg:flex bg-white-primary shadow-md rounded-md system-padding  overflow-y-auto ${containerClassName}`
           }`}
         >
-          <div className="flex-1 min-h-0 w-full flex-col-start gap-2 overflow-hidden">
+          <div className="flex-1 min-h-0 w-full flex-col-start gap-2 overflow-hidden py-1">
             <div className="w-full flex-row-between-start">
               <div className="flex-col-start">
                 {tabs && (

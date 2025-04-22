@@ -18,7 +18,7 @@ import { MdOutlineKeyboardArrowUp } from "react-icons/md";
 import { usePathname, useRouter } from "next/navigation";
 import {
   ProjectSelector as ProjectSelectorProps,
-  RevisionInterface,
+  ProjectListResponseInterface,
 } from "@/lib/definitions";
 import { useCallback, useEffect, useState } from "react";
 import { useCheckViceManagerPermission } from "@/hooks/general/use-project";
@@ -70,33 +70,21 @@ export function ProjectSelector({
     }
   }, [hasProjectId]);
 
-  function checkIfThereIsRevisions({ projectId }: { projectId: string }) {
-    const project = projects?.find(
-      (project) => projectId === project.id && !!project.revisions
-    );
-
-    return project;
-  }
-
-  function onSelect(project: RevisionInterface) {
+  function onSelect(project: ProjectListResponseInterface) {
     if (project.id && project.project_title) {
-      const withRevisions = checkIfThereIsRevisions({ projectId: project.id });
+      const userRole = project.user_role;
+      const data = {
+        projectId: project.id,
+        projectName: project.project_title,
+        userRole,
+        hasVicePermission,
+      };
+      setProjectId(projectId); // Updates asynchronously
+      localStorage.setItem("projectSelected", JSON.stringify(data));
+      setData([{ ...data }]); // Sync store with localStorage
+      createQueryString(project.id + "_" + project.project_title);
 
-      if (!withRevisions) {
-        const userRole = project.user_role;
-        const data = {
-          projectId: project.id,
-          projectName: project.project_title,
-          userRole,
-          hasVicePermission,
-        };
-        setProjectId(projectId); // Updates asynchronously
-        localStorage.setItem("projectSelected", JSON.stringify(data));
-        setData([{ ...data }]); // Sync store with localStorage
-        createQueryString(project.id + "_" + project.project_title);
-
-        return;
-      }
+      return;
     }
   }
 

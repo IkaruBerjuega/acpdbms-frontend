@@ -22,7 +22,6 @@ export const useDashboard = () => {
     const intervalId = setInterval(() => {
       queryClient.refetchQueries({
         queryKey: ["online-users"],
-        active: true,
       });
     }, 60000);
 

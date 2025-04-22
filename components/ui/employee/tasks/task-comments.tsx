@@ -252,7 +252,7 @@ export default function TaskComments({
   }
 
   return (
-    <div className="flex-grow flex-col-between-start min-h-0 py-1">
+    <div className="flex-grow flex-col-between-start min-h-0">
       <div className="w-full text-sm text-slate-500 flex-grow flex-col-start gap-4 overflow-y-auto ">
         {transformedComments.map((comment) => {
           return (
