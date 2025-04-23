@@ -19,7 +19,6 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   ProjectSelector as ProjectSelectorProps,
   ProjectListResponseInterface,
-  ViceManagerPermissionResponse,
 } from "@/lib/definitions";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryParams } from "@/hooks/use-query-params";
