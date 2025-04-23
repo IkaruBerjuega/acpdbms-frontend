@@ -58,8 +58,6 @@ export default function TasksHeaderActions({
 
   const hasManagerPermission = role === "Project Manager" || hasVicePermission;
 
-  console.log(hasManagerPermission);
-
   return (
     <DataTableHeader
       tableName={dndName}

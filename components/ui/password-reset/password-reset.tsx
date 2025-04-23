@@ -11,7 +11,7 @@ import { BtnDialog, ButtonLink } from "../button";
 import { ChangePassByUserFormProps } from "@/lib/user-definitions";
 import { IoCheckmarkCircle } from "react-icons/io5";
 import Link from "next/link";
-import { useDeviceToken, useRole, useToken } from "@/hooks/general/use-token";
+import { useRole, useToken } from "@/hooks/general/use-token";
 
 export default function PasswordResetForm({
   token,
@@ -37,12 +37,10 @@ export default function PasswordResetForm({
   const [isNoticePage, setToNoticePage] = useState<boolean>(false);
 
   const { deleteToken } = useToken();
-  const { deleteDeviceToken } = useDeviceToken();
   const { deleteRole } = useRole();
 
   const deleteAllCookies = async () => {
     await deleteToken();
-    await deleteDeviceToken();
     await deleteRole();
   };
 

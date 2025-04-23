@@ -19,10 +19,11 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   ProjectSelector as ProjectSelectorProps,
   ProjectListResponseInterface,
+  ViceManagerPermissionResponse,
 } from "@/lib/definitions";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { useCheckViceManagerPermission } from "@/hooks/general/use-project";
 import { useQueryParams } from "@/hooks/use-query-params";
+import { requestAPI } from "@/hooks/tanstack-query";
 
 export function ProjectSelector({
   role,
@@ -35,10 +36,6 @@ export function ProjectSelector({
   const { setData } = useProjectSelectStore();
 
   const projectId = projId?.split("_")[0];
-
-  const { data } = useCheckViceManagerPermission(projectId ?? "");
-
-  const hasVicePermission = data?.vice_manager_permission === true;
 
   const { params } = useQueryParams();
 
@@ -77,18 +74,26 @@ export function ProjectSelector({
   }, [hasProjectId]);
 
   const mustOpen = useMemo(() => {
-    console.log("in memo", open);
     return !projectId && open;
   }, [projectId, open]);
 
-  function onSelect(project: ProjectListResponseInterface) {
+  async function onSelect(project: ProjectListResponseInterface) {
     if (project.id && project.project_title) {
       const userRole = project.user_role;
+
+      const vicePermissionResponse = await requestAPI({
+        url: `/projects/${project.id}/vice-permission`,
+        body: null,
+        contentType: "application/json",
+        auth: true,
+        method: "GET",
+      });
+
       const data = {
         projectId: project.id,
         projectName: project.project_title,
         userRole,
-        hasVicePermission,
+        hasVicePermission: vicePermissionResponse.vice_manager_permission,
       };
 
       localStorage.setItem("projectSelected", JSON.stringify(data));
