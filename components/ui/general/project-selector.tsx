@@ -34,12 +34,16 @@ export function ProjectSelector({
   const { data: projects } = useAssociatedProjects({ role: role });
   const { setData } = useProjectSelectStore();
 
-  const { data } = useCheckViceManagerPermission(projId ?? "");
+  const projectId = projId?.split("_")[0];
+  console.log(projectId);
+
+  const { data } = useCheckViceManagerPermission(projectId ?? "");
+
   const hasVicePermission = data?.vice_manager_permission === true;
 
   const { params } = useQueryParams();
 
-  const hasProjectId = !!projId;
+  const hasProjectId = !!projectId;
 
   const pathname = usePathname();
 
@@ -75,8 +79,8 @@ export function ProjectSelector({
 
   const mustOpen = useMemo(() => {
     console.log("in memo", open);
-    return !projId && open;
-  }, [projId, open]);
+    return !projectId && open;
+  }, [projectId, open]);
 
   function onSelect(project: ProjectListResponseInterface) {
     if (project.id && project.project_title) {
