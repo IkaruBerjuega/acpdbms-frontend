@@ -55,7 +55,10 @@ export default function TasksHeaderActions({
   const role = projectSelected[0]?.userRole;
   const hasVicePermission =
     projectSelected[0]?.hasVicePermission && role === "Vice Manager";
+
   const hasManagerPermission = role === "Project Manager" || hasVicePermission;
+
+  console.log(hasManagerPermission);
 
   return (
     <DataTableHeader

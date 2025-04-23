@@ -35,7 +35,6 @@ export function ProjectSelector({
   const { setData } = useProjectSelectStore();
 
   const projectId = projId?.split("_")[0];
-  console.log(projectId);
 
   const { data } = useCheckViceManagerPermission(projectId ?? "");
 
