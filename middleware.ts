@@ -49,17 +49,17 @@ export async function middleware(req: NextRequest) {
   }
 
   try {
-    const laravelResponse = await fetch(LARAVEL_AUTH_CHECK_URL, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    });
+    // const laravelResponse = await fetch(LARAVEL_AUTH_CHECK_URL, {
+    //   method: "GET",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${token}`,
+    //   },
+    // });
 
-    if (!laravelResponse.ok) {
-      return NextResponse.redirect(new URL("/login", req.url));
-    }
+    // if (!laravelResponse.ok) {
+    //   return NextResponse.redirect(new URL("/login", req.url));
+    // }
 
     // Allow users to stay on the login page if they are NOT logged in
     if (isLoginPage) {

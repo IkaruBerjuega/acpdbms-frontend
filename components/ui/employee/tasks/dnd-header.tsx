@@ -81,7 +81,9 @@ export default function TasksHeaderActions({
               </Button>
               <AddBtn
                 label="Add Task/Phases"
-                href="/employee/tasks/add?show_phases=true"
+                href={`/employee/tasks/add?show_phases=true&${
+                  "projectId=" + projectId
+                } `}
                 dark={true}
                 className="h-full"
               />

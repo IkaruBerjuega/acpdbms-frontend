@@ -146,14 +146,13 @@ export default function LoginForm() {
 
     login.mutate(body, {
       onSuccess: async (responseData: LoginResponseInterface) => {
-        if (responseData.message === "2FA code sent to your email") {
+        if (
+          responseData.message === "2FA code sent to your email" ||
+          responseData.remaining_seconds
+        ) {
           verify2faSetValue("email", data.email);
           setShouldVerify(true);
-          setTimeLeft(default2faTimer);
-        } else if (responseData.remaining_seconds) {
-          verify2faSetValue("email", data.email);
-          setShouldVerify(true);
-          setTimeLeft(responseData.remaining_seconds);
+          setTimeLeft(responseData.remaining_seconds || default2faTimer);
         } else {
           storeCookies({
             token: responseData.token,

@@ -23,6 +23,7 @@ import {
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useQueryParams } from "@/hooks/use-query-params";
 import { requestAPI } from "@/hooks/tanstack-query";
+import Image from "next/image";
 
 export function ProjectSelector({
   role,
@@ -105,6 +106,8 @@ export function ProjectSelector({
 
   const projectName = projId?.split("_")[1];
 
+  const btnCollapseSrc = "/button-svgs/sidepanel-close.svg";
+
   return (
     <Sheet
       open={mustOpen}
@@ -131,14 +134,28 @@ export function ProjectSelector({
         </Button>
       </SheetTrigger>
       <SheetContent side={"bottom"} className="h-[90vh] overflow-y-auto">
-        <SheetHeader className="w-full">
-          <SheetTitle className="text-2xl font-bold w-full">
-            Your Projects
-          </SheetTitle>
-          <SheetDescription className="text-base w-full">
-            Select a project.
-          </SheetDescription>
-        </SheetHeader>
+        <div className="w-full flex-row-between-start">
+          <SheetHeader className="w-full">
+            <SheetTitle className="text-2xl font-bold w-full">
+              Your Projects
+            </SheetTitle>
+            <SheetDescription className="text-base w-full">
+              Select a project.
+            </SheetDescription>
+          </SheetHeader>{" "}
+          <Button
+            onClick={() => setOpen(false)}
+            className="p-0 h-8 px-2"
+            variant="ghost"
+          >
+            <Image
+              src={btnCollapseSrc}
+              width={16}
+              height={16}
+              alt="collapse sidebar button"
+            />
+          </Button>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-2 mt-10">
           {projects?.map((project, index) => {

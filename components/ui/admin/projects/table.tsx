@@ -68,14 +68,29 @@ export default function Table<T extends ProjectListResponseInterface>({
     {
       accessorKey: "start_date",
       header: "Start Date",
+      meta: {
+        filter_name: "Start Date",
+        filter_type: "date",
+        filter_columnAccessor: "start_date",
+      },
     },
     {
       accessorKey: "end_date",
       header: "End Date",
+      meta: {
+        filter_name: "End Date",
+        filter_type: "date",
+        filter_columnAccessor: "end_date",
+      },
     },
     {
       accessorKey: "finish_date",
       header: "Finish Date",
+      meta: {
+        filter_name: "Finish Date",
+        filter_type: "date",
+        filter_columnAccessor: "finish_date",
+      },
     },
     {
       accessorKey: "status",

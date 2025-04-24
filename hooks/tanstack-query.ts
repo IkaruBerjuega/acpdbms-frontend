@@ -137,6 +137,7 @@ export function useApiQuery<T>({
     queryFn: () => fetchApiData(),
     initialData: initialData,
     enabled: enabled,
+    retry: 2,
   });
 
   return {
