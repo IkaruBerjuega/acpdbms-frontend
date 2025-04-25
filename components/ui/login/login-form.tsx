@@ -26,6 +26,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Checkbox } from "../checkbox";
+import { useDeviceTokenStore } from "@/hooks/states/create-store";
 
 const default2faTimer = 180; //default2faTimer seconds
 
@@ -68,6 +69,7 @@ export default function LoginForm() {
   const { storeToken } = useToken();
   const { storeRole } = useRole();
   const { storeDeviceToken, getDeviceToken } = useDeviceToken();
+  const { setData } = useDeviceTokenStore();
 
   //this function will be triggered when the login is successful, will set cookies here
   const onRedirect = async (role: "admin" | "employee" | "client") => {
@@ -129,6 +131,7 @@ export default function LoginForm() {
         : true;
 
     if (canRedirect) {
+      setData([device_token]);
       await onRedirect(role);
     }
   };

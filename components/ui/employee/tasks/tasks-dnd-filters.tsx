@@ -142,50 +142,56 @@ export function TaskFilters() {
   //project id based phases
   const { data: phasesResponse } = usePhases(projectId);
 
+  const isTasksViewAssigned = paramsKey["view"] === "assigned";
+
   return (
     <div className="flex-grow overflow-y-auto min-h-0 flex-col-start gap-6 text-slate-600 mt-2">
       {/* Members */}
-      <div className="flex-col-start gap-4">
-        <div className="flex-row-start-center gap-2">
-          <AiOutlineTeam className="h-5 w-5 text-maroon-600 mr-1" />
-          <p className="text-base">Members</p>
-        </div>
-        <div className="flex-col-start gap-2">
-          {team?.map((member) => {
-            return (
-              <div
-                className="flex-row-start-center p-1 space-x-4"
-                key={member.user_id}
-              >
-                <Checkbox
-                  checked={isMemberFiltered(member.full_name)}
-                  onCheckedChange={(value) =>
-                    addOrRemoveFilterByCheckbox(
-                      "member_filters",
-                      value,
-                      member.full_name
-                    )
-                  }
-                />
-                <div className="flex-row-start-center gap-3">
-                  <div className="flex-row-start">
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage src={member.profile_picture_url} />
-                      <AvatarFallback className="text-xs">
-                        {getInitialsFallback(member.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
-                  </div>
-                  <div className="flex-col-start">
-                    <p className="text-sm">{member.full_name}</p>
-                    <p className="text-xs text-slate-400">{member.role}</p>
+
+      {!isTasksViewAssigned && (
+        <div className="flex-col-start gap-4">
+          <div className="flex-row-start-center gap-2">
+            <AiOutlineTeam className="h-5 w-5 text-maroon-600 mr-1" />
+            <p className="text-base">Members</p>
+          </div>
+          <div className="flex-col-start gap-2">
+            {team?.map((member) => {
+              return (
+                <div
+                  className="flex-row-start-center p-1 space-x-4"
+                  key={member.user_id}
+                >
+                  <Checkbox
+                    checked={isMemberFiltered(member.full_name)}
+                    onCheckedChange={(value) =>
+                      addOrRemoveFilterByCheckbox(
+                        "member_filters",
+                        value,
+                        member.full_name
+                      )
+                    }
+                  />
+                  <div className="flex-row-start-center gap-3">
+                    <div className="flex-row-start">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage src={member.profile_picture_url} />
+                        <AvatarFallback className="text-xs">
+                          {getInitialsFallback(member.full_name)}
+                        </AvatarFallback>
+                      </Avatar>
+                    </div>
+                    <div className="flex-col-start">
+                      <p className="text-sm">{member.full_name}</p>
+                      <p className="text-xs text-slate-400">{member.role}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
+
       {/* Phases */}
       <div className="flex-col-start gap-4">
         <div className="flex-row-start-center gap-2">

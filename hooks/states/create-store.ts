@@ -55,3 +55,4 @@ export const useSelectFiles = createStore<string>([]);
 export const useProjectSelectStore = createStore<ProjectSelector>();
 export const usePhaseTransfer = createStore<AddPhaseShortcut>([]);
 export const useSelectedTaskStatus = createStore<TaskStatuses | undefined>();
+export const useDeviceTokenStore = createStore<string | undefined>([]);
