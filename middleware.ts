@@ -58,7 +58,12 @@ export async function middleware(req: NextRequest) {
     });
 
     if (!laravelResponse.ok) {
-      return NextResponse.redirect(new URL("/login", req.url));
+      // Create a response to redirect to login
+      const response = NextResponse.redirect(new URL("/login", req.url));
+      // Delete the token and role cookies
+      response.cookies.delete("token");
+      response.cookies.delete("role");
+      return response;
     }
 
     // Allow users to stay on the login page if they are NOT logged in
@@ -71,7 +76,11 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL(getRoleRedirect(role), req.url));
     }
   } catch (error) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    // Create a response to redirect to login
+    const response = NextResponse.redirect(new URL("/login", req.url));
+    // Delete the token and role cookies
+    response.cookies.delete("token");
+    response.cookies.delete("role");
   }
 
   return NextResponse.next();
