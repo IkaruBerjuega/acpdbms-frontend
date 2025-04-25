@@ -87,7 +87,7 @@ export default function PasswordResetForm({
               required
               dataType="password"
               validationRules={{
-                required: requireError("field"),
+                required: requireError("Field"),
                 pattern: {
                   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
                   message:
@@ -105,7 +105,7 @@ export default function PasswordResetForm({
               required
               dataType="password"
               validationRules={{
-                required: requireError("field"),
+                required: requireError("Field"),
                 validate: (value: string) =>
                   value === watch("new_pass") || "Password does not match",
               }}

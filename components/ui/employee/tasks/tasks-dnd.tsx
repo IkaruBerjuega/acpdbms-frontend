@@ -131,7 +131,7 @@ export default function TasksDND({
   const [taskId, setTaskId] = useState<number>();
   const [droppedStatus, setDroppedByStatus] = useState<TaskStatuses>("to do");
   const [recentStatus, setRecentStatus] = useState<TaskStatuses>("to do");
-  const { startTask, pauseTask, setTaskToNeedsReview, reviewTask } =
+  const { startTask, pauseTask, setTaskToNeedsReview, reviewTask, cancelTask } =
     useTaskActions<ReviewTaskRequest | null>({
       taskId: String(taskId),
       projectId: projectId,
@@ -213,10 +213,10 @@ export default function TasksDND({
       content: <></>,
     },
     cancelled: {
-      action: setTaskToNeedsReview,
-      title: "Set to Needs Review",
-      desc: "Do you confirm on setting to needs review the selected/dragged task?",
-      successMessagePlaceholder: "Task is now set to needs review",
+      action: cancelTask,
+      title: "Cancel",
+      desc: "Do you confirm on cancelling selected/dragged task?",
+      successMessagePlaceholder: "Task is now cancelled",
       content: <></>,
     },
   };
@@ -347,32 +347,35 @@ export default function TasksDND({
     return <div className="py-2">Loading Tasks...</div>;
   }
 
-  if (tasks?.length === 0) {
-    return <div className="py-2">No Tasks </div>;
-  }
-
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="w-full">
         <ButtonTasksDndFilter />
       </div>
-      <div className="w-full flex-col-start overflow-x-auto min-h-0 flex-grow">
-        <div className="flex-grow flex-row-start mt-4 ">
-          {TASK_STATUSES.map((status) => {
-            if (status === "cancelled") return;
-            return (
-              <TaskColumn
-                key={status}
-                columnStatus={status}
-                tasks={
-                  convertedTasks.filter((task) => task.status === status) ?? []
-                }
-                moveTask={moveTask}
-              />
-            );
-          })}
+
+      {tasks?.length !== 0 ? (
+        <div className="w-full flex-col-start overflow-x-auto min-h-0 flex-grow">
+          <div className="flex-grow flex-row-start mt-4 ">
+            {TASK_STATUSES.map((status) => {
+              if (status === "cancelled") return;
+              return (
+                <TaskColumn
+                  key={status}
+                  columnStatus={status}
+                  tasks={
+                    convertedTasks.filter((task) => task.status === status) ??
+                    []
+                  }
+                  moveTask={moveTask}
+                />
+              );
+            })}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="py-2">No Tasks </div>
+      )}
+
       {open && (
         <DialogNoBtn
           title={dialogConfig[droppedStatus].title}

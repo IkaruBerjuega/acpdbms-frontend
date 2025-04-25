@@ -13,10 +13,11 @@ export default function FileRow({
   firstIndex,
   setFirstIndex,
   setSecondIndex,
+  role,
 }: FileUIProps) {
   const { data, setData } = useSelectFiles();
 
-  const isSelected = (data as string[]).includes(file.file_id);
+  const isSelected = data.includes(file);
 
   const handleSelectFiles = (event: React.MouseEvent<HTMLDivElement>) => {
     const ctrl = event.metaKey || event.ctrlKey;
@@ -38,22 +39,28 @@ export default function FileRow({
 
       const newSelectedFileIds = filteredFiles
         .slice(start, end + 1)
-        .map((filteredFile) => filteredFile.file_id);
+        .map((filteredFile) => filteredFile);
 
       setData((prev) => Array.from(new Set([...prev, ...newSelectedFileIds])));
       setSecondIndex(currentIndex);
     } else if (ctrl) {
-      setData((prev) => Array.from(new Set([...prev, file.file_id])));
-      setFirstIndex(currentIndex);
+      const isIncluded = data.includes(file);
+
+      if (isIncluded) {
+        setData((prev) => prev.filter((id) => id !== file));
+      } else {
+        setData((prev) => Array.from(new Set([...prev, file])));
+        setFirstIndex(currentIndex);
+      }
       setSecondIndex(-1);
     } else if (event.button === 2) {
       if (data.length > 1) {
         return;
       }
 
-      setData([file.file_id]);
+      setData([file]);
     } else {
-      setData([file.file_id]);
+      setData([file]);
       setFirstIndex(currentIndex);
       setSecondIndex(-1);
     }
@@ -63,6 +70,7 @@ export default function FileRow({
     <FileActionWrapper
       projectId={projectId}
       isArchived={file.is_archived}
+      role={role}
       elementTrigger={
         <Card
           className={`${

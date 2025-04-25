@@ -33,7 +33,7 @@ export default async function Page({
       </div>
 
       <Suspense fallback={<></>}>
-        <Files {...queries} isAdmin={false} />
+        <Files {...queries} role="employee" />
       </Suspense>
     </>
   );

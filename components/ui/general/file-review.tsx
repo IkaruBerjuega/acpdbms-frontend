@@ -40,7 +40,7 @@ export default function FileReview({
   taskId: string;
   version: string | null;
   initialData: TaskVersionsResponse;
-  role: "manager" | "client";
+  role: "admin" | "manager" | "client";
   reviewMode: boolean;
   projectId: string;
   view_files: string | null;

@@ -67,6 +67,7 @@ export interface FileUIProps {
   setFirstIndex: React.Dispatch<SetStateAction<number>>;
   secondIndex: number;
   setSecondIndex: React.Dispatch<SetStateAction<number>>;
+  role: "admin" | "employee" | "client";
 }
 
 export interface FileActionsRequest {
