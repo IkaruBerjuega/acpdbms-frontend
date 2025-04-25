@@ -55,6 +55,7 @@ export default function TasksHeaderActions({
   const role = projectSelected[0]?.userRole;
   const hasVicePermission =
     projectSelected[0]?.hasVicePermission && role === "Vice Manager";
+
   const hasManagerPermission = role === "Project Manager" || hasVicePermission;
 
   return (
@@ -80,7 +81,9 @@ export default function TasksHeaderActions({
               </Button>
               <AddBtn
                 label="Add Task/Phases"
-                href="/employee/tasks/add?show_phases=true"
+                href={`/employee/tasks/add?show_phases=true&${
+                  "projectId=" + projectId
+                } `}
                 dark={true}
                 className="h-full"
               />

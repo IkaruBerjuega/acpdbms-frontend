@@ -11,6 +11,7 @@ import { BtnDialog, ButtonLink } from "../button";
 import { ChangePassByUserFormProps } from "@/lib/user-definitions";
 import { IoCheckmarkCircle } from "react-icons/io5";
 import Link from "next/link";
+import { useRole, useToken } from "@/hooks/general/use-token";
 
 export default function PasswordResetForm({
   token,
@@ -35,6 +36,14 @@ export default function PasswordResetForm({
 
   const [isNoticePage, setToNoticePage] = useState<boolean>(false);
 
+  const { deleteToken } = useToken();
+  const { deleteRole } = useRole();
+
+  const deleteAllCookies = async () => {
+    await deleteToken();
+    await deleteRole();
+  };
+
   if (!token && !email) return;
 
   const processForm: SubmitHandler<ChangePassByUserFormProps> = (data) => {
@@ -46,7 +55,8 @@ export default function PasswordResetForm({
         password_confirmation: data.confirm_new_pass,
       },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
+          await deleteAllCookies();
           setToNoticePage(true);
         },
         onError: ({ message }: { message: string }) => {

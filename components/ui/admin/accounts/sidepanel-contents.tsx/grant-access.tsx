@@ -188,7 +188,7 @@ export default function GrantProjectAccess() {
       setStep(step + 1);
     } else if (step === 2) {
       const isValid = await trigger("team");
-      console.log(projectId);
+
       if (!isValid) {
         return;
       }

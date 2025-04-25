@@ -14,6 +14,8 @@ export default async function Page({
     { pageName: "Client", href: "", active: false },
     { pageName: "Approval", href: "/client/approval", active: true },
   ];
+
+  const _projectId = projectId?.split("_")[0];
   return (
     <>
       <div className="flex-col-start gap-4 sm:flex-row-between-center sm:gap-0 w-full">
@@ -25,7 +27,12 @@ export default async function Page({
       <Suspense>
         <TasksHeaderActions isEmployee={false} />
       </Suspense>
-      <ClientTasksView view={view} />
+
+      {_projectId ? (
+        <ClientTasksView view={view} projectId={_projectId} />
+      ) : (
+        <>Select a project...</>
+      )}
     </>
   );
 }

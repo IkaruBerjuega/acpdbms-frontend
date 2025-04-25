@@ -181,7 +181,7 @@ export interface ProjectSelector {
   projectId: string;
   projectName: string;
   userRole?: ProjectListResponseInterface["user_role"];
-  hasVicePermission: boolean;
+  hasVicePermission?: boolean;
 }
 
 export const ItemTypes = {
@@ -213,7 +213,7 @@ export interface TeamMemberDashboardResponse {
 }
 
 export interface ViceManagerPermissionResponse {
-  vice_manager_permission?: boolean;
+  vice_manager_permission: boolean;
 }
 
 export interface ContactDetails {

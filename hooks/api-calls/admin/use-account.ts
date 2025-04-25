@@ -43,6 +43,13 @@ export const useUserBasicInfo = () => {
   });
 };
 
+export const useUniquePositions = () => {
+  return useApiQuery<string[]>({
+    key: "unique-positions",
+    url: "/unique-positions",
+  });
+};
+
 export const useAccountActions = <T>() => {
   const deactivateAcc = useApiMutation<T>({
     url: "/users/deactivate",
