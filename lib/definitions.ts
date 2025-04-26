@@ -1,11 +1,11 @@
-import { CellContext, HeaderContext, Row } from "@tanstack/react-table";
-import { FilterType } from "./filter-types";
+import { CellContext, HeaderContext, Row } from '@tanstack/react-table';
+import { FilterType } from './filter-types';
 
 export interface UserInterface {
   id: number;
   email: string;
   is_admin: boolean;
-  role: "admin" | "employee" | "client";
+  role: 'admin' | 'employee' | 'client';
   profile_complete: boolean;
   must_change_password: boolean;
   profile_picture: string;
@@ -55,7 +55,7 @@ export interface ClientInterface {
 export interface Manager {
   id: number;
   name: string;
-  role: "Project Manager" | "Vice Manager";
+  role: 'Project Manager' | 'Vice Manager';
 }
 
 export interface TeamDetailsResponse {
@@ -72,17 +72,17 @@ export interface RevisionInterface {
   end_date: string;
   finish_date?: string | null;
   status:
-    | "finished"
-    | "on-hold"
-    | "ongoing"
-    | "cancelled"
-    | "archived"
-    | "pending";
+    | 'finished'
+    | 'on-hold'
+    | 'ongoing'
+    | 'cancelled'
+    | 'archived'
+    | 'pending';
   location: string;
   image_url: string | null;
   project_manager: string;
   revision?: number | null;
-  user_role?: "Project Manager" | "Vice Manager" | "Member";
+  user_role?: 'Project Manager' | 'Vice Manager' | 'Member';
   revision_of?: number | null;
   can_be_finished: boolean;
 }
@@ -95,17 +95,17 @@ export interface ProjectListResponseInterface {
   end_date: string;
   finish_date?: string | null;
   status:
-    | "finished"
-    | "on-hold"
-    | "ongoing"
-    | "cancelled"
-    | "archived"
-    | "pending";
+    | 'finished'
+    | 'on-hold'
+    | 'ongoing'
+    | 'cancelled'
+    | 'archived'
+    | 'pending';
   location: string;
   image_url: string | null;
   project_manager: string;
   project_description: string;
-  user_role?: "Project Manager" | "Vice Manager" | "Member";
+  user_role?: 'Project Manager' | 'Vice Manager' | 'Member';
   revision?: number | null;
   revision_of?: number | null;
   can_be_finished: boolean;
@@ -120,7 +120,7 @@ export interface ProjectDetailsInterface {
   start_date: string;
   end_date: string;
   finish_date?: string | null;
-  status: "finished" | "on-hold" | "ongoing" | "cancelled" | "archived";
+  status: 'finished' | 'on-hold' | 'ongoing' | 'cancelled' | 'archived';
   street: string;
   city_town: string;
   state: string;
@@ -155,11 +155,11 @@ export interface ColumnInterfaceProp {
 }
 
 export type AccountActions =
-  | "sendReset"
-  | "deactivate"
-  | "archive"
-  | "activate"
-  | "unarchive"
+  | 'sendReset'
+  | 'deactivate'
+  | 'archive'
+  | 'activate'
+  | 'unarchive'
   | undefined;
 
 export type ProjectActions =
@@ -185,7 +185,7 @@ export interface ProjectSelector {
 }
 
 export const ItemTypes = {
-  TASK: "task" as const,
+  TASK: 'task' as const,
 };
 
 export interface TeamMemberDashboard {
@@ -197,9 +197,9 @@ export interface TeamMemberDashboard {
   phone_number: string;
   role: string;
   task_counts: {
-    "to do": number;
-    "in progress": number;
-    "needs review": number;
+    'to do': number;
+    'in progress': number;
+    'needs review': number;
     paused: number;
     done: number;
     cancelled: number;
@@ -229,12 +229,12 @@ export interface Phase {
   finish_date?: Date;
   project_id?: string;
   status:
-    | "to do"
-    | "in progress"
-    | "cancelled"
-    | "paused"
-    | "archived"
-    | "finished";
+    | 'to do'
+    | 'in progress'
+    | 'cancelled'
+    | 'paused'
+    | 'archived'
+    | 'finished';
   updated_at?: Date;
 }
 
@@ -269,7 +269,7 @@ export interface DuplicatedProjectResponse {
   project: {
     id: number;
     project_title: string;
-    status: "draft" | "pending" | "ongoing" | "finished"; // assuming all possible statuses
+    status: 'draft' | 'pending' | 'ongoing' | 'finished'; // assuming all possible statuses
     revision: number;
     revision_of: number;
   };
@@ -280,7 +280,7 @@ export type SupportedTableTypes =
   | EmployeeInterface
   | ProjectListResponseInterface;
 
-export type SupportedTableName = "Accounts" | "Projects";
+export type SupportedTableName = 'Accounts' | 'Projects';
 export type AccountsTableType = ClientInterface | EmployeeInterface;
 
 export interface ClientViewInterface {
@@ -368,6 +368,7 @@ export type TicketData = {
   content: string;
   date: string;
   status: string;
+  profile_picture_url: string;
 };
 
 export type ProjectLocationYear = {
@@ -484,7 +485,7 @@ export interface Verify2FAResponse {
     id: number;
     name: string;
     email: string;
-    role: "client" | "employee" | "admin"; // adjust if more roles exist
+    role: 'client' | 'employee' | 'admin'; // adjust if more roles exist
     is_admin: boolean;
     profile_complete: boolean;
     must_change_password: boolean;
