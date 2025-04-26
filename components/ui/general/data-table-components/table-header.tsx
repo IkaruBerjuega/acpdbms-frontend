@@ -16,7 +16,7 @@ interface DataTableHeaderInterface {
   tableName: string;
   onArchive?: onArchiveInterface;
   onShowArchive?: boolean;
-  onGenerateReport?: boolean;
+  onGenerateReportElement?: JSX.Element;
   additionalElement?: JSX.Element;
 }
 
@@ -24,7 +24,7 @@ export default function DataTableHeader({
   tableName = "Items",
   onArchive,
   onShowArchive,
-  onGenerateReport,
+  onGenerateReportElement,
   additionalElement,
 }: DataTableHeaderInterface) {
   const { paramsKey, params } = useQueryParams();
@@ -104,12 +104,7 @@ export default function DataTableHeader({
             onClick={toggleArchived}
           />
         )}
-        {onGenerateReport && (
-          <ButtonTooltip
-            tooltip={`Generate ${tableName} Report`}
-            iconSrc="/button-svgs/table-header-generate-report.svg"
-          />
-        )}
+        {!!onGenerateReportElement && onGenerateReportElement}
         {additionalElement && additionalElement}
       </div>
     </div>

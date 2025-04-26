@@ -61,7 +61,7 @@ export default function TasksHeaderActions({
   return (
     <DataTableHeader
       tableName={dndName}
-      onGenerateReport={true}
+      onGenerateReportElement={<></>}
       additionalElement={
         <>
           {hasManagerPermission && (

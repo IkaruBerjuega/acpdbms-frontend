@@ -32,7 +32,7 @@ export default async function Page({
         <ProjectSelector role="client" projId={queries.projectId} />
       </div>
       <Suspense fallback={<></>}>
-        <Files {...queries} isAdmin={false} />
+        <Files {...queries} role={"client"} />
       </Suspense>
     </>
   );

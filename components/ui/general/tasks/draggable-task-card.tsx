@@ -260,7 +260,13 @@ export default function TaskCard(props: TaskCardProps) {
     "cancelled",
   ];
   const cannotSetToNeedsReview = ["needs review", "to do", "done", "cancelled"];
-  const cannotSetToDone = ["to do", "in progress", "paused", "cancelled"];
+  const cannotSetToDone = [
+    "to do",
+    "in progress",
+    "paused",
+    "cancelled",
+    "done",
+  ];
 
   const taskName =
     version > 0 ? (
@@ -317,7 +323,7 @@ export default function TaskCard(props: TaskCardProps) {
               ...(!cannotSetToDo.includes(status)
                 ? [
                     {
-                      label: "Set to to do",
+                      label: "Create New Version",
                       iconSrc: "/button-svgs/checklist.svg",
                       className: "",
                       alt: "Set to To do  Task Button",
@@ -408,21 +414,24 @@ export default function TaskCard(props: TaskCardProps) {
                     },
                   ]
                 : []),
-
-              {
-                label: "Cancel",
-                iconSrc: "/button-svgs/table-action-cancel.svg",
-                className: "",
-                alt: "Set to Cancel  Task Button",
-                isDialog: false,
-                onClick: () => {
-                  moveTask({
-                    id: id,
-                    droppedStatus: "cancelled",
-                    recentStatus: status,
-                  });
-                },
-              },
+              ...(status === "to do"
+                ? [
+                    {
+                      label: "Cancel",
+                      iconSrc: "/button-svgs/table-action-cancel.svg",
+                      className: "",
+                      alt: "Set to Cancel  Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "cancelled",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
             ]}
             btnVariant={"ghost"}
           />

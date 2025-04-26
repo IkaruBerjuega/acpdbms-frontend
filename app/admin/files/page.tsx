@@ -27,7 +27,7 @@ export default async function Page({
   return (
     <>
       <SidebarTrigger breadcrumbs={breadcrumbs} />
-      <Files {...queries} isAdmin={true} />
+      <Files {...queries} role={"admin"} />
     </>
   );
 }

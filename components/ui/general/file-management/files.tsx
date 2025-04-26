@@ -2,7 +2,7 @@
 
 import FileFilters from "./file-filters";
 import { formatFileSize, formatFileType, formatDate } from "@/lib/utils";
-import { FilesPageProps } from "@/lib/files-definitions";
+import { FilesPageProps, FileUIProps } from "@/lib/files-definitions";
 import { useFileList } from "@/hooks/api-calls/employee/use-files";
 import SidepanelDrawerComponent from "../../general/sidepanel-drawer";
 import { ItemInterface } from "@/lib/filter-types";
@@ -11,7 +11,7 @@ import FileList from "./file-list";
 import FileListHeaderActions from "./file-list-header";
 
 interface FilesProps extends FilesPageProps {
-  isAdmin: boolean;
+  role: FileUIProps["role"];
 }
 
 export default function Files(queries: FilesProps) {
@@ -147,6 +147,7 @@ export default function Files(queries: FilesProps) {
           description="Set filters here"
           content={
             <FileFilters
+              isAdmin={queries.role === "admin"}
               phases={_phaseItems}
               tasks={_taskItems}
               taskVersionItems={_taskVersionItems}

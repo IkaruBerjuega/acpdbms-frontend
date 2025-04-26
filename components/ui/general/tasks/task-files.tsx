@@ -3,7 +3,7 @@ import {
   useTaskActions,
 } from "@/hooks/api-calls/employee/use-tasks";
 import Dropbox from "../dropbox";
-import { Dispatch, SetStateAction, useMemo, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react";
 import { Separator } from "../../separator";
 import { BtnDialog, Button, ButtonIconTooltipDialog } from "../../button";
 import { bytesToMb } from "@/lib/utils";
@@ -19,6 +19,7 @@ import { TaskStatuses, TaskVersionsResponse } from "@/lib/tasks-definitions";
 import { Check, X } from "lucide-react";
 import useFileActions from "@/hooks/api-calls/employee/use-files";
 import { Badge } from "../../badge";
+import { useTaskSelectFile } from "@/hooks/states/create-store";
 
 type viewType = "references" | "deliverables" | "archived";
 
@@ -226,12 +227,14 @@ export default function TaskFiles({
   reviewMode?: boolean;
   initialData?: TaskVersionsResponse;
   getSelectedFileUrl?: ({ file }: { file: TaskFile }) => void;
-  role: "manager" | "client";
+  role: "admin" | "manager" | "client";
   review?: TaskFilesApproval[];
   setReview?: Dispatch<SetStateAction<TaskFilesApproval[] | undefined>>;
   projectId: string;
 }) {
   const taskStatus = localStorage.getItem("selectedTaskStatus") as TaskStatuses;
+
+  const { data: selectedTaskFileId } = useTaskSelectFile();
 
   const [selectedfile, setSelectedfile] = useState<TaskFile>();
 
@@ -264,11 +267,10 @@ export default function TaskFiles({
     return size;
   }, [attachedFiles]);
 
-  const { data: taskVersions, isLoading: versionLoading } =
-    useGetSpecificTaskVersions({
-      taskId: taskId,
-      initialData: initialData,
-    });
+  const { data: taskVersions } = useGetSpecificTaskVersions({
+    taskId: taskId,
+    initialData: initialData,
+  });
 
   const versions = taskVersions?.versions.sort((a, b) => b.version - a.version);
   const lastVersionNumber =
@@ -301,15 +303,17 @@ export default function TaskFiles({
     isLoading: uploadReferencesIsLoading,
   } = uploadReferences;
 
+  const _role = role !== "admin" && role === "manager" ? "manager" : "client";
+
   //for review mode
   const handleSubmitReviewedFiles = async (
     data: TaskFilesApproval[] | undefined
   ) => {
     if (!data) return;
 
-    const actionFn = submitReviewConfig[role].mutate;
+    const actionFn = submitReviewConfig[_role].mutate;
     const successMessagePlaceholder =
-      submitReviewConfig[role].successMessagePlaceholder;
+      submitReviewConfig[_role].successMessagePlaceholder;
     const toastTitle = "Review Files";
 
     const body: TaskFilesApprovalRequest = { approvals: data };
@@ -356,24 +360,29 @@ export default function TaskFiles({
     },
   };
 
-  if (versionLoading) return null;
-
-  if (!versions || versions.length === 0) {
-    return null;
-  }
-
   const lastVersion = versions?.reduce(
     (max, version) => (version.version > max.version ? version : max),
     versions[0]
   );
   const openedVersion =
-    versions.find((ver) => ver.version === Number(version)) || lastVersion;
+    versions?.find((ver) => ver.version === Number(version)) || lastVersion;
 
-  const isLastVersion = lastVersion.version === openedVersion.version;
+  const isLastVersion = lastVersion?.version === openedVersion?.version;
 
   const files = isLastVersion
-    ? lastVersion.task_files
-    : openedVersion.task_files;
+    ? lastVersion?.task_files || []
+    : openedVersion?.task_files || [];
+
+  //automatically set attached files if the file viewed  from file repository
+  useEffect(() => {
+    const file = files.find(
+      (file) => file.id === Number(selectedTaskFileId[0])
+    );
+
+    if (file) {
+      selectFile({ file: file });
+    }
+  }, [selectedTaskFileId]);
 
   const archivedFiles = files.filter((file) => file.is_archived === true);
 
@@ -698,7 +707,7 @@ export default function TaskFiles({
                     review={undefined}
                     handleSetApproval={undefined}
                     handleToggleArchiveFile={handleArchiveFiles}
-                    role={role}
+                    role={_role}
                   />
                 )}
                 {isViewReferences && (
@@ -708,7 +717,7 @@ export default function TaskFiles({
                     reviewMode={false}
                     selectedFile={selectedfile}
                     review={undefined}
-                    role={role}
+                    role={_role}
                     handleToggleArchiveFile={handleArchiveFiles}
                   />
                 )}
@@ -724,7 +733,7 @@ export default function TaskFiles({
                     reviewMode={reviewMode}
                     selectedFile={selectedfile}
                     review={review}
-                    role={role}
+                    role={_role}
                     handleSetApproval={handleSetApproval}
                     handleToggleArchiveFile={handleArchiveFiles}
                   />
@@ -743,7 +752,7 @@ export default function TaskFiles({
                         selectedFile={selectedfile}
                         review={review}
                         handleSetApproval={handleSetApproval}
-                        role={role}
+                        role={_role}
                         handleToggleArchiveFile={handleArchiveFiles}
                       />
                     </div>
@@ -758,7 +767,7 @@ export default function TaskFiles({
                         reviewMode={reviewMode}
                         selectedFile={selectedfile}
                         review={undefined}
-                        role={role}
+                        role={_role}
                         handleToggleArchiveFile={handleArchiveFiles}
                       />
                     </div>
@@ -779,7 +788,7 @@ export default function TaskFiles({
                         selectedFile={selectedfile}
                         review={review}
                         handleSetApproval={handleSetApproval}
-                        role={role}
+                        role={_role}
                         handleToggleArchiveFile={handleArchiveFiles}
                       />
                     </div>
@@ -793,7 +802,7 @@ export default function TaskFiles({
                         onFileClick={selectFile}
                         reviewMode={reviewMode}
                         selectedFile={selectedfile}
-                        role={role}
+                        role={_role}
                         review={undefined}
                         handleToggleArchiveFile={handleArchiveFiles}
                       />
@@ -810,7 +819,7 @@ export default function TaskFiles({
                 reviewMode={reviewMode}
                 selectedFile={selectedfile}
                 review={undefined}
-                role={role}
+                role={_role}
                 handleToggleArchiveFile={handleArchiveFiles}
               />
             )}
@@ -818,38 +827,44 @@ export default function TaskFiles({
         </div>
       </div>
 
-      {isLastVersion && !reviewMode && !isTaskDone && !isViewArchived && (
-        <>
-          <Separator className="w-full my-4 bg-slate-500" />
-          <div className="w-full flex-col-start gap-2 h-1/2 overflow-y-auto">
-            <div className="w-full">
-              <Dropbox
-                state={{
-                  attachedFiles: attachedFiles,
-                  setAttachedFiles: setAttachedFiles,
-                }}
-                description={actionConfig[view]?.dragAndDropDesc}
-              />
-              {message && <div className="text-xs text-red-600">{message}</div>}
-            </div>
+      {isLastVersion &&
+        !reviewMode &&
+        !isTaskDone &&
+        !isViewArchived &&
+        role !== "admin" && (
+          <>
+            <Separator className="w-full my-4 bg-slate-500" />
+            <div className="w-full flex-col-start gap-2 h-1/2 overflow-y-auto">
+              <div className="w-full">
+                <Dropbox
+                  state={{
+                    attachedFiles: attachedFiles,
+                    setAttachedFiles: setAttachedFiles,
+                  }}
+                  description={actionConfig[view]?.dragAndDropDesc}
+                />
+                {message && (
+                  <div className="text-xs text-red-600">{message}</div>
+                )}
+              </div>
 
-            <div className="w-full flex-row-end-center">
-              <BtnDialog
-                btnTitle={"Submit"}
-                isLoading={isLoading}
-                alt={"Submit attached or uploaded files"}
-                dialogTitle={actionConfig[view]?.title}
-                dialogDescription={
-                  "Do you confirm on uploading the attached files?"
-                }
-                submitType={"button"}
-                submitTitle="Confirm"
-                onClick={handleUploadFiles}
-              />
+              <div className="w-full flex-row-end-center">
+                <BtnDialog
+                  btnTitle={"Submit"}
+                  isLoading={isLoading}
+                  alt={"Submit attached or uploaded files"}
+                  dialogTitle={actionConfig[view]?.title}
+                  dialogDescription={
+                    "Do you confirm on uploading the attached files?"
+                  }
+                  submitType={"button"}
+                  submitTitle="Confirm"
+                  onClick={handleUploadFiles}
+                />
+              </div>
             </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
 
       <div className="flex-grow"></div>
       {isLastVersion && reviewMode && (

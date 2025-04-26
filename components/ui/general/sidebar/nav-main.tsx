@@ -96,7 +96,7 @@ export function NavMain({ role }: { role: "admin" | "employee" | "client" }) {
       title: "Files",
       url: "/admin/files",
       icon: LiaFileSolid,
-      query: "filters=true&tab=row",
+      query: "tab=row",
     },
   ];
 
@@ -116,7 +116,7 @@ export function NavMain({ role }: { role: "admin" | "employee" | "client" }) {
       title: "Files",
       url: "/employee/files",
       icon: LiaFileSolid,
-      query: "filters=true&tab=row",
+      query: "tab=row",
     },
   ];
 
@@ -131,7 +131,7 @@ export function NavMain({ role }: { role: "admin" | "employee" | "client" }) {
       title: "Files",
       url: "/client/files",
       icon: LiaFileSolid,
-      query: "filters=true&tab=row",
+      query: "tab=row",
     },
   ];
 
