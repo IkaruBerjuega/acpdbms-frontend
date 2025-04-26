@@ -11,6 +11,7 @@ import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
 import { AddBtn } from "../../button";
 import { titleCase } from "@/lib/utils";
+import { useQueryParams } from "@/hooks/use-query-params";
 
 export default function AccountsTableHeaderActions({
   roleValue,
@@ -19,7 +20,7 @@ export default function AccountsTableHeaderActions({
   roleValue: "employee" | "client";
   archived: string | null;
 }) {
-  const params = new URLSearchParams();
+  const { params } = useQueryParams();
   const { replace } = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();

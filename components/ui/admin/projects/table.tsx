@@ -3,7 +3,6 @@
 import {
   ColumnInterfaceProp,
   ProjectListResponseInterface,
-  RevisionInterface,
 } from "@/lib/definitions";
 import { useProjectList } from "@/hooks/general/use-project";
 import { useCreateTableColumns } from "../../general/data-table-components/create-table-columns";
@@ -69,15 +68,29 @@ export default function Table<T extends ProjectListResponseInterface>({
     {
       accessorKey: "start_date",
       header: "Start Date",
+      meta: {
+        filter_name: "Start Date",
+        filter_type: "date",
+        filter_columnAccessor: "start_date",
+      },
     },
-
     {
       accessorKey: "end_date",
       header: "End Date",
+      meta: {
+        filter_name: "End Date",
+        filter_type: "date",
+        filter_columnAccessor: "end_date",
+      },
     },
     {
       accessorKey: "finish_date",
       header: "Finish Date",
+      meta: {
+        filter_name: "Finish Date",
+        filter_type: "date",
+        filter_columnAccessor: "finish_date",
+      },
     },
     {
       accessorKey: "status",
@@ -106,26 +119,12 @@ export default function Table<T extends ProjectListResponseInterface>({
       header: "Actions",
     },
   ];
-  const transformedColumns = useCreateTableColumns<RevisionInterface>(
-    columns,
-    "Projects"
-  );
+  const transformedColumns = useCreateTableColumns<T>(columns, "Projects");
 
   const { data: projectList, isLoading } = useProjectList<T>({
     isArchived: isArchived,
     initialData: initialData,
   });
-
-  //transform the data so that the project revisions can be in the main display
-  const transformedProjectList =
-    projectList?.flatMap((project) => {
-      const { revisions, ...mainProjectWithoutRevisions } = project;
-
-      // Just return the revisions as-is; they already don't have the `revisions` field
-      const flattenedRevisions = revisions ?? [];
-
-      return [mainProjectWithoutRevisions, ...flattenedRevisions];
-    }) || [];
 
   if (isLoading) {
     return <>Loading</>;
@@ -136,6 +135,10 @@ export default function Table<T extends ProjectListResponseInterface>({
   }
 
   return (
-    <DataTable columns={transformedColumns} data={transformedProjectList} />
+    <DataTable
+      columns={transformedColumns}
+      data={projectList}
+      tableClassName="min-w-[1600px]"
+    />
   );
 }

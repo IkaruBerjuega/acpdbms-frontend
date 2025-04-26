@@ -84,6 +84,7 @@ export interface RevisionInterface {
   revision?: number | null;
   user_role?: 'Project Manager' | 'Vice Manager' | 'Member';
   revision_of?: number | null;
+  can_be_finished: boolean;
 }
 
 export interface ProjectListResponseInterface {
@@ -107,7 +108,7 @@ export interface ProjectListResponseInterface {
   user_role?: 'Project Manager' | 'Vice Manager' | 'Member';
   revision?: number | null;
   revision_of?: number | null;
-  revisions?: RevisionInterface[];
+  can_be_finished: boolean;
 }
 
 export interface ProjectDetailsInterface {
@@ -162,11 +163,12 @@ export type AccountActions =
   | undefined;
 
 export type ProjectActions =
-  | 'archive'
-  | 'cancel'
-  | 'remove'
-  | 'onhold'
-  | 'continue'
+  | "archive"
+  | "cancel"
+  | "remove"
+  | "onhold"
+  | "finish"
+  | "continue"
   | undefined;
 
 export interface Breadcrumbs {
@@ -178,8 +180,8 @@ export interface Breadcrumbs {
 export interface ProjectSelector {
   projectId: string;
   projectName: string;
-  userRole?: ProjectListResponseInterface['user_role'];
-  hasVicePermission: boolean;
+  userRole?: ProjectListResponseInterface["user_role"];
+  hasVicePermission?: boolean;
 }
 
 export const ItemTypes = {
@@ -211,7 +213,7 @@ export interface TeamMemberDashboardResponse {
 }
 
 export interface ViceManagerPermissionResponse {
-  vice_manager_permission?: boolean;
+  vice_manager_permission: boolean;
 }
 
 export interface ContactDetails {
@@ -253,6 +255,8 @@ export interface DuplicateProjectRequest {
   duplicate_phases?: boolean;
   duplicate_team_members?: boolean;
   project_description?: string;
+  start_date: string;
+  end_date?: string;
 }
 
 export interface DuplicateProjectForm extends DuplicateProjectRequest {

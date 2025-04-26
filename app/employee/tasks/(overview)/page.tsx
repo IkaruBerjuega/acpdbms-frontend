@@ -4,6 +4,7 @@ import TasksDND from "@/components/ui/employee/tasks/tasks-dnd";
 import { ProjectSelector } from "@/components/ui/general/project-selector";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Breadcrumbs } from "@/lib/definitions";
+import { Suspense } from "react";
 
 export default async function Page({
   searchParams,
@@ -14,9 +15,22 @@ export default async function Page({
     version: number | undefined;
     projectId: string | null;
     view: "general" | "assigned" | null;
+    query: string | null;
+    phases_filters: string | null;
+    member_filters: string | null;
+    date_filter: string | null;
   }>;
 }) {
-  const { sheet, taskId, projectId, view } = await searchParams;
+  const {
+    sheet,
+    taskId,
+    projectId,
+    view,
+    query,
+    phases_filters,
+    member_filters,
+    date_filter,
+  } = await searchParams;
   const breadcrumbs: Breadcrumbs[] = [
     {
       href: "",
@@ -45,13 +59,22 @@ export default async function Page({
 
       {_projectId ? (
         <>
-          <TasksDND projectId={_projectId} view={view} />
-          <TaskSheetContainer
-            sheetParamValue={sheet}
-            taskId={taskId}
-            version={""}
+          <TasksDND
             projectId={_projectId}
+            view={view}
+            query={query}
+            phaseFilters={phases_filters}
+            dateFilter={date_filter}
+            memberFilters={member_filters}
           />
+          <Suspense>
+            <TaskSheetContainer
+              sheetParamValue={sheet}
+              taskId={taskId}
+              version={""}
+              projectId={_projectId}
+            />
+          </Suspense>
         </>
       ) : (
         "Select a project"

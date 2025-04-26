@@ -58,6 +58,7 @@ import { LiaTasksSolid } from "react-icons/lia";
 import { Checkbox } from "../checkbox";
 import Profile from "./profile";
 import { StatusNotice } from "../hover-card";
+import USLocationSelector from "./location-selector";
 
 interface ProjectDetails {
   id: string;
@@ -85,6 +86,7 @@ function ProjectDetails({
     reset,
     watch,
     formState: { errors },
+    setValue,
   } = methods;
 
   const params = new URLSearchParams();
@@ -375,37 +377,29 @@ function ProjectDetails({
               <div className="grid grid-cols-1 md:grid-cols-2 ml-6 gap-6">
                 {isEdit ? (
                   <>
-                    <FormInput
-                      name="state"
-                      label="State"
-                      inputType="default"
-                      validationRules={{ required: requireError("State") }}
-                      errorMessage={errors.state?.message}
-                      register={register}
-                    />
-                    <FormInput
-                      name="city_town"
-                      label="City/Town"
-                      inputType="default"
-                      validationRules={{ required: requireError("City/Town") }}
-                      errorMessage={errors.city_town?.message}
-                      register={register}
+                    <USLocationSelector
+                      control={control}
+                      setValue={setValue}
+                      stateFieldName="state"
+                      cityFieldName="city_town"
+                      zipcodeFieldName="zip_code"
+                      onStateChange={(state) =>
+                        console.log("State changed:", state)
+                      }
+                      onCityChange={(city) =>
+                        console.log("City changed:", city)
+                      }
+                      onZipcodeChange={(zipcode) =>
+                        console.log("Zipcode changed:", zipcode)
+                      }
                     />
                     <FormInput
                       name="street"
                       label="Street"
                       inputType="default"
-                      validationRules={{ required: requireError("Street") }}
-                      errorMessage={errors.street?.message}
+                      placeholder="Ex. 123 Sunset Blvd"
                       register={register}
-                    />
-                    <FormInput
-                      name="zip_code"
-                      label="Zip Code"
-                      inputType="default"
-                      register={register}
-                      errorMessage={errors.zip_code?.message}
-                      validationRules={{ valueAsNumber: true }}
+                      required
                     />
                   </>
                 ) : (

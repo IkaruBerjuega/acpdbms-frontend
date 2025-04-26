@@ -169,7 +169,7 @@ export default function TaskComments({
     projectId: projectId,
   });
 
-  const { data: commentsResponse, isLoading } = useGetSpecificTaskComments({
+  const { data: commentsResponse } = useGetSpecificTaskComments({
     taskId: taskId || "",
   });
 
@@ -221,21 +221,6 @@ export default function TaskComments({
     });
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex-grow flex-col-between-start ">
-        <div className="w-full text-sm text-slate-500 flex-grow flex-col-center ">
-          Loading messages...
-        </div>
-        <MessageInput
-          placeholder={""}
-          handleSend={handleSend}
-          focusOnInput={focusOnMessageInput}
-        />
-      </div>
-    );
-  }
-
   if (!comments) {
     return (
       <div className="flex-grow flex-col-between-start ">
@@ -252,7 +237,7 @@ export default function TaskComments({
   }
 
   return (
-    <div className="flex-grow flex-col-between-start min-h-0 py-1">
+    <div className="flex-grow flex-col-between-start min-h-0">
       <div className="w-full text-sm text-slate-500 flex-grow flex-col-start gap-4 overflow-y-auto ">
         {transformedComments.map((comment) => {
           return (

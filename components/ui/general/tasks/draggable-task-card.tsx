@@ -245,6 +245,23 @@ export default function TaskCard(props: TaskCardProps) {
     }
   }
 
+  const cannotSetToDo = ["in progress", "paused", "to do", "cancelled"];
+  const cannotSetToInProgress = [
+    "in progress",
+    "needs review",
+    "done",
+    "cancelled",
+  ];
+  const cannotSetToPause = [
+    "to do",
+    "needs review",
+    "paused",
+    "done",
+    "cancelled",
+  ];
+  const cannotSetToNeedsReview = ["needs review", "to do", "done", "cancelled"];
+  const cannotSetToDone = ["to do", "in progress", "paused", "cancelled"];
+
   const taskName =
     version > 0 ? (
       <div>
@@ -265,7 +282,7 @@ export default function TaskCard(props: TaskCardProps) {
       <div className="w-full flex-row-between-center">
         <div className="flex-row-start-center">
           <Badge className={`${phaseColor?.dark} ${phaseColor?.light} `}>
-            {phase_category}
+            {titleCase(phase_category)}
           </Badge>
           {isInNeedsReview && (
             <Badge className={` ${reviewStatus.color}`}>
@@ -287,6 +304,124 @@ export default function TaskCard(props: TaskCardProps) {
                 alt: "View Task Button",
                 isDialog: false,
                 href: detailsLink,
+              },
+              {
+                label: "Update Task",
+                iconSrc: "/button-svgs/table-action-edit.svg",
+                className: "",
+                alt: "Edit Task Button",
+                isDialog: false,
+                onClick: () => {},
+              },
+
+              ...(!cannotSetToDo.includes(status)
+                ? [
+                    {
+                      label: "Set to to do",
+                      iconSrc: "/button-svgs/checklist.svg",
+                      className: "",
+                      alt: "Set to To do  Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "to do",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
+
+              ...(!cannotSetToInProgress.includes(status)
+                ? [
+                    {
+                      label: "Set to ongoing",
+                      iconSrc: "/button-svgs/table-action-continue.svg",
+                      className: "",
+                      alt: "Continue/Set to Ongoing Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "in progress",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
+
+              ...(!cannotSetToPause.includes(status)
+                ? [
+                    {
+                      label: "Set to on-hold",
+                      iconSrc: "/button-svgs/table-action-onhold.svg",
+                      className: "",
+                      alt: "Set to Onhold Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "paused",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
+
+              ...(!cannotSetToNeedsReview.includes(status)
+                ? [
+                    {
+                      label: "Review",
+                      iconSrc: "/button-svgs/review.svg",
+                      className: "",
+                      alt: "Set to Review Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "needs review",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
+
+              ...(!cannotSetToDone.includes(status)
+                ? [
+                    {
+                      label: "Finish",
+                      iconSrc: "/button-svgs/table-action-finish.svg",
+                      className: "",
+                      alt: "Set to Done or Finish Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "done",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
+
+              {
+                label: "Cancel",
+                iconSrc: "/button-svgs/table-action-cancel.svg",
+                className: "",
+                alt: "Set to Cancel  Task Button",
+                isDialog: false,
+                onClick: () => {
+                  moveTask({
+                    id: id,
+                    droppedStatus: "cancelled",
+                    recentStatus: status,
+                  });
+                },
               },
             ]}
             btnVariant={"ghost"}

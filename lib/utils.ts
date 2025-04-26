@@ -236,8 +236,6 @@ export const getPhaseBadgeColor = (phases: string[]) => {
       dark: `text-${color}-600`,
     };
 
-    console.log(acc);
-
     return acc;
   }, {} as Record<string, { light: string; dark: string }>);
 };

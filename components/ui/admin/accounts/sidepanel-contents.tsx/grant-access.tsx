@@ -63,17 +63,6 @@ export default function GrantProjectAccess() {
     isArchived: false,
   });
 
-  //transform the data so that the project revisions can be in the main display
-  const transformedProjectList =
-    projectList?.flatMap((project) => {
-      const { revisions, ...mainProjectWithoutRevisions } = project;
-
-      // Just return the revisions as-is; they already don't have the `revisions` field
-      const flattenedRevisions = revisions ?? [];
-
-      return [mainProjectWithoutRevisions, ...flattenedRevisions];
-    }) || [];
-
   const selectedProjectId = watch("project_id");
   const { data: TeamDetails } = useTeamDetails(selectedProjectId);
 
@@ -199,7 +188,7 @@ export default function GrantProjectAccess() {
       setStep(step + 1);
     } else if (step === 2) {
       const isValid = await trigger("team");
-      console.log(projectId);
+
       if (!isValid) {
         return;
       }
@@ -232,7 +221,7 @@ export default function GrantProjectAccess() {
   };
 
   const projects: ItemInterface[] =
-    transformedProjectList?.map((project) => ({
+    projectList?.map((project) => ({
       value: project.id,
       label: project.project_title,
     })) || [];

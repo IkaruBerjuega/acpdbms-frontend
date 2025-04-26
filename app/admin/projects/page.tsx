@@ -15,10 +15,11 @@ export default async function Page({
 
   const url = isArchived ? "/projects-archived" : "/project-list";
 
-  const initialData: ProjectListResponseInterface[] = await serverRequestAPI({
-    url: url,
-    auth: true,
-  });
+  const initialData: ProjectListResponseInterface[] =
+    (await serverRequestAPI({
+      url: url,
+      auth: true,
+    })) || [];
 
   const breadCrumbs = [
     {

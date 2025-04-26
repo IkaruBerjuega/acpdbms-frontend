@@ -2,42 +2,25 @@ import { useCreateTableColumns } from "../../general/data-table-components/creat
 import { useProjectList } from "@/hooks/general/use-project";
 import ProjectCards from "../../general/data-table-components/project-cards";
 import { columns } from "./project-columns";
-import {
-  ProjectListResponseInterface,
-  RevisionInterface,
-} from "@/lib/definitions";
+import { ProjectListResponseInterface } from "@/lib/definitions";
 
-export default function Cards<T extends ProjectListResponseInterface>({
+export default function Cards({
   isArchived,
   initialData,
 }: {
   isArchived: boolean;
-  initialData: T[];
+  initialData: ProjectListResponseInterface[];
 }) {
-  const transformedColumns = useCreateTableColumns<RevisionInterface>(
-    columns,
-    "Projects"
-  );
+  const transformedColumns =
+    useCreateTableColumns<ProjectListResponseInterface>(columns, "Projects");
 
-  const { data: projectList, isLoading } = useProjectList<T>({
-    isArchived: isArchived,
-    initialData: initialData,
-  });
-
-  //transform the data so that the project revisions can be in the main display
-  const transformedProjectList =
-    projectList?.flatMap((project) => {
-      const { revisions, ...mainProjectWithoutRevisions } = project;
-
-      // Just return the revisions as-is; they already don't have the `revisions` field
-      const flattenedRevisions = revisions ?? [];
-
-      return [mainProjectWithoutRevisions, ...flattenedRevisions];
-    }) || [];
+  const { data: projectList, isLoading } =
+    useProjectList<ProjectListResponseInterface>({
+      isArchived: isArchived,
+      initialData: initialData,
+    });
 
   if (isLoading) return <p>Loading...</p>;
   if (!projectList) return <>No Projects Yet</>;
-  return (
-    <ProjectCards columns={transformedColumns} data={transformedProjectList} />
-  );
+  return <ProjectCards columns={transformedColumns} data={projectList} />;
 }

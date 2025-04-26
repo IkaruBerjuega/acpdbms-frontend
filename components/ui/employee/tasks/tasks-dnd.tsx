@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import TaskColumn from "./task-columns";
@@ -8,15 +8,10 @@ import {
   useGetTasks,
   useTaskActions,
 } from "@/hooks/api-calls/employee/use-tasks";
-import { useCreateTableColumns } from "../../general/data-table-components/create-table-columns";
-import { useCustomTable } from "../../general/data-table-components/custom-tanstack";
 import { getPhaseBadgeColor, requireError } from "@/lib/utils";
-import FilterPopOver from "../../general/data-table-components/filter-components/filter-popover";
-import { LuFilter } from "react-icons/lu";
 import { DialogNoBtn } from "../../dialog";
 import { toast } from "@/hooks/use-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import { ColumnInterfaceProp } from "@/lib/definitions";
 import {
   ReviewTaskRequest,
   TASK_STATUSES,
@@ -26,13 +21,22 @@ import {
 } from "@/lib/tasks-definitions";
 import { useForm } from "react-hook-form";
 import FormInput from "../../general/form-components/form-input";
+import { ButtonTasksDndFilter } from "./tasks-dnd-filters";
 
 export default function TasksDND({
   projectId,
   view,
+  query,
+  phaseFilters,
+  memberFilters,
+  dateFilter,
 }: {
   projectId: string;
   view: "general" | "assigned" | null;
+  query: string | null;
+  phaseFilters: string | null;
+  memberFilters: string | null;
+  dateFilter: string | null;
 }) {
   const isGeneral = view === "general";
 
@@ -43,7 +47,68 @@ export default function TasksDND({
     isGeneral,
   });
 
-  const tasks = taskList?.tasks;
+  const tasks = useMemo(() => {
+    let tasks: TaskItem[] = taskList?.tasks || [];
+    if (query) {
+      const filteredList =
+        tasks.filter((task) =>
+          Object.values(task).some((value) =>
+            String(value).toLowerCase().includes(query.toLowerCase())
+          )
+        ) || [];
+      tasks = filteredList;
+    }
+
+    if (phaseFilters) {
+      const filters = phaseFilters.split("_");
+
+      const filteredList =
+        tasks.filter((task) => filters.includes(task.phase_category)) || [];
+
+      tasks = filteredList;
+    }
+
+    if (memberFilters) {
+      const filters = memberFilters.split("_");
+
+      const filteredList =
+        tasks.filter((task) =>
+          task.assigned_team_members.some((member) =>
+            filters.includes(member.full_name)
+          )
+        ) || [];
+
+      tasks = filteredList;
+    }
+
+    if (dateFilter) {
+      const filteredList = tasks.filter((task) => {
+        if (dateFilter === "due_today") {
+          return task.remaining_duration <= 1;
+        }
+
+        if (dateFilter === "due_in_3_days") {
+          return task.remaining_duration <= 3;
+        }
+
+        if (dateFilter === "due_in_7_days") {
+          return task.remaining_duration <= 7;
+        }
+
+        if (dateFilter === "due_in_14_days") {
+          return task.remaining_duration <= 14;
+        }
+
+        if (dateFilter === "due_in_30_days") {
+          return task.remaining_duration <= 30;
+        }
+      });
+
+      tasks = filteredList;
+    }
+
+    return tasks;
+  }, [taskList, query, phaseFilters, memberFilters, dateFilter]);
 
   const phases: string[] = [
     ...new Set(
@@ -53,92 +118,13 @@ export default function TasksDND({
     ),
   ];
 
-  const columns: ColumnInterfaceProp[] = [
-    { id: "id", filterFn: false },
-    {
-      accessorKey: "phase_category",
-      meta: {
-        filter_name: "Phase",
-        filter_type: "select",
-        filter_options: phases,
-        filter_columnAccessor: "phase_category",
-      },
-    },
-    {
-      accessorKey: "task_name",
-      meta: {
-        filter_name: "Task Name",
-        filter_type: "text",
-        filter_columnAccessor: "task_name",
-      },
-    },
-    {
-      accessorKey: "task_description",
-      meta: {
-        filter_name: "Task Description",
-        filter_type: "text",
-        filter_columnAccessor: "task_description",
-      },
-    },
-    {
-      accessorKey: "status",
-      meta: {
-        filter_name: "Status",
-        filter_type: "select",
-        filter_options: [
-          "To Do",
-          "In Progress",
-          "Paused",
-          "Needs Review",
-          "Done",
-        ],
-        filter_columnAccessor: "status",
-      },
-    },
-    {
-      accessorKey: "total_duration",
-      meta: {
-        filter_name: "Total Duration",
-        filter_type: "number",
-        filter_columnAccessor: "total_duration",
-      },
-    },
-    {
-      accessorKey: "remaining_duration",
-      meta: {
-        filter_name: "Remaining Duration",
-        filter_type: "number",
-        filter_columnAccessor: "remaining_duration",
-      },
-    },
-    {
-      accessorKey: "task_comments_count",
-      filterFn: false,
-    },
-    {
-      accessorKey: "versions",
-      filterFn: false,
-    },
-  ];
-
-  const transformedColumns = useCreateTableColumns<TaskItem>(
-    columns,
-    "Projects"
-  );
-
-  const { table, filterComponents, filters } = useCustomTable<TaskItem>(
-    tasks ?? [],
-    transformedColumns,
-    undefined
-  );
-
-  const plainTasks = table.getRowModel().rows.map((row) => row.original);
   const phaseColors = getPhaseBadgeColor(phases);
 
-  const convertedTasks: TaskItemProps[] = plainTasks.map((task) => ({
-    ...task,
-    phaseColor: phaseColors[task.phase_category], // Explicitly add phaseColor
-  }));
+  const convertedTasks: TaskItemProps[] =
+    tasks?.map((task) => ({
+      ...task,
+      phaseColor: phaseColors[task.phase_category], // Explicitly add phaseColor
+    })) || [];
 
   //actions
   const [open, setOpen] = useState<boolean>(false);
@@ -367,21 +353,10 @@ export default function TasksDND({
 
   return (
     <DndProvider backend={HTML5Backend}>
+      <div className="w-full">
+        <ButtonTasksDndFilter />
+      </div>
       <div className="w-full flex-col-start overflow-x-auto min-h-0 flex-grow">
-        <div className="flex flex-wrap flex-col w-full h-auto gap-2">
-          <div className="w-full flex-row-between-center">
-            <FilterPopOver
-              width="w-auto"
-              content={filters}
-              popoverName="+"
-              icon={<LuFilter className="text-xs md:text-lg" />}
-            />
-          </div>
-
-          <div className="flex flex-wrap flex-row gap-2 w-full h-auto transition-all duration-200 ease-in-out">
-            {filterComponents}
-          </div>
-        </div>
         <div className="flex-grow flex-row-start mt-4 ">
           {TASK_STATUSES.map((status) => {
             if (status === "cancelled") return;

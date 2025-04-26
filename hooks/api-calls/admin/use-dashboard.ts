@@ -23,6 +23,7 @@ export const useDashboard = () => {
       queryClient.refetchQueries({
         queryKey: ['online-users'],
         active: true,
+
       });
     }, 60000);
 

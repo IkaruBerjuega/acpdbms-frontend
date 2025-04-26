@@ -36,6 +36,5 @@ export interface UnseenNotificationCount {
 export interface NotificationFilters {
   filter: "today" | "last_3_days" | "last_7_days" | "last_30_days" | "all";
   page: string;
-
   role: "admin" | "employee" | "client";
 }

@@ -53,7 +53,6 @@ export default async function SettingsPage({
       <div className="flex items-center">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
       </div>
-
       <AccountSettings activeTab={activeTab} role="client" />
     </main>
   );
