@@ -397,10 +397,10 @@ export default function ClientAccView({
                         name={project.project_title}
                         address={project.location}
                         endDate={String(project.end_date)}
-                        id={id}
                         edit={isEdit}
                         canDelete={true}
                         image={project.image_url}
+                        role="client"
                       />
                     ))}
                   </div>
@@ -435,10 +435,10 @@ export default function ClientAccView({
                         name={project.project_title}
                         address={project.location}
                         endDate={String(project.end_date)}
-                        id={id}
                         edit={isEdit}
                         canDelete={true}
                         image={project.image_url}
+                        role="client"
                       />
                     ))}
                   </div>

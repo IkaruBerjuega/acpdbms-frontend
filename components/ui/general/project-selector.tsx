@@ -33,13 +33,17 @@ export function ProjectSelector({
   projId: string | null;
 }) {
   const { data: projects } = useAssociatedProjects({ role: role });
-  const { setData } = useProjectSelectStore();
+  const {
+    data: tempProjectSelected,
+    setData,
+    resetData: resetProjectSelectStore,
+  } = useProjectSelectStore();
 
-  const projectId = projId?.split("_")[0];
+  const projectId = projId?.split("_")[0] || tempProjectSelected[0]?.projectId;
 
   const { params } = useQueryParams();
 
-  const hasProjectId = !!projectId;
+  const hasProjectId = !!projectId || !!tempProjectSelected[0]?.projectId;
 
   const pathname = usePathname();
 
@@ -66,10 +70,8 @@ export function ProjectSelector({
       const parsedProject: ProjectSelectorProps = JSON.parse(savedProject);
       setData([{ ...parsedProject }]);
 
-      if (!hasProjectId) {
-        const projectQueryParam = `${parsedProject.projectId}_${parsedProject.projectName}`;
-        createQueryString(projectQueryParam);
-      }
+      const projectQueryParam = `${parsedProject.projectId}_${parsedProject.projectName}`;
+      createQueryString(projectQueryParam);
     }
   }, [hasProjectId]);
 
@@ -104,7 +106,8 @@ export function ProjectSelector({
     }
   }
 
-  const projectName = projId?.split("_")[1];
+  const projectName =
+    projId?.split("_")[1] || tempProjectSelected[0]?.projectName;
 
   const btnCollapseSrc = "/button-svgs/sidepanel-close.svg";
 
@@ -116,6 +119,7 @@ export function ProjectSelector({
         if (isOpen) {
           localStorage.removeItem("projectSelected");
           deleteProjectIdQuery();
+          resetProjectSelectStore();
           setOpen(true);
           return;
         }

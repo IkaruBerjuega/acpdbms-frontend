@@ -60,8 +60,13 @@ const AccountActions = <T extends AccountsTableType>({
     queryClient.invalidateQueries({ queryKey: [queryKey] });
   };
 
-  const { sendReset, deactivateAcc, archiveAcc, activateAcc } =
-    useAccountActions<AccountActionsRequest>();
+  const {
+    sendReset,
+    deactivateAcc,
+    archiveAcc,
+    activateAcc,
+    deleteArchivedAccount,
+  } = useAccountActions({ userId: String(user_id) });
 
   const actions = {
     sendReset: {
@@ -93,7 +98,11 @@ const AccountActions = <T extends AccountsTableType>({
       message:
         "Reactivating this account will restore access. Confirm to proceed.",
     },
-    undefined: null,
+    delete: {
+      title: "Delete Account",
+      action: deleteArchivedAccount,
+      message: "Do you confirm on deleting this account",
+    },
   };
 
   const { paramsKey } = useQueryParams<{
@@ -119,28 +128,35 @@ const AccountActions = <T extends AccountsTableType>({
     const message = actions[action].message;
     const queryKey = queryKeys[role];
 
-    const body =
-      action === "sendReset" ? { email: email } : { user_ids: [user_id] };
+    const body: AccountActionsRequest | null =
+      action === "sendReset"
+        ? { email: email }
+        : action === "delete"
+        ? null
+        : { user_ids: [user_id] };
 
-    actionFn.mutate(body, {
-      onSuccess: (response: {
-        message?: string;
-        skipped_clients?: { message: string };
-      }) => {
-        if (response.skipped_clients) {
-          const error = {
-            message:
-              "The selected account is not deactivated because it linked to an ongoing project",
-          };
-          onError(error, title, message, queryKey);
+    actionFn.mutate(
+      body as any, // eslint-disable-line
+      {
+        onSuccess: (response: {
+          message?: string;
+          skipped_clients?: { message: string };
+        }) => {
+          if (response.skipped_clients) {
+            const error = {
+              message:
+                "The selected account is not deactivated because it linked to an ongoing project",
+            };
+            onError(error, title, message, queryKey);
 
-          return;
-        }
-        onSuccess(response, title, message, queryKey);
-      },
-      onError: (error: { message?: string }) =>
-        onError(error, title, message, queryKey),
-    });
+            return;
+          }
+          onSuccess(response, title, message, queryKey);
+        },
+        onError: (error: { message?: string }) =>
+          onError(error, title, message, queryKey),
+      }
+    );
     resetData();
   };
 
@@ -213,18 +229,33 @@ const AccountActions = <T extends AccountsTableType>({
           />
         </>
       ) : isStatusArchived ? (
-        <ButtonIconTooltipDialog
-          iconSrc={"/button-svgs/table-action-unarchive.svg"}
-          alt={"unarhive account button"}
-          tooltipContent={"Unarchive Account"}
-          dialogTitle={"Unarchive Account"}
-          dialogDescription={"Do you confirm to unarchive this account?"}
-          dialogContent={<DialogContent />}
-          className="bg-green-600 hover:!bg-green-700"
-          submitType={"button"}
-          submitTitle="Confirm"
-          onClick={() => onClick({ action: "unarchive" })}
-        />
+        <>
+          {" "}
+          <ButtonIconTooltipDialog
+            iconSrc={"/button-svgs/table-action-unarchive.svg"}
+            alt={"unarhive account button"}
+            tooltipContent={"Unarchive Account"}
+            dialogTitle={"Unarchive Account"}
+            dialogDescription={"Do you confirm to unarchive this account?"}
+            dialogContent={<DialogContent />}
+            className="bg-green-600 hover:!bg-green-700"
+            submitType={"button"}
+            submitTitle="Confirm"
+            onClick={() => onClick({ action: "unarchive" })}
+          />
+          <ButtonIconTooltipDialog
+            iconSrc={"/button-svgs/trash-white.svg"}
+            alt={"delete account button"}
+            tooltipContent={"Delete Account"}
+            dialogTitle={"Delete Account"}
+            dialogDescription={"Do you confirm to delete this account?"}
+            dialogContent={<DialogContent />}
+            submitType={"button"}
+            submitTitle="Confirm"
+            className="bg-black-secondary hover:!bg-black-primary"
+            onClick={() => onClick({ action: "delete" })}
+          />
+        </>
       ) : isStatusPending ? (
         <>
           <ButtonIconTooltipDialog

@@ -96,7 +96,7 @@ export function AdminTools() {
               Update your site logo to reflect your brand identity.
             </p>
           </div>
-          <LogoUpload />
+          <LogoUpload logoUrl={logo} />
         </CardHeader>
         <CardContent>
           {isLogoLoading ? (
@@ -108,8 +108,8 @@ export function AdminTools() {
           ) : (
             <div className="flex items-center justify-center bg-gray-100 p-4 rounded-md">
               <Image
-                src={logo || "/placeholder.svg"}
-                className="max-h-64 object-cover rounded-md"
+                src={logo || "/system-component-images/logo-placeholder.webp"}
+                className="object-contain w-fit h-fit rounded-md"
                 alt="Site Logo"
                 width={1000}
                 height={1000}

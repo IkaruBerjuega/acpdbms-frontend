@@ -40,6 +40,7 @@ interface FormInputType<T extends FieldValues> {
   fieldBg?: string;
   borderNone?: boolean;
   clearFn?: () => void;
+  initialPopoverState?: boolean;
 }
 
 export default function FormInput<T extends FieldValues>({
@@ -66,6 +67,7 @@ export default function FormInput<T extends FieldValues>({
   borderNone,
   clearFn,
   inputType = "default",
+  initialPopoverState,
 }: FormInputType<T>) {
   const isSearch = inputType === "search";
   const isDate = inputType === "date";
@@ -104,6 +106,7 @@ export default function FormInput<T extends FieldValues>({
                 emptyMessage={placeholder || ""}
                 value={value || ""}
                 onBlur={onBlur}
+                initialPopoverState={initialPopoverState}
                 allowNewValue={allowedNewValue}
                 disabled={disabled}
                 clearFn={clearFn}

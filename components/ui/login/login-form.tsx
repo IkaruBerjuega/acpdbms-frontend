@@ -93,7 +93,7 @@ export default function LoginForm() {
       interval = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
-    } else if (timeLeft === 0) {
+    } else if (timeLeft <= 0) {
       setCanResend(true);
     }
 

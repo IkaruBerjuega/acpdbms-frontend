@@ -57,7 +57,7 @@ export default function AccountsTableHeaderActions({
 
   // Archive accounts logic
   const { data, resetData } = useCheckboxStore();
-  const { archiveAcc } = useAccountActions();
+  const { archiveAcc } = useAccountActions({ userId: "" });
   const { mutate } = archiveAcc;
 
   const generateReportConfig = {

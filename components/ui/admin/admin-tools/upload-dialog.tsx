@@ -5,7 +5,7 @@ import {
   DialogDescription,
   DialogTitle,
   DialogTrigger,
-} from '../../dialog';
+} from "../../dialog";
 
 export function UploadDialog({
   title,
@@ -14,6 +14,7 @@ export function UploadDialog({
   open,
   onOpenChange,
   trigger,
+  showCloseButton = true,
 }: {
   title: string;
   description: string;
@@ -21,11 +22,15 @@ export function UploadDialog({
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   trigger: React.ReactNode;
+  showCloseButton?: boolean;
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent className='sm:max-w-[500px] max-h-[90vh] overflow-y-auto'>
+      <DialogContent
+        className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto"
+        showCloseButton={showCloseButton}
+      >
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>

@@ -3,6 +3,12 @@
 import { useApiMutation, useApiQuery } from "@/hooks/tanstack-query";
 import { UserBasicInfo } from "@/lib/definitions";
 import {
+  AccountActionSchemaType,
+  AccountSendLinkSchemaType,
+  addClientAccountRequest,
+  addEmpAccountRequest,
+} from "@/lib/form-constants/form-constants";
+import {
   ResetPasswordRequestByUser,
   ValidateTokenRequest,
 } from "@/lib/user-definitions";
@@ -50,22 +56,22 @@ export const useUniquePositions = () => {
   });
 };
 
-export const useAccountActions = <T>() => {
-  const deactivateAcc = useApiMutation<T>({
+export const useAccountActions = ({ userId }: { userId?: string }) => {
+  const deactivateAcc = useApiMutation<AccountActionSchemaType>({
     url: "/users/deactivate",
     method: "PATCH",
     contentType: "application/json",
     auth: true,
   });
 
-  const archiveAcc = useApiMutation<T>({
+  const archiveAcc = useApiMutation<AccountActionSchemaType>({
     url: "/users/archive",
     method: "PATCH",
     contentType: "application/json",
     auth: true,
   });
 
-  const activateAcc = useApiMutation<T>({
+  const activateAcc = useApiMutation<AccountActionSchemaType>({
     url: "/users/activate",
     method: "PATCH",
     contentType: "application/json",
@@ -73,7 +79,7 @@ export const useAccountActions = <T>() => {
   });
 
   //client add
-  const addClient = useApiMutation<T>({
+  const addClient = useApiMutation<addClientAccountRequest>({
     url: "/clients",
     method: "POST",
     contentType: "application/json",
@@ -81,14 +87,14 @@ export const useAccountActions = <T>() => {
   });
 
   //employee add
-  const addEmployee = useApiMutation<T>({
+  const addEmployee = useApiMutation<addEmpAccountRequest>({
     url: "/employees",
     method: "POST",
     contentType: "application/json",
     auth: true,
   });
 
-  const sendReset = useApiMutation<T>({
+  const sendReset = useApiMutation<AccountSendLinkSchemaType>({
     url: "/password-reset/send-link",
     method: "POST",
     contentType: "application/json",
@@ -109,6 +115,13 @@ export const useAccountActions = <T>() => {
     auth: false,
   });
 
+  const deleteArchivedAccount = useApiMutation<null>({
+    url: `/users/${userId}/delete-archived`,
+    method: "DELETE",
+    contentType: "application/json",
+    auth: true,
+  });
+
   return {
     sendReset,
     deactivateAcc,
@@ -118,5 +131,6 @@ export const useAccountActions = <T>() => {
     addEmployee,
     verifyToken,
     resetPassword,
+    deleteArchivedAccount,
   };
 };

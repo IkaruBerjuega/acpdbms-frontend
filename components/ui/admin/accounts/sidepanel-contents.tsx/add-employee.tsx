@@ -33,7 +33,7 @@ export default function AddEmployee() {
   });
 
   //api
-  const { addEmployee } = useAccountActions();
+  const { addEmployee } = useAccountActions({ userId: "" });
 
   const { mutate, isLoading } = addEmployee;
 

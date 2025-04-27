@@ -1,5 +1,6 @@
 // use-location-selector.ts
 import axios from "axios";
+import { Dispatch, SetStateAction } from "react";
 
 export interface StateItem {
   name: string;
@@ -93,7 +94,9 @@ export async function getUSStates(): Promise<StateItem[]> {
   }
 }
 
-export async function getCitiesForState(state: string): Promise<CityItem[]> {
+export async function getCitiesForState(
+  state: string
+): Promise<CityItem[] | null> {
   try {
     const response = await axios.post(
       "https://countriesnow.space/api/v0.1/countries/state/cities",
@@ -103,29 +106,31 @@ export async function getCitiesForState(state: string): Promise<CityItem[]> {
     return cityNames.map((name) => ({ name }));
   } catch (error) {
     console.error("Error fetching cities:", error);
-    return [];
+    return null;
   }
 }
 
 export async function getZipcodesForCity(
   state: string,
   city: string
-): Promise<string[]> {
+): Promise<{ response: string[]; error: boolean }> {
   try {
     const stateCode = stateNameToCode[state];
     if (!stateCode) {
       console.error("No state code found for", state);
-      return [];
+      return { response: [], error: false };
     }
     const response = await axios.get<ZipInfo>(
       `http://api.zippopotam.us/us/${stateCode}/${encodeURIComponent(city)}`
     );
-    return response.data.places?.map((p) => p["post code"]) ?? [];
+
+    const _response = response.data.places?.map((p) => p["post code"]) ?? [];
+
+    return { response: _response, error: false };
   } catch (error: unknown) {
     if (axios.isAxiosError(error) && error.response?.status === 404) {
-      return [];
+      return { response: [], error: true };
     }
-    console.error("Error fetching zip codes:", error);
-    return [];
+    return { response: [], error: true };
   }
 }

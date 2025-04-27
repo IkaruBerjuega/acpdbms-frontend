@@ -32,7 +32,7 @@ export default function PasswordResetForm({
     formState: { errors },
   } = methods;
 
-  const { resetPassword } = useAccountActions();
+  const { resetPassword } = useAccountActions({ userId: "" });
 
   const [isNoticePage, setToNoticePage] = useState<boolean>(false);
 
@@ -123,7 +123,10 @@ export default function PasswordResetForm({
               variant={"default"}
             />
 
-            <Link href={"/login"} className="text-xs text-slate-500 mt-10">
+            <Link
+              href={"/login"}
+              className="text-xs text-slate-500 mt-10 w-full flex-col-center"
+            >
               Go To Login
             </Link>
           </form>

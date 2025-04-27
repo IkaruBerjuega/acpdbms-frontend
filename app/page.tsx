@@ -5,17 +5,45 @@ import Hero from "@/components/ui/homepage/hero";
 import Navbar from "@/components/ui/homepage/navbar";
 import Process from "@/components/ui/homepage/process";
 import RecentProjects from "@/components/ui/homepage/recent-projects";
+import serverRequestAPI from "@/hooks/server-request";
+import {
+  DynamicContactSchema,
+  LogoResponse,
+  RecentProjectsResponse,
+} from "@/lib/definitions";
 
-export default function Home() {
+export default async function Home() {
+  const logoResponse: LogoResponse = await serverRequestAPI({
+    url: "/settings/logo",
+    auth: false,
+  });
+
+  const contactDetailsResponse: DynamicContactSchema = await serverRequestAPI({
+    url: "/contact-details",
+    auth: false,
+  });
+
+  const recentProjectImagesResponse: RecentProjectsResponse =
+    await serverRequestAPI({
+      url: "/recent-projects",
+      auth: false,
+    });
+
+  const logoUrl = logoResponse.logo_url;
+
+  const contactDetails = contactDetailsResponse.contact_details;
+
+  const recentProjectImages = recentProjectImagesResponse.recent_project_images;
+
   return (
     <main className="relative">
       <Navbar />
-      <Hero />
+      <Hero logoUrl={logoUrl} />
       <About />
       <Process />
-      <RecentProjects />
+      <RecentProjects images={recentProjectImages} />
       <ContactForm />
-      <Footer />
+      <Footer logoUrl={logoUrl} contactDetails={contactDetails} />
     </main>
   );
 }

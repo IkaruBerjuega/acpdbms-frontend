@@ -142,11 +142,6 @@ export default function ProjectDetails() {
               stateFieldName="state"
               cityFieldName="city_town"
               zipcodeFieldName="zip_code"
-              onStateChange={(state) => console.log("State changed:", state)}
-              onCityChange={(city) => console.log("City changed:", city)}
-              onZipcodeChange={(zipcode) =>
-                console.log("Zipcode changed:", zipcode)
-              }
             />
             <FormInput
               name="street"

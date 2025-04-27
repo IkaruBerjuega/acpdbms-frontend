@@ -1,6 +1,5 @@
 "use client";
 import { useForm, type SubmitHandler, FormProvider } from "react-hook-form";
-import { MdEmail } from "react-icons/md";
 import { CardFooter } from "../../card";
 import { Input } from "../../input";
 import { ConfirmDialog } from "./confirm-dialog";
@@ -11,20 +10,21 @@ import { useQueryParams } from "@/hooks/use-query-params";
 import { usePathname, useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSettingsActions } from "@/hooks/general/use-admin-settings";
+import { PiAddressBookTabsFill } from "react-icons/pi";
 
-interface EmailFormData {
-  email: string;
+interface AddressFormData {
+  address: string;
 }
 
-export function EmailSettings({ email }: { email: ContactDetails[] }) {
+export function Address({ address }: { address: ContactDetails[] }) {
   const queryClient = useQueryClient();
   const { paramsKey, params } = useQueryParams();
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const methods = useForm<EmailFormData>({
+  const methods = useForm<AddressFormData>({
     mode: "onBlur",
-    defaultValues: { email: email[0]?.value || "" },
+    defaultValues: { address: address[0]?.value || "" },
   });
 
   const { storeContactDetails } = useSettingsActions();
@@ -42,7 +42,7 @@ export function EmailSettings({ email }: { email: ContactDetails[] }) {
   const toggleEdit = (enable: boolean) => {
     if (enable) {
       params.set("edit_email", "true");
-      reset({ email: email[0]?.value || "" });
+      reset({ address: address[0]?.value || "" });
     } else {
       params.delete("edit_email");
     }
@@ -58,19 +58,19 @@ export function EmailSettings({ email }: { email: ContactDetails[] }) {
     queryClient.invalidateQueries({ queryKey: ["siteContactDetails"] });
     toggleEdit(false);
 
-    const email = response.contact_details.find(
+    const address = response.contact_details.find(
       (contactDetail) => contactDetail.type === "email"
     );
     reset({
-      email: email?.value,
+      address: address?.value,
     });
   };
 
-  const processForm: SubmitHandler<EmailFormData> = (data) => {
+  const processForm: SubmitHandler<AddressFormData> = (data) => {
     storeContactDetails.mutate(
       {
         contact_details: [
-          { id: email[0]?.id, type: "email", value: data.email },
+          { id: address[0]?.id, type: "address", value: data.address },
         ],
       },
       {
@@ -94,38 +94,34 @@ export function EmailSettings({ email }: { email: ContactDetails[] }) {
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(processForm)}>
         <ContactSection
-          title="Email Address"
+          title="Address"
           onEdit={() => toggleEdit(!isEditing)}
           isEditing={isEditing}
-          isEmpty={!email?.length}
+          isEmpty={!address?.length}
         >
           {!isEditing ? (
             <div className="flex items-center gap-2 text-sm">
-              <MdEmail className="h-4 w-4 text-muted-foreground" />
-              <span>{email[0]?.value || "No email set"}</span>
+              <PiAddressBookTabsFill className="h-4 w-4 text-muted-foreground" />
+              <span>{address[0]?.value || "No address set"}</span>
             </div>
           ) : (
             <>
               <Input
-                placeholder="Enter email address"
-                {...register("email", {
-                  required: "Email is required",
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: "Invalid email address",
-                  },
+                placeholder="Enter address address"
+                {...register("address", {
+                  required: "Address is required",
                 })}
                 disabled={isSubmitting}
               />
-              {errors.email && (
+              {errors.address && (
                 <p className="text-sm text-destructive">
-                  {errors.email.message}
+                  {errors.address.message}
                 </p>
               )}
               <CardFooter className="px-0 pt-4">
                 <ConfirmDialog
-                  title="Update Email"
-                  description="Do you confirm to update the email address?"
+                  title="Update Address"
+                  description="Do you confirm to update the business address?"
                   onConfirm={handleSubmit(processForm)}
                   disabled={isSubmitting}
                 />

@@ -10,7 +10,7 @@ export function LoadingCircle({
   borderWidth = 2,
 }: LoadingCircleProps) {
   return (
-    <div
+    <span
       className={`animate-spin rounded-full border-t-transparent border-white-primary ${color}`}
       style={{
         width: size,

@@ -2,11 +2,16 @@
 import { useAdminSettings } from "@/hooks/general/use-admin-settings";
 import type { Project } from "../admin/settings/admin-tools";
 import { ProjectCarousel } from "./recent-project-carousel";
+import { RecentProjectsResponse } from "@/lib/definitions";
 
-export default function RecentProjects() {
+export default function RecentProjects({
+  images,
+}: {
+  images: RecentProjectsResponse["recent_project_images"];
+}) {
   const { recentImagesQuery } = useAdminSettings();
   const { data: recentProjectsData } = recentImagesQuery;
-  const projects: Project[] = recentProjectsData?.recent_project_images || [];
+  const projects: Project[] = images || [];
   const recentProjectsMessage =
     recentProjectsData?.message || "No recent projects yet.";
 

@@ -9,7 +9,7 @@ import {
   ProjectUpdateRequest,
 } from "@/lib/form-constants/project-constants";
 import { Separator } from "@/components/ui/separator";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonIconTooltipDialog } from "@/components/ui/button";
 import {
   Calendar,
   Edit,
@@ -59,6 +59,7 @@ import { Checkbox } from "../checkbox";
 import Profile from "./profile";
 import { StatusNotice } from "../hover-card";
 import USLocationSelector from "./location-selector";
+import { useProjectSelectStore } from "@/hooks/states/create-store";
 
 interface ProjectDetails {
   id: string;
@@ -210,6 +211,8 @@ function ProjectDetails({
     }
   };
 
+  const canEdit = status !== "archived" && status !== "finished";
+
   return (
     <Card className="border-none shadow-md  h-fit ">
       <CardContent className="system-padding">
@@ -231,7 +234,7 @@ function ProjectDetails({
                 height={1000}
                 className="object-cover h-full w-full"
               />
-              {isHovered && isAdmin && (
+              {isHovered && isAdmin && canEdit && (
                 <div className="absolute inset-0 flex items-center justify-center hover:bg-primary hover:bg-opacity-60">
                   <p className="text-sm text-secondary font-bold">
                     Change Photo
@@ -269,7 +272,7 @@ function ProjectDetails({
               </div>
             </div>
           </div>
-          {!isEdit && isAdmin && (
+          {!isEdit && isAdmin && canEdit && (
             <Button
               className="bg-maroon-600 hover:bg-maroon-700 text-white self-start"
               onClick={handleEdit}
@@ -294,7 +297,7 @@ function ProjectDetails({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 ml-6 gap-6">
-                {isEdit ? (
+                {isEdit && canEdit ? (
                   <>
                     <FormInput
                       name="client_name"
@@ -375,7 +378,7 @@ function ProjectDetails({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 ml-6 gap-6">
-                {isEdit ? (
+                {isEdit && canEdit ? (
                   <>
                     <USLocationSelector
                       control={control}
@@ -459,7 +462,7 @@ function ProjectDetails({
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 ml-6 gap-6">
-                {isEdit ? (
+                {isEdit && canEdit ? (
                   <>
                     <FormInput
                       name="start_date"
@@ -569,7 +572,7 @@ function ProjectDetails({
               </div>
             </div>
 
-            {isEdit && (
+            {isEdit && canEdit && (
               <div className="flex justify-end gap-3 ">
                 <Button
                   type="button"
@@ -604,17 +607,32 @@ function Member({
   props,
   hasPermission,
   toggleVicePermission,
+  deactivateMemberFromProject,
+  userRole,
 }: {
   props: TeamMemberDashboard;
   hasPermission?: boolean;
   toggleVicePermission?: () => void;
+  deactivateMemberFromProject: (teamMemberId: string) => void;
+  userRole: "Project Manager" | "Vice Manager" | "Member" | undefined;
 }) {
+  //team member role (pov of user)
   const isProjectManager = props.role === "Project Manager";
   const isViceManager = props.role === "Vice Manager";
 
+  //user role in the project check
+  const isUserProjectManager = userRole === "Project Manager";
+  const isUserViceManager = userRole === "Vice Manager";
+  const isUserMember = userRole === "Member";
+
+  const canDeactivateMember = !isUserViceManager && !isUserMember;
+
+  const memberCardIsForProjectManager =
+    isProjectManager && isUserProjectManager;
+
   return (
     <Card className="">
-      <CardContent className="p-6 min-h-[200px] shadow-md border-none flex-col-between-start">
+      <CardContent className="p-6 h-full xl:min-h-[200px] shadow-md border-none flex-col-between-start relative">
         <div className="mb-5 w-full">
           <div>
             <div className="flex-row-start-center gap-2 ">
@@ -651,7 +669,7 @@ function Member({
             <div className="flex items-center">
               <MdOutlinePhoneEnabled className="h-4 w-4 text-slate-500 mr-2" />
               <span className="text-sm font-medium text-slate-700">
-                {props.phone_number}
+                {props.phone_number || "Not set yet"}
               </span>
             </div>
           </div>
@@ -722,6 +740,22 @@ function Member({
             </AccordionItem>
           )}
         </Accordion>
+
+        {canDeactivateMember && !memberCardIsForProjectManager && (
+          <ButtonIconTooltipDialog
+            iconSrc={"/button-svgs/table-action-remove.svg"}
+            alt={"remove account from project button"}
+            tooltipContent={"Deactivate account from project"}
+            dialogTitle={"Remove Account"}
+            dialogDescription={`Do you confirm to deactivate this team member from the project?`}
+            submitType={"button"}
+            submitTitle="Confirm"
+            className="h-fit border-none absolute top-2 right-2"
+            onClick={() =>
+              deactivateMemberFromProject(String(props.teammember_id))
+            }
+          />
+        )}
       </CardContent>
     </Card>
   );
@@ -736,9 +770,35 @@ function TeamMembers({
 }) {
   const { data, isLoading } = useTeamDetailsForDashboard(id, teamInitialData);
   const { data: hasPermission } = useCheckViceManagerPermission(id);
-  const { toggleVicePermission } = useProjectActions(id);
+  const [teamMemberId, setteamMemberId] = useState<string>("");
+  const { toggleVicePermission, deactivateUsersFromTeam } = useProjectActions(
+    id,
+    teamMemberId
+  );
+  const { data: userProjectSelected } = useProjectSelectStore();
+
+  const userRoleInSelectedProject = userProjectSelected[0]?.userRole;
 
   const queryClient = useQueryClient();
+
+  const handleDeactivateUserFromTeam = (teamMemberId: string) => {
+    setteamMemberId(teamMemberId);
+    deactivateUsersFromTeam.mutate(null, {
+      onSuccess: (response: { message: string }) => {
+        toast({ title: "Deactivate Member", description: response.message });
+        queryClient.invalidateQueries({
+          queryKey: [`team-details-dashboard`, id],
+        });
+      },
+      onError: (response: { message: string }) => {
+        toast({
+          title: "Deactivate Member",
+          description: response.message,
+          variant: "destructive",
+        });
+      },
+    });
+  };
 
   const handletoggleVicePermission = () => {
     toggleVicePermission.mutate(null, {
@@ -795,24 +855,39 @@ function TeamMembers({
   return (
     <div className="w-full h-full space-y-2 ">
       <Card className="border-none shadow-md">
-        <CardContent className="p-2 ">
+        <CardContent className="system-padding py-2">
           <div className="flex items-center">
             <AiOutlineTeam className="h-5 w-5 text-maroon-600 mr-2" />
             <h2 className="font-semibold text-lg text-maroon-600">Team</h2>
           </div>
         </CardContent>
       </Card>
-      <div className="grid grid-cols-1 gap-2">
-        {projectManager && <Member props={projectManager} />}
+      <div className="grid   md:grid-cols-2 xl:grid-cols-1 gap-2">
+        {projectManager && (
+          <Member
+            props={projectManager}
+            deactivateMemberFromProject={handleDeactivateUserFromTeam}
+            userRole={userRoleInSelectedProject}
+          />
+        )}
         {viceManager && (
           <Member
             props={viceManager}
             hasPermission={hasPermission?.vice_manager_permission}
             toggleVicePermission={handletoggleVicePermission}
+            deactivateMemberFromProject={handleDeactivateUserFromTeam}
+            userRole={userRoleInSelectedProject}
           />
         )}
         {members?.map((member, index) => {
-          return <Member key={index} props={member} />;
+          return (
+            <Member
+              key={index}
+              props={member}
+              deactivateMemberFromProject={handleDeactivateUserFromTeam}
+              userRole={userRoleInSelectedProject}
+            />
+          );
         })}
       </div>
     </div>
@@ -831,7 +906,7 @@ function PhasesMapping({
   const title = isActive ? "Active Phases" : "Archived Phases";
 
   return (
-    <div className="flex-col-start  mx-6 ">
+    <div className="flex-col-start  xl:mx-6 ">
       <div className="flex-col-start  gap-4">
         <Badge
           className={`flex items-center w-fit text-xs ${
@@ -864,7 +939,7 @@ function PhasesMapping({
 
                     <StatusNotice {...statusNoticeConfig[phase.status]} />
                   </div>
-                  <div className="ml-6 mt-2 text-sm text-slate-500 flex-row-start-center gap-2">
+                  <div className="xl:ml-6 mt-2 text-sm text-slate-500 flex-row-start-center gap-2">
                     <div className="flex-row-start-center gap-2">
                       <CalendarDaysIcon className="text-xs h-4 w-4" />
                       <span>{phase?.created_at?.toString().slice(0, 10)}</span>
@@ -968,8 +1043,8 @@ export default function ProjectView({
   isAdmin?: boolean;
 }) {
   return (
-    <div className="flex flex-row-start gap-2  min-h-0 overflow-y-auto relative transition-all duration-200 overflow-visible ">
-      <div className="w-[75%] space-y-2  h-full overflow-visible ">
+    <div className="flex-col-start xl:flex-row-start gap-2  min-h-0 overflow-y-auto relative transition-all duration-200 overflow-visible ">
+      <div className="w-full xl:w-[75%] space-y-2  xl:h-full overflow-visible ">
         <ProjectDetails
           id={id}
           edit={edit}
@@ -982,7 +1057,7 @@ export default function ProjectView({
           archivedPhasesInitialData={archivedPhasesInitialData}
         />
       </div>
-      <div className="flex-grow h-full ">
+      <div className="xl:flex-grow xl:h-full ">
         <TeamMembers id={id} teamInitialData={teamInitialData} />
       </div>
     </div>

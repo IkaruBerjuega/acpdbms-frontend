@@ -4,7 +4,7 @@ import ForgotPasswordForm from "@/components/ui/password-reset/forgot-password-f
 export default async function Page() {
   return (
     <div className='flex items-center justify-center h-screen bg-[url("/bg.png")] bg-cover'>
-      <div className="flex w-[90%] h-[80%]  md:w-[70%] md:h-[60%] lg:h-[70%] lg:max-w-4xl  ">
+      <div className="flex w-[90%] h-[80%]  md:w-[70%] md:h-[80%]  lg:max-w-4xl  ">
         <div className="flex-col-center lg:flex-row-start w-full h-full rounded-lg bg-white-primary overflow-hidden">
           <div className="flex-column w-full p-4 lg:w-1/2 lg:p-6">
             <div className="flex justify-center mx-0">

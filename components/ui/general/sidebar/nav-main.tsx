@@ -61,6 +61,7 @@ import {
 } from "@/components/ui/sidebar";
 import { VscGithubProject } from "react-icons/vsc";
 import { useQueryParams } from "@/hooks/use-query-params";
+import { useProjectSelectStore } from "@/hooks/states/create-store";
 
 interface NavigationInterface {
   title: string;
@@ -100,12 +101,20 @@ export function NavMain({ role }: { role: "admin" | "employee" | "client" }) {
     },
   ];
 
+  const { data: projectSelected } = useProjectSelectStore();
+  const canAccessEmployeeProjectDashboard =
+    projectSelected[0]?.userRole !== "Member";
+
   const employeeNavs = [
-    {
-      title: "Project Dashboard",
-      url: `/employee/project-dashboard`,
-      icon: MdOutlineDashboard,
-    },
+    ...(canAccessEmployeeProjectDashboard
+      ? [
+          {
+            title: "Project Dashboard",
+            url: `/employee/project-dashboard`,
+            icon: MdOutlineDashboard,
+          },
+        ]
+      : []),
     {
       title: "Tasks",
       url: "/employee/tasks",

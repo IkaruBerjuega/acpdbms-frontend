@@ -14,7 +14,6 @@ import {
   getZipcodesForCity,
   StateItem,
 } from "@/hooks/general/use-location-selector";
-import axios from "axios";
 
 type USLocationSelectorProps<T extends FieldValues> = {
   control: Control<T, any>; // eslint-disable-line
@@ -37,11 +36,13 @@ export default function USLocationSelector<T extends FieldValues>({
   setValue,
   onZipcodeChange,
 }: USLocationSelectorProps<T>) {
-  const [states, setStates] = useState<StateItem[]>([]);
-  const [cities, setCities] = useState<CityItem[]>([]);
+  const [states, setStates] = useState<StateItem[] | null>([]);
+  const [cities, setCities] = useState<CityItem[] | null>([]);
   const [zipcodes, setZipcodes] = useState<string[]>([]);
   const [selectedState, setSelectedState] = useState<string>("");
   const [selectedCity, setSelectedCity] = useState<string>("");
+
+  const [disableZipCode, setDisableZipCode] = useState<boolean>(false);
 
   useEffect(() => {
     async function loadStates() {
@@ -54,7 +55,7 @@ export default function USLocationSelector<T extends FieldValues>({
   useEffect(() => {
     async function loadCities() {
       if (!selectedState) {
-        setCities([]);
+        setCities(null);
         return;
       }
       const stateCities = await getCitiesForState(selectedState);
@@ -71,40 +72,28 @@ export default function USLocationSelector<T extends FieldValues>({
         return;
       }
 
-      try {
-        const zips = await getZipcodesForCity(selectedState, selectedCity);
-        setZipcodes(zips);
-        if (zips.length === 1) {
-          const zip = zips[0];
-          setValue(zipcodeFieldName, zip as PathValue<T, Path<T>>);
-          onZipcodeChange?.(zip);
-        }
-      } catch (err: unknown) {
-        if (axios.isAxiosError(err) && err.response?.status === 404) {
-          setZipcodes([]);
-        } else {
-          console.error("Zipcode lookup failed:", err);
-          throw err;
-        }
+      const { response, error } = await getZipcodesForCity(
+        selectedState,
+        selectedCity
+      );
+
+      if (error) {
+        setDisableZipCode(true);
+        setValue(zipcodeFieldName, "N/A" as PathValue<T, Path<T>>);
+        return;
+      }
+
+      setDisableZipCode(false);
+      setZipcodes(response);
+
+      if (response.length === 1) {
+        const zip = response[0];
+        onZipcodeChange?.(zip);
       }
     }
 
     loadZipcodes();
-  }, [
-    selectedState,
-    selectedCity,
-    zipcodeFieldName,
-    setValue,
-    onZipcodeChange,
-  ]);
-
-  // checking the empty array
-  useEffect(() => {
-    console.log(
-      `🔍 zipcodes for "${selectedState}" / "${selectedCity}" =>`,
-      zipcodes
-    );
-  }, [selectedState, selectedCity, zipcodes]);
+  }, [selectedCity, zipcodeFieldName, setValue, onZipcodeChange]);
 
   return (
     <>
@@ -114,11 +103,13 @@ export default function USLocationSelector<T extends FieldValues>({
         name={stateFieldName}
         label="State"
         inputType="search"
-        items={states.map((st, idx) => ({
-          key: `${st.name}-${idx}`,
-          value: st.name,
-          label: st.name,
-        }))}
+        items={
+          states?.map((st, idx) => ({
+            key: `${st.name}-${idx}`,
+            value: st.name,
+            label: st.name,
+          })) || []
+        }
         placeholder="Select State"
         validationRules={{ required: "State is required" }}
         onSelect={(item) => {
@@ -132,6 +123,11 @@ export default function USLocationSelector<T extends FieldValues>({
             onStateChange?.(selectedValue);
           }
         }}
+        clearFn={() => {
+          setValue(stateFieldName, null as PathValue<T, Path<T>>);
+          setValue(cityFieldName, null as PathValue<T, Path<T>>);
+          setValue(zipcodeFieldName, null as PathValue<T, Path<T>>);
+        }}
       />
 
       <FormInput
@@ -140,11 +136,13 @@ export default function USLocationSelector<T extends FieldValues>({
         name={cityFieldName}
         label="City / Town"
         inputType="search"
-        items={cities.map((ct, idx) => ({
-          key: `${ct.name}-${idx}`,
-          value: ct.name,
-          label: ct.name,
-        }))}
+        items={
+          cities?.map((ct, idx) => ({
+            key: `${ct.name}-${idx}`,
+            value: ct.name,
+            label: ct.name,
+          })) || []
+        }
         placeholder="Select City/Town"
         validationRules={{ required: "City is required" }}
         onSelect={(item) => {
@@ -155,20 +153,29 @@ export default function USLocationSelector<T extends FieldValues>({
             onCityChange?.(selectedCityValue);
           }
         }}
+        clearFn={() => {
+          setValue(cityFieldName, null as PathValue<T, Path<T>>);
+          setValue(zipcodeFieldName, null as PathValue<T, Path<T>>);
+          setDisableZipCode(false);
+        }}
       />
 
       <FormInput
+        key={`zipcode-${disableZipCode}-${zipcodes.length}`}
         className="min-w-[230px]"
         control={formControl}
         name={zipcodeFieldName}
         label="Zip Code"
         required={false}
+        disabled={disableZipCode}
         inputType="search"
-        items={zipcodes.map((zip, idx) => ({
-          key: `${zip}-${idx}`,
-          value: zip,
-          label: zip,
-        }))}
+        items={
+          zipcodes.map((zip, idx) => ({
+            key: `${zip}-${idx}`,
+            value: zip,
+            label: zip,
+          })) || []
+        }
         placeholder="Select Zip Code"
         onSelect={(item) => {
           if (item) {
