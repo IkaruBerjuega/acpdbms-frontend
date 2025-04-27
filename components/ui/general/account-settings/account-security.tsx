@@ -338,7 +338,7 @@ export default function AccountSecurity() {
                 <p className="text-sm text-green-600 ml-1">Passwords match!</p>
               ) : passwordDoesNotMatch ? (
                 <p className="text-sm text-red-600 ml-1">
-                  Passwords don&apost match!
+                  Passwords don&apos;t match!
                 </p>
               ) : null}
 
