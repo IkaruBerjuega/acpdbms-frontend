@@ -33,23 +33,6 @@ export const useDashboard = () => {
     key: "online-users",
     url: "/dashboard/online-users",
     auth: true,
-    initialData: [
-      {
-        name: "Alice Johnson",
-        role: "Project Manager",
-        profile_picture_url: "/no-profile.png",
-      },
-      {
-        name: "Bob Smith",
-        role: "Client",
-        profile_picture_url: null,
-      },
-      {
-        name: "Carlos Reyes",
-        role: "Developer",
-        profile_picture_url: "/no-profile.png",
-      },
-    ],
   });
 
   // fetch project statistics

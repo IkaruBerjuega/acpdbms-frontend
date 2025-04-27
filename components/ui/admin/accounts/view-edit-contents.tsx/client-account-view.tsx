@@ -236,7 +236,7 @@ export default function ClientAccView({
                     />
 
                     {/* Address */}
-                    <div className="lg:col-span-4 col-span-1">
+                    <div className="lg:col-span-4 md:col-span-2 col-span-1">
                       <Separator className="my-4" />
                       <div className="flex items-center mb-4">
                         <MapPin className="h-5 w-5 text-primary mr-2" />
@@ -246,24 +246,22 @@ export default function ClientAccView({
                       </div>
                     </div>
 
-                    <div className="lg:col-span-3 col-span-1">
-                      <USLocationSelector
-                        control={control}
-                        setValue={setValue}
-                        stateFieldName="state"
-                        cityFieldName="city_town"
-                        zipcodeFieldName="zip_code"
-                        onStateChange={(state) =>
-                          console.log("State changed:", state)
-                        }
-                        onCityChange={(city) =>
-                          console.log("City changed:", city)
-                        }
-                        onZipcodeChange={(zipcode) =>
-                          console.log("Zipcode changed:", zipcode)
-                        }
-                      />
-                    </div>
+                    <USLocationSelector
+                      control={control}
+                      setValue={setValue}
+                      stateFieldName="state"
+                      cityFieldName="city_town"
+                      zipcodeFieldName="zip_code"
+                      onStateChange={(state) =>
+                        console.log("State changed:", state)
+                      }
+                      onCityChange={(city) =>
+                        console.log("City changed:", city)
+                      }
+                      onZipcodeChange={(zipcode) =>
+                        console.log("Zipcode changed:", zipcode)
+                      }
+                    />
 
                     <div className="lg:col-span-1 col-span-1">
                       <FormInput
@@ -277,7 +275,7 @@ export default function ClientAccView({
                     </div>
 
                     {/* Other Details (email) */}
-                    <div className="lg:col-span-4 col-span-1">
+                    <div className="lg:col-span-4 md:col-span-2 col-span-1">
                       <Separator className="my-4" />
                       <div className="flex items-center mb-4">
                         <FileText className="h-5 w-5 text-primary mr-2" />
@@ -320,7 +318,7 @@ export default function ClientAccView({
                     </div>
 
                     {/* Address */}
-                    <div className="lg:col-span-4 col-span-1">
+                    <div className="lg:col-span-4 md:col-span-2 col-span-1">
                       <Separator className="my-4" />
                       <div className="flex items-center mb-4">
                         <MapPin className="h-5 w-5 text-slate-900 mr-2" />
@@ -356,7 +354,7 @@ export default function ClientAccView({
                       </p>
                     </div>
                     {/* Other Details */}
-                    <div className="lg:col-span-4 col-span-1">
+                    <div className="lg:col-span-4 md:col-span-2 col-span-1">
                       <Separator className="my-4" />
                       <div className="flex items-center mb-4">
                         <FileText className="h-5 w-5 text-slate-900 mr-2" />

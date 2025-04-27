@@ -121,7 +121,7 @@ export async function getZipcodesForCity(
       return { response: [], error: false };
     }
     const response = await axios.get<ZipInfo>(
-      `http://api.zippopotam.us/us/${stateCode}/${encodeURIComponent(city)}`
+      `https://api.zippopotam.us/us/${stateCode}/${encodeURIComponent(city)}`
     );
 
     const _response = response.data.places?.map((p) => p["post code"]) ?? [];
