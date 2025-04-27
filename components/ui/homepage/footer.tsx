@@ -41,7 +41,7 @@ export default function Footer({
       <div className="flex-row-start-center gap-6">
         <div className="p-1 bg-white-primary/40 rounded-md">
           <Image
-            src={logoUrl || "/system-component-images/logo-placeholder.svg"}
+            src={logoUrl || "/system-component-images/logo-placeholder.webp"}
             alt={"footer-logo-svg"}
             width={30}
             height={30}
@@ -70,12 +70,14 @@ export default function Footer({
         />
 
         <div className="flex-row-start-center gap-1 flex-wrap text-white-secondary">
-          {contactNumbers.map((no, index) => (
-            <Fragment key={no.id}>
-              {index > 0 && <Separator orientation="vertical" />}
-              <p>{no.value}</p>
-            </Fragment>
-          )) || "Not Set Yet"}
+          {contactNumbers.length > 0
+            ? contactNumbers.map((no, index) => (
+                <Fragment key={no.id}>
+                  {index > 0 && <Separator orientation="vertical" />}
+                  <p>{no.value}</p>
+                </Fragment>
+              ))
+            : "Not Set Yet"}
         </div>
       </div>
       <div className="mt-2 flex-row-start gap-6 flex-row-start">
