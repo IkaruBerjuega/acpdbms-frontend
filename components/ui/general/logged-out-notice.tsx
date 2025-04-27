@@ -1,11 +1,22 @@
 "use client";
 
 import { useQueryParams } from "@/hooks/use-query-params";
-import Link from "next/link";
 import { AlertTriangle } from "lucide-react";
+import { useRole, useToken } from "@/hooks/general/use-token";
+import { Button } from "../button";
 
 export default function AutomaticallyLoggedOutNotice() {
   const { paramsKey } = useQueryParams();
+
+  const { deleteToken } = useToken();
+  const { deleteRole } = useRole();
+
+  const deleteCookies = async () => {
+    await deleteToken();
+    await deleteRole();
+
+    window.location.reload();
+  };
 
   const isLoggedOut = paramsKey["isLoggedOut"] === "true";
 
@@ -20,12 +31,12 @@ export default function AutomaticallyLoggedOutNotice() {
           You have been logged out due to inactivity. For security reasons, we
           automatically log out users after a period of inactivity.
         </p>
-        <Link
-          href="/login"
+        <Button
+          onClick={deleteCookies}
           className="px-6 py-3 bg-black-primary text-white-primary hover:bg-black-secondary text-white font-medium rounded-md transition-colors"
         >
           Log In Again
-        </Link>
+        </Button>
       </div>
     </div>
   );
