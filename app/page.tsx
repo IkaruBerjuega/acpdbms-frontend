@@ -13,27 +13,29 @@ import {
 } from "@/lib/definitions";
 
 export default async function Home() {
-  const logoResponse: LogoResponse = await serverRequestAPI({
+  const logoResponse: LogoResponse | null = await serverRequestAPI({
     url: "/settings/logo",
     auth: false,
   });
 
-  const contactDetailsResponse: DynamicContactSchema = await serverRequestAPI({
-    url: "/contact-details",
-    auth: false,
-  });
+  const contactDetailsResponse: DynamicContactSchema | null =
+    await serverRequestAPI({
+      url: "/contact-details",
+      auth: false,
+    });
 
-  const recentProjectImagesResponse: RecentProjectsResponse =
+  const recentProjectImagesResponse: RecentProjectsResponse | null =
     await serverRequestAPI({
       url: "/recent-projects",
       auth: false,
     });
 
-  const logoUrl = logoResponse.logo_url;
+  const logoUrl = logoResponse?.logo_url || "";
 
-  const contactDetails = contactDetailsResponse.contact_details;
+  const contactDetails = contactDetailsResponse?.contact_details || [];
 
-  const recentProjectImages = recentProjectImagesResponse.recent_project_images;
+  const recentProjectImages =
+    recentProjectImagesResponse?.recent_project_images || [];
 
   return (
     <main className="relative">
