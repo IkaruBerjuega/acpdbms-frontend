@@ -186,6 +186,7 @@ export function RecentProjectsUpload() {
                     "image/svg+xml": [],
                   }}
                   showImages={true}
+                  showList={false}
                   formInput={{ name: "project_titles", register }}
                   maxSize={2 * 1024 * 1024}
                 />
