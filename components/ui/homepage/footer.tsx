@@ -63,7 +63,7 @@ export default function Footer({
               width={20}
               height={20}
             />
-            <p className="text-white-secondary">{address}</p>
+            <p className="text-white-secondary">{address || "Not Set Yet"}</p>
           </>
         )}
       </div>
@@ -91,45 +91,50 @@ export default function Footer({
           width={20}
           height={20}
         />
-        <p className="text-white-secondary">{email}</p>
+        <p className="text-white-secondary">{email || "Not Set Yet"}</p>
       </div>
-      <div className="mt-8 flex-col-start gap-4  flex-row-start">
-        <p className="text-white-secondary font-bold">Find us on</p>
-        <div className="flex-row-start gap-4">
-          {!!facebookLink && (
-            <Link href={facebookLink}>
-              <Image
-                src={"/homepage/footer-fb.svg"}
-                alt={"footer-fb-svg"}
-                width={20}
-                height={20}
-              />
-            </Link>
-          )}
 
-          {!!instagramLink && (
-            <Link href={instagramLink}>
-              <Image
-                src={"/homepage/footer-linkedIn.svg"}
-                alt={"footer-linkedIn-svg"}
-                width={20}
-                height={20}
-              />
-            </Link>
-          )}
+      {!!facebookLink ||
+        !!instagramLink ||
+        (!!linkedInLink && (
+          <div className="mt-8 flex-col-start gap-4  flex-row-start">
+            <p className="text-white-secondary font-bold">Find us on</p>
+            <div className="flex-row-start gap-4">
+              {!!facebookLink && (
+                <Link href={facebookLink}>
+                  <Image
+                    src={"/homepage/footer-fb.svg"}
+                    alt={"footer-fb-svg"}
+                    width={20}
+                    height={20}
+                  />
+                </Link>
+              )}
 
-          {!!linkedInLink && (
-            <Link href={linkedInLink}>
-              <Image
-                src={"/homepage/footer-insta.svg"}
-                alt={"footer-insta-svg"}
-                width={20}
-                height={20}
-              />
-            </Link>
-          )}
-        </div>
-      </div>
+              {!!instagramLink && (
+                <Link href={instagramLink}>
+                  <Image
+                    src={"/homepage/footer-linkedIn.svg"}
+                    alt={"footer-linkedIn-svg"}
+                    width={20}
+                    height={20}
+                  />
+                </Link>
+              )}
+
+              {!!linkedInLink && (
+                <Link href={linkedInLink}>
+                  <Image
+                    src={"/homepage/footer-insta.svg"}
+                    alt={"footer-insta-svg"}
+                    width={20}
+                    height={20}
+                  />
+                </Link>
+              )}
+            </div>
+          </div>
+        ))}
     </footer>
   );
 }
