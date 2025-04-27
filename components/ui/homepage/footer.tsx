@@ -40,14 +40,12 @@ export default function Footer({
     <footer className="bg-black-primary h-fit flex-col-center-start  homepage-padding py-20 ">
       <div className="flex-row-start-center gap-6">
         <div className="p-1 bg-white-primary/40 rounded-md">
-          {!!logoUrl && (
-            <Image
-              src={logoUrl || "/system-component-images/logo-placeholder.svg"}
-              alt={"footer-logo-svg"}
-              width={30}
-              height={30}
-            />
-          )}
+          <Image
+            src={logoUrl || "/system-component-images/logo-placeholder.svg"}
+            alt={"footer-logo-svg"}
+            width={30}
+            height={30}
+          />
         </div>
 
         <h1 className="text-2xl italic font-bold text-white-secondary">
@@ -55,17 +53,13 @@ export default function Footer({
         </h1>
       </div>
       <div className="mt-10 flex-row-start gap-6 flex-row-start">
-        {!!address && (
-          <>
-            <Image
-              src={"/homepage/footer-location.svg"}
-              alt={"footer-location-svg"}
-              width={20}
-              height={20}
-            />
-            <p className="text-white-secondary">{address || "Not Set Yet"}</p>
-          </>
-        )}
+        <Image
+          src={"/homepage/footer-location.svg"}
+          alt={"footer-location-svg"}
+          width={20}
+          height={20}
+        />
+        <p className="text-white-secondary">{address || "Not Set Yet"}</p>
       </div>
       <div className="mt-2 flex-row-start gap-6 flex-row-start">
         <Image
@@ -81,7 +75,7 @@ export default function Footer({
               {index > 0 && <Separator orientation="vertical" />}
               <p>{no.value}</p>
             </Fragment>
-          ))}
+          )) || "Not Set Yet"}
         </div>
       </div>
       <div className="mt-2 flex-row-start gap-6 flex-row-start">
