@@ -34,6 +34,7 @@ export default function RootLayout({
       </Head>
       <body className={`${roboto.className} antialiased`}>
         <QueryProvider>{children}</QueryProvider>
+
         <Toaster />
       </body>
     </html>

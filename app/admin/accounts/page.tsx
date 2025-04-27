@@ -51,8 +51,8 @@ export default async function Page({
 
   const breadcrumbs: Breadcrumbs[] = [
     {
-      href: "",
       pageName: "Admin",
+      href: "/admin/dashboard",
       active: false,
     },
     {

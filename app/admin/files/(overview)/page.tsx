@@ -13,7 +13,7 @@ export default async function Page({
   const queries = await searchParams;
   const breadcrumbs: Breadcrumbs[] = [
     {
-      href: "/admin",
+      href: "/admin/dashboard",
       pageName: "Admin",
       active: false,
     },

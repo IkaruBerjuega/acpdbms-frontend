@@ -103,7 +103,7 @@ export function Combobox({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            `w-full flex justify-between items-center text-xs sm:text-sm ${className} overflow-hidden`,
+            `w-full flex justify-between items-center text-xs sm:text-sm ${className} overflow-hidden focus:border-[1px]`,
             selectedValue ? "text-darkgray-800" : "text-darkgray-400",
             disabled ? "cursor-not-allowed opacity-50" : "" // Add disabled styles
           )}

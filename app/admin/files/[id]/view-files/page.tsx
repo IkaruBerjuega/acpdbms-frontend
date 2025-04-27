@@ -28,13 +28,13 @@ export default async function Page({
 
   const breadcrumbs: Breadcrumbs[] = [
     {
-      href: "",
+      href: `/files/`,
       pageName: "Tasks",
       active: false,
     },
     {
-      href: `/client/approval/${taskId}/review-files?view_files=true`,
-      pageName: "Files Review",
+      href: `/files/${taskId}/view-files?view_files=true`,
+      pageName: "Files View",
       active: true,
     },
   ];

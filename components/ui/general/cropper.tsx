@@ -51,9 +51,7 @@ export default function Cropper({
               src={imageUrl}
               className="object-contain max-h-[300px]"
               ref={cropperRef}
-              guides={false}
-              aspectRatio={1}
-              viewMode={1} // Important for restricting crop outside image
+              guides={true}
               cropBoxResizable={true} // Optional: prevent resizing the crop box
               dragMode="move" // Optional: move image instead of crop box
             />

@@ -19,7 +19,12 @@ export default async function Page({
       <SidebarTrigger
         breadcrumbs={[
           {
-            pageName: "Accounts",
+            pageName: "Admin",
+            href: "/admin/dashboard",
+            active: false,
+          },
+          {
+            pageName: "Client Accounts",
             href: "/admin/accounts?tab=Client",
             active: false,
           },

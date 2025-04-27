@@ -143,14 +143,14 @@ export function LogoUpload({ logoUrl }: { logoUrl: string | undefined }) {
             />
             {image && initialImage && (
               <div
-                className="w-full relative transition-all aspect-square duration-200 cursor-pointer hover:scale-95 "
+                className="w-full relative transition-all  duration-200 cursor-pointer hover:scale-95 "
                 onClick={() => {
                   onImageDropdown(initialImage);
                 }}
               >
                 <Image
                   src={URL.createObjectURL(image)}
-                  className="aspect-square w-full"
+                  className="object-contain w-full"
                   width={1000}
                   height={1000}
                   alt={"logo image"}

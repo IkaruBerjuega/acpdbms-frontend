@@ -4,48 +4,63 @@ import type { NextRequest } from "next/server";
 const LARAVEL_AUTH_CHECK_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth/check`;
 
 export async function middleware(req: NextRequest) {
+  const protectedPaths = ["/admin", "/employee", "/client", "/login"];
+  const { pathname } = req.nextUrl;
+  const isProtectedPath = protectedPaths.some((path) =>
+    pathname.startsWith(path)
+  );
+  const isLoginPage = pathname === "/login";
+
   const storedToken = req.cookies.get("token")?.value || "";
   const storedRole = req.cookies.get("role")?.value || "";
 
-  // Decode URL-encoded cookie
   const decodedToken = decodeURIComponent(storedToken);
   const decodedRole = decodeURIComponent(storedRole);
-
-  // Check if the user is on the login page
-  const isLoginPage = req.nextUrl.pathname === "/login";
 
   let token = "";
   let role = "";
 
-  // If no token, only allow access to the login page
-  if (!storedToken && !storedRole) {
-    return isLoginPage
-      ? NextResponse.next()
-      : NextResponse.redirect(new URL("/login", req.url));
+  //  If not protected but has isLoggedOut, remove it
+  if (!isProtectedPath && req.nextUrl.searchParams.has("isLoggedOut")) {
+    const cleanUrl = req.nextUrl.clone();
+    cleanUrl.searchParams.delete("isLoggedOut");
+    return NextResponse.redirect(cleanUrl);
   }
 
-  // Try parsing the stored token data
+  // If not a protected page, allow
+  if (!isProtectedPath) {
+    return NextResponse.next();
+  }
+
+  // If no token/role, allow access to login, otherwise just mark isLoggedOut
+  if (!storedToken || !storedRole) {
+    if (isLoginPage) {
+      return NextResponse.next();
+    }
+    return addIsLoggedOutParam(req);
+  }
+
   try {
     const parsedData = JSON.parse(decodedToken) as { token: string };
     token = parsedData.token;
-  } catch (error) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  } catch {
+    return addIsLoggedOutParam(req);
   }
 
-  // Try parsing the stored token data
   try {
     const parsedData = JSON.parse(decodedRole) as {
       role: "admin" | "employee" | "client";
     };
     role = parsedData.role;
-  } catch (error) {
-    return NextResponse.redirect(new URL("/login", req.url));
+  } catch {
+    return addIsLoggedOutParam(req);
   }
 
   if (!token) {
-    return isLoginPage
-      ? NextResponse.next()
-      : NextResponse.redirect(new URL("/login", req.url));
+    if (isLoginPage) {
+      return NextResponse.next();
+    }
+    return addIsLoggedOutParam(req);
   }
 
   try {
@@ -57,36 +72,47 @@ export async function middleware(req: NextRequest) {
       },
     });
 
+    const url = req.nextUrl.clone();
+
     if (!laravelResponse.ok) {
-      // Create a response to redirect to login
-      const response = NextResponse.redirect(new URL("/login", req.url));
-      // Delete the token and role cookies
-      response.cookies.delete("token");
-      response.cookies.delete("role");
-      return response;
+      //  Laravel auth failed: stay on page, add isLoggedOut
+      return addIsLoggedOutParam(req);
     }
 
-    // Allow users to stay on the login page if they are NOT logged in
+    //  Laravel auth success: clean isLoggedOut if exists
+    if (url.searchParams.has("isLoggedOut")) {
+      url.searchParams.delete("isLoggedOut");
+      return NextResponse.redirect(url);
+    }
+
+    //  Already authenticated, handle login page
     if (isLoginPage) {
       return NextResponse.redirect(new URL(getRoleRedirect(role), req.url));
     }
 
-    // Ensure users access only the correct role-based path
-    if (!req.nextUrl.pathname.startsWith(getRolePath(role))) {
+    //  Ensure role matches path
+    if (!pathname.startsWith(getRolePath(role))) {
       return NextResponse.redirect(new URL(getRoleRedirect(role), req.url));
     }
-  } catch (error) {
-    // Create a response to redirect to login
-    const response = NextResponse.redirect(new URL("/login", req.url));
-    // Delete the token and role cookies
-    response.cookies.delete("token");
-    response.cookies.delete("role");
+  } catch {
+    return addIsLoggedOutParam(req);
   }
 
   return NextResponse.next();
 }
 
-//  Utility functions for cleaner role-based logic
+function addIsLoggedOutParam(req: NextRequest) {
+  const url = req.nextUrl.clone();
+
+  if (!url.searchParams.has("isLoggedOut")) {
+    url.searchParams.set("isLoggedOut", "true");
+    return NextResponse.redirect(url);
+  }
+
+  // Already has isLoggedOut, just continue
+  return NextResponse.next();
+}
+
 const getRoleRedirect = (role: string) => {
   return (
     {
@@ -107,7 +133,6 @@ const getRolePath = (role: string) => {
   );
 };
 
-// Apply middleware to protected routes and the login page
 export const config = {
-  matcher: ["/admin/:path*", "/employee/:path*", "/client/:path*", "/login"],
+  matcher: ["/:path*"],
 };

@@ -32,6 +32,7 @@ export function FileActionWrapper({
 
   const { deleteFiles, downloadFiles, archiveFiles } = useFileActions({
     projectId: _projectId,
+    taskVersionId: selectedFiles[0]?.task_version_id,
   });
 
   const queryClient = useQueryClient();
@@ -84,31 +85,6 @@ export function FileActionWrapper({
           toast({
             variant: "destructive",
             title: "Delete File",
-            description:
-              error.message || "There was an error submitting the request",
-          });
-        },
-      }
-    );
-  };
-
-  const handleArchiveFiles = () => {
-    archiveFiles.mutate(
-      { file_ids: fileIds },
-      {
-        onSuccess: async (response: { message?: string }) => {
-          toast({
-            variant: "default",
-            title: "Archive Files",
-            description: response.message || "Files Are Successfully Archived",
-          });
-          queryClient.invalidateQueries({ queryKey: ["files", projectId] });
-          resetData();
-        },
-        onError: (error: { message?: string }) => {
-          toast({
-            variant: "destructive",
-            title: "Archive File",
             description:
               error.message || "There was an error submitting the request",
           });
@@ -221,22 +197,7 @@ export function FileActionWrapper({
                   ]
                 : []),
             ]
-          : [
-              ...(selectedFiles.length === 1
-                ? [
-                    {
-                      actionName: "Archive",
-                      onClick: handleArchiveFiles,
-                      btnSrc: "/button-svgs/table-action-archive-black.svg",
-                      isDialog: true,
-                      dialogBtnSubmitLabel: "Confirm",
-                      dialogDescription:
-                        "Do you confirm to archive all the selected file?",
-                      dialogTitle: "Archive File",
-                    },
-                  ]
-                : []),
-            ]),
+          : []),
       ]}
     />
   );
