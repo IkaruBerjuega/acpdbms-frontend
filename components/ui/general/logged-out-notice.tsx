@@ -31,12 +31,7 @@ export default function AutomaticallyLoggedOutNotice() {
           You have been logged out due to inactivity. For security reasons, we
           automatically log out users after a period of inactivity.
         </p>
-        <Button
-          onClick={deleteCookies}
-          className="px-6 py-3 bg-black-primary text-white-primary hover:bg-black-secondary text-white font-medium rounded-md transition-colors"
-        >
-          Log In Again
-        </Button>
+        <Button onClick={deleteCookies}>Log In Again</Button>
       </div>
     </div>
   );
