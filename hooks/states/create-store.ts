@@ -4,7 +4,7 @@ import {
   SupportedTableTypes,
 } from "@/lib/definitions";
 import { File, TaskFile } from "@/lib/files-definitions";
-import { TaskStatuses } from "@/lib/tasks-definitions";
+import { TaskItem, TaskStatuses } from "@/lib/tasks-definitions";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 
@@ -58,3 +58,4 @@ export const useProjectSelectStore = createStore<ProjectSelector>();
 export const usePhaseTransfer = createStore<AddPhaseShortcut>([]);
 export const useSelectedTaskStatus = createStore<TaskStatuses | undefined>();
 export const useDeviceTokenStore = createStore<string | undefined>([]);
+export const useTaskToUpdateDetails = createStore<TaskItem | undefined>([]);

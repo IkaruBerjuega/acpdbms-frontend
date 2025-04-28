@@ -3,7 +3,6 @@ import { StoreTaskRequest } from "@/lib/tasks-definitions";
 import {
   AssignTaskRequest,
   CancelTaskAssignmentRequest,
-  ReviewTaskRequest,
   TaskAssignmentDetailsResponse,
   TaskCommentRequest,
   TaskCommentsResponse,
@@ -202,6 +201,14 @@ export const useTaskActions = <T>({
     additionalHeaders,
   });
 
+  const updateTask = useApiMutation<T>({
+    url: `/task-edit/${taskId}`,
+    method: "PUT",
+    contentType: "application/json",
+    auth: true,
+    additionalHeaders,
+  });
+
   return {
     addTasks,
     assignMultipleEmployeesToTask,
@@ -217,5 +224,6 @@ export const useTaskActions = <T>({
     setTaskToNeedsReview,
     cancelTask,
     reviewTask,
+    updateTask,
   };
 };

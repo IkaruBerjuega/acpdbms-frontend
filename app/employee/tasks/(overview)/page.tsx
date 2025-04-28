@@ -10,7 +10,15 @@ export default async function Page({
   searchParams,
 }: {
   searchParams: Promise<{
-    sheet: "comments" | "files" | "phases" | "phases_archived" | undefined;
+    sheet:
+      | "comments"
+      | "files"
+      | "phases"
+      | "phases_archived"
+      | "members"
+      | "assign_members"
+      | "update_task"
+      | undefined;
     taskId: string | undefined;
     version: number | undefined;
     projectId: string | null;

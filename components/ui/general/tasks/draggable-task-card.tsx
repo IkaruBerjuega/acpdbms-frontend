@@ -12,6 +12,7 @@ import { LegacyRef, useCallback } from "react";
 import {
   useProjectSelectStore,
   useSelectedTaskStatus,
+  useTaskToUpdateDetails,
 } from "@/hooks/states/create-store";
 import { TaskItem, TaskItemProps, TaskStatuses } from "@/lib/tasks-definitions";
 import { ItemTypes } from "@/lib/definitions";
@@ -170,6 +171,14 @@ export default function TaskCard(props: TaskCardProps) {
     createQueryString("taskId", String(id));
   }
 
+  const { setData: setToUpdateDetails } = useTaskToUpdateDetails();
+
+  function onUpdateTaskClick() {
+    setToUpdateDetails([props]);
+    createQueryString("taskId", String(id));
+    createQueryString("sheet", "update_task");
+  }
+
   const { data: projectSelected } = useProjectSelectStore();
   const isUserMember = projectSelected[0]?.userRole === "Member";
 
@@ -317,7 +326,7 @@ export default function TaskCard(props: TaskCardProps) {
                 className: "",
                 alt: "Edit Task Button",
                 isDialog: false,
-                onClick: () => {},
+                onClick: () => onUpdateTaskClick(),
               },
 
               ...(!cannotSetToDo.includes(status)
@@ -361,7 +370,7 @@ export default function TaskCard(props: TaskCardProps) {
               ...(!cannotSetToPause.includes(status)
                 ? [
                     {
-                      label: "Set to on-hold",
+                      label: "Set To On-hold",
                       iconSrc: "/button-svgs/table-action-onhold.svg",
                       className: "",
                       alt: "Set to Onhold Task Button",
@@ -380,7 +389,7 @@ export default function TaskCard(props: TaskCardProps) {
               ...(!cannotSetToNeedsReview.includes(status)
                 ? [
                     {
-                      label: "Review",
+                      label: "Set To Review",
                       iconSrc: "/button-svgs/review.svg",
                       className: "",
                       alt: "Set to Review Task Button",

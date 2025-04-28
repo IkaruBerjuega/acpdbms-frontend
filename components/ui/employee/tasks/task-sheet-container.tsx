@@ -11,6 +11,7 @@ import Members from "./task-details/task-members-view";
 import AssignMembers from "./task-details/task-members-add";
 import { useQueryClient } from "@tanstack/react-query";
 import { TaskFilters } from "./tasks-dnd-filters";
+import UpdateTaskForm from "../../general/tasks/update-task";
 
 interface TaskSheetContainerProps {
   sheetParamValue:
@@ -20,6 +21,7 @@ interface TaskSheetContainerProps {
     | "phases_archived"
     | "members"
     | "assign_members"
+    | "update_task"
     | undefined;
   taskId: string | undefined;
   version: string;
@@ -154,6 +156,11 @@ export default function TaskSheetContainer({
       title: "Filters",
       desc: "Task Filters are set here",
       content: <TaskFilters />,
+    },
+    update_task: {
+      title: "Update Task",
+      desc: "Update Task Details here",
+      content: <UpdateTaskForm projectId={projectId} taskId={taskId} />,
     },
   };
 
