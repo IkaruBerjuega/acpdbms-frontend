@@ -17,7 +17,7 @@ import { useIsDesktop } from "@/hooks/use-is-desktop";
 import { CustomTabsProps } from "@/lib/definitions";
 import Tabs from "./tabs";
 import { usePathname } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { useMemo } from "react";
 import { useRouter } from "next/navigation";
 
 interface ReusableSheetProps {
@@ -45,9 +45,10 @@ export default function ReusableSheet({
   const pathname = usePathname();
   const { replace } = useRouter();
 
-  const closeDrawer = useCallback(() => {
+  const closeDrawer = () => {
+    const _params = new URLSearchParams(params.toString());
     paramsKeyToDelete.forEach((key) => {
-      params.delete(key);
+      _params.delete(key);
     });
 
     if (closeDrawerAdditionalFn) {
@@ -56,8 +57,8 @@ export default function ReusableSheet({
 
     // Now replace the URL with updated params
 
-    replace(`${pathname}?${params.toString()}`);
-  }, [params, replace, pathname, paramsKeyToDelete, closeDrawerAdditionalFn]);
+    replace(`${pathname}?${_params.toString()}`);
+  };
 
   const canOpen = useMemo(() => {
     return paramsKey[paramKey] === toCompare;

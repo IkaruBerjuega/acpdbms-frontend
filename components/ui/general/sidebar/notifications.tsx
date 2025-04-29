@@ -96,7 +96,7 @@ export function Notifications({
             />
           }
           paramKey={"notifications"}
-          paramsKeyToDelete={["notifications"]}
+          paramsKeyToDelete={["notifications", "filter", "page"]}
           toCompare={"open"}
           tabs={null}
         />

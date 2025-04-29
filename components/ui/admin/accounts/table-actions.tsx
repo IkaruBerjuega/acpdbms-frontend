@@ -230,7 +230,6 @@ const AccountActions = <T extends AccountsTableType>({
         </>
       ) : isStatusArchived ? (
         <>
-          {" "}
           <ButtonIconTooltipDialog
             iconSrc={"/button-svgs/table-action-unarchive.svg"}
             alt={"unarhive account button"}
@@ -243,6 +242,9 @@ const AccountActions = <T extends AccountsTableType>({
             submitTitle="Confirm"
             onClick={() => onClick({ action: "unarchive" })}
           />
+        </>
+      ) : isStatusPending ? (
+        <>
           <ButtonIconTooltipDialog
             iconSrc={"/button-svgs/trash-white.svg"}
             alt={"delete account button"}
@@ -254,21 +256,6 @@ const AccountActions = <T extends AccountsTableType>({
             submitTitle="Confirm"
             className="bg-black-secondary hover:!bg-black-primary"
             onClick={() => onClick({ action: "delete" })}
-          />
-        </>
-      ) : isStatusPending ? (
-        <>
-          <ButtonIconTooltipDialog
-            iconSrc={"/button-svgs/table-action-archive.svg"}
-            alt={"archive account button"}
-            tooltipContent={"Archive Account"}
-            dialogTitle={"Archive Account"}
-            dialogDescription={"Do you confirm to archive this account?"}
-            dialogContent={<DialogContent />}
-            submitType={"button"}
-            submitTitle="Confirm"
-            className="bg-black-secondary hover:!bg-black-primary"
-            onClick={() => onClick({ action: "archive" })}
           />
         </>
       ) : null}
