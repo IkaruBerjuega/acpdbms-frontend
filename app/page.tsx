@@ -13,10 +13,11 @@ import {
 } from "@/lib/definitions";
 
 export default async function Home() {
-  const logoResponse: LogoResponse | null = await serverRequestAPI({
-    url: "/settings/logo",
-    auth: false,
-  });
+  const logoResponse: LogoResponse | null =
+    (await serverRequestAPI({
+      url: "/settings/logo",
+      auth: false,
+    })) || "/system-component-images/logo-placeholder.webp";
 
   const contactDetailsResponse: DynamicContactSchema | null =
     await serverRequestAPI({
@@ -30,7 +31,8 @@ export default async function Home() {
       auth: false,
     });
 
-  const logoUrl = logoResponse?.logo_url || "";
+  const logoUrl =
+    logoResponse?.logo_url || "/system-component-images/logo-placeholder.webp";
 
   const contactDetails = contactDetailsResponse?.contact_details || [];
 

@@ -18,22 +18,9 @@ export default async function serverRequestAPI({
 }: ServerRequestAPI) {
   const tokenResponse = (await cookies()).get("token")?.value;
 
-  if (!tokenResponse) {
-    console.warn("No token found in cookies");
-    return null;
-  }
-
   let token;
-  try {
-    const tokenParsed = JSON.parse(tokenResponse);
-    token = tokenParsed.token;
-    if (!token) {
-      console.warn("Token not found in parsed cookie data");
-      return null;
-    }
-  } catch (error) {
-    console.error("Failed to parse token from cookies:", error);
-    return null;
+  if (tokenResponse) {
+    token = JSON.parse(tokenResponse).token;
   }
 
   let res;
@@ -42,16 +29,16 @@ export default async function serverRequestAPI({
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(auth ? { Authorization: `Bearer ${token}` } : {}),
+        ...(auth && !!token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
   } catch (error) {
-    console.error(`Fetch failed for ${url}:`, error);
+    // console.error(`Fetch failed for ${url}:`, error);
     return null;
   }
 
   if (!res.ok) {
-    console.error(`HTTP error ${res.status} for ${url}:`, await res.text());
+    // console.log(`HTTP error ${res.status} for ${url}:`, await res.text());
     return null;
   }
 
@@ -59,7 +46,7 @@ export default async function serverRequestAPI({
   try {
     responseData = await res.json();
   } catch (error) {
-    console.error(`Failed to parse JSON response for ${url}:`, error);
+    // console.error(`Failed to parse JSON response for ${url}:`, error);
     return null;
   }
 

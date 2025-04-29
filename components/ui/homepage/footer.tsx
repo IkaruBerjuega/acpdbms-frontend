@@ -10,7 +10,7 @@ export default function Footer({
   logoUrl,
   contactDetails,
 }: {
-  logoUrl: string | undefined;
+  logoUrl: string;
   contactDetails: DynamicContactSchema["contact_details"];
 }) {
   const email = contactDetails.find(
@@ -40,12 +40,7 @@ export default function Footer({
     <footer className="bg-black-primary h-fit flex-col-center-start  homepage-padding py-20 ">
       <div className="flex-row-start-center gap-6">
         <div className="p-1 bg-white-primary/40 rounded-md">
-          <Image
-            src={logoUrl || "/system-component-images/logo-placeholder.webp"}
-            alt={"footer-logo-svg"}
-            width={30}
-            height={30}
-          />
+          <Image src={logoUrl} alt={"footer-logo-svg"} width={30} height={30} />
         </div>
 
         <h1 className="text-2xl italic font-bold text-white-secondary">

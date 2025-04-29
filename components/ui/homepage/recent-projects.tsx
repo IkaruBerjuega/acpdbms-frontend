@@ -1,6 +1,4 @@
 "use client";
-import { useAdminSettings } from "@/hooks/general/use-admin-settings";
-import type { Project } from "../admin/settings/admin-tools";
 import { ProjectCarousel } from "./recent-project-carousel";
 import { RecentProjectsResponse } from "@/lib/definitions";
 
@@ -9,12 +7,6 @@ export default function RecentProjects({
 }: {
   images: RecentProjectsResponse["recent_project_images"];
 }) {
-  const { recentImagesQuery } = useAdminSettings();
-  const { data: recentProjectsData } = recentImagesQuery;
-  const projects: Project[] = images || [];
-  const recentProjectsMessage =
-    recentProjectsData?.message || "No recent projects yet.";
-
   return (
     <section
       id="recent-projects"
@@ -27,11 +19,11 @@ export default function RecentProjects({
 
       {/* Full-page carousel */}
       <div className="flex-grow flex justify-center">
-        {projects.length > 0 ? (
-          <ProjectCarousel projects={projects} />
+        {!images || images.length > 0 ? (
+          <ProjectCarousel projects={images!} />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-white-secondary text-xl">
-            {recentProjectsMessage}
+            No uploaded images yet
           </div>
         )}
       </div>

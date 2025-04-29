@@ -3,7 +3,7 @@
 import { ButtonLink } from "../button";
 import Image from "next/image";
 
-export default function Hero({ logoUrl }: { logoUrl: string | undefined }) {
+export default function Hero({ logoUrl }: { logoUrl: string }) {
   return (
     <section
       id="home"
