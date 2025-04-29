@@ -116,7 +116,7 @@ export const useAccountActions = ({ userId }: { userId?: string }) => {
   });
 
   const deleteArchivedAccount = useApiMutation<null>({
-    url: `/users/${userId}/delete-archived`,
+    url: `/users/${userId}/delete`,
     method: "DELETE",
     contentType: "application/json",
     auth: true,
