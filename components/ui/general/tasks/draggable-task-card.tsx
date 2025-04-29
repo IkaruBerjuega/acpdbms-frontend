@@ -180,6 +180,7 @@ export default function TaskCard(props: TaskCardProps) {
   }
 
   const { data: projectSelected } = useProjectSelectStore();
+  const { setData: setTaskStatus } = useSelectedTaskStatus();
   const isUserMember = projectSelected[0]?.userRole === "Member";
 
   //check if there is projectId url parameter
@@ -204,7 +205,7 @@ export default function TaskCard(props: TaskCardProps) {
     goTo(
       `/employee/tasks/${id}/view-files?view_files=true&version=${version}&projectId=${projectId}`
     );
-    localStorage.setItem("selectedTaskStatus", status);
+    setTaskStatus([status]);
   }
 
   //link to go to task details

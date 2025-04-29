@@ -87,8 +87,6 @@ function addIsLoggedOutParam(req: NextRequest) {
   url.searchParams.set("isLoggedOut", "true");
 
   const response = NextResponse.redirect(url);
-  response.cookies.delete("token");
-  response.cookies.delete("role");
 
   return response;
 }

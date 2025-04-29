@@ -129,6 +129,7 @@ export default function TaskSheetContainer({
           version={version}
           role={"manager"}
           projectId={projectId}
+          reviewMode={false}
         />
       ),
     },

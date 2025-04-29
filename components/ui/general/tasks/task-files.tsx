@@ -15,11 +15,14 @@ import {
   TaskFilesApproval,
   TaskFilesApprovalRequest,
 } from "@/lib/files-definitions";
-import { TaskStatuses, TaskVersionsResponse } from "@/lib/tasks-definitions";
+import { TaskVersionsResponse } from "@/lib/tasks-definitions";
 import { Check, X } from "lucide-react";
 import useFileActions from "@/hooks/api-calls/employee/use-files";
 import { Badge } from "../../badge";
-import { useTaskSelectFile } from "@/hooks/states/create-store";
+import {
+  useSelectedTaskStatus,
+  useTaskSelectFile,
+} from "@/hooks/states/create-store";
 
 type viewType = "references" | "deliverables" | "archived";
 
@@ -232,8 +235,6 @@ export default function TaskFiles({
   setReview?: Dispatch<SetStateAction<TaskFilesApproval[] | undefined>>;
   projectId: string;
 }) {
-  const taskStatus = localStorage.getItem("selectedTaskStatus") as TaskStatuses;
-
   const { data: selectedTaskFileId } = useTaskSelectFile();
 
   const [selectedfile, setSelectedfile] = useState<TaskFile>();
@@ -247,6 +248,10 @@ export default function TaskFiles({
   const [message, setMessage] = useState<string>("");
 
   const isValidToUploadDeliverables = !reviewMode;
+
+  const { data: selectedTaskStatus } = useSelectedTaskStatus();
+
+  const taskStatus = selectedTaskStatus[0];
 
   const defaultView: viewType =
     isValidToUploadDeliverables && taskStatus !== "to do"
@@ -364,6 +369,7 @@ export default function TaskFiles({
     (max, version) => (version.version > max.version ? version : max),
     versions[0]
   );
+
   const openedVersion =
     versions?.find((ver) => ver.version === Number(version)) || lastVersion;
 
@@ -598,7 +604,7 @@ export default function TaskFiles({
                     size={"sm"}
                     variant={"ghost"}
                     onClick={() => setView("deliverables")}
-                    className={`${
+                    className={`text-xs px-2  ${
                       isViewDeliverables
                         ? "text-black-primary font-semibold"
                         : "text-slate-400"
@@ -615,14 +621,14 @@ export default function TaskFiles({
                   size={"sm"}
                   variant={"ghost"}
                   onClick={() => setreviewViewStatus("to review")}
-                  className={`${
+                  className={`text-xs px-2   ${
                     isViewToReview
                       ? "text-black-primary font-semibold"
                       : "text-slate-400"
                   }`}
                 >
                   To Review
-                  <span className="rounded-md px-2 py-1 text-xs">
+                  <span className="rounded-md  py-1 text-xs">
                     {filesToReview.length}
                   </span>
                 </Button>
@@ -630,7 +636,7 @@ export default function TaskFiles({
                   size={"sm"}
                   variant={"ghost"}
                   onClick={() => setreviewViewStatus("approved")}
-                  className={`
+                  className={`text-xs px-2 
                     ${
                       isViewAccepted
                         ? "text-black-primary font-semibold"
@@ -638,7 +644,7 @@ export default function TaskFiles({
                     }`}
                 >
                   Approved
-                  <span className=" rounded-md px-2 py-1 text-xs ">
+                  <span className=" rounded-md py-1 text-xs ">
                     {approvedFiles.length}
                   </span>
                 </Button>
@@ -646,14 +652,14 @@ export default function TaskFiles({
                   size={"sm"}
                   variant={"ghost"}
                   onClick={() => setreviewViewStatus("rejected")}
-                  className={`${
+                  className={`text-xs px-2  ${
                     isViewRejected
                       ? "text-black-primary font-semibold"
                       : "text-slate-400"
                   }`}
                 >
                   Rejected
-                  <span className="rounded-md px-2 py-1 text-xs ">
+                  <span className="rounded-md  py-1 text-xs ">
                     {rejectedFiles.length}
                   </span>
                 </Button>
@@ -665,7 +671,7 @@ export default function TaskFiles({
                 size={"sm"}
                 variant={"ghost"}
                 onClick={() => setView("references")}
-                className={`${
+                className={`text-xs px-2  ${
                   isViewReferences
                     ? "text-black-primary font-semibold"
                     : "text-slate-400"
@@ -685,7 +691,7 @@ export default function TaskFiles({
                   setView("archived");
                 }
               }}
-              className={`${
+              className={`text-xs px-2  ${
                 isViewArchived
                   ? "text-black-primary font-semibold"
                   : "text-slate-400"

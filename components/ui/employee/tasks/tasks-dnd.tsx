@@ -297,6 +297,17 @@ export default function TasksDND({
       return;
     }
 
+    if (droppedStatus === "to do" && recentStatus === "in progress") {
+      toast({
+        title: "Warning",
+        description:
+          "Tasks that are being in progress cannot be set back to to do",
+        variant: "destructive",
+      });
+
+      return;
+    }
+
     if (droppedStatus === "needs review" && recentStatus === "to do") {
       toast({
         title: "Warning",
