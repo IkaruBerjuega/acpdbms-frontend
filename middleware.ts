@@ -40,16 +40,6 @@ export async function middleware(req: NextRequest) {
     return redirectToLogin(req, isProtectedPath);
   }
 
-  // Handle login page: delete cookies and redirect if authenticated
-  if (isLoginPage) {
-    const response = NextResponse.redirect(
-      new URL(getRoleRedirect(role), req.url)
-    );
-    response.cookies.delete("token");
-    response.cookies.delete("role");
-    return response;
-  }
-
   // Verify token with Laravel
   try {
     const laravelResponse = await fetch(LARAVEL_AUTH_CHECK_URL, {
@@ -61,6 +51,16 @@ export async function middleware(req: NextRequest) {
     });
 
     if (!laravelResponse.ok) {
+      // Handle login page: delete cookies and redirect if authenticated
+      if (isLoginPage) {
+        const response = NextResponse.redirect(
+          new URL(getRoleRedirect(role), req.url)
+        );
+        response.cookies.delete("token");
+        response.cookies.delete("role");
+        return response;
+      }
+
       return redirectToLogin(req, isProtectedPath, role);
     }
 
