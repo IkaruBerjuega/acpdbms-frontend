@@ -17,14 +17,9 @@ export default async function Page({ searchParams }: PageProps) {
 
   const { edit = "false", projectId } = await searchParams;
 
-  const pageRoute = `/employee/project-details/${projectId}/view`;
+  const pageRoute = `/employee/project-dashboard?projectId=${projectId}`;
 
   const breadcrumbs = [
-    {
-      pageName: "Employee",
-      href: "",
-      active: false,
-    },
     {
       pageName: "View Project Details",
       href: pageRoute,

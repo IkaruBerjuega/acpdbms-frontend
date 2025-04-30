@@ -210,6 +210,7 @@ interface ReusableCxtMenuProps {
   handleOpenChange: (open: boolean) => void;
   elementTrigger: JSX.Element;
   items: ItemProps[];
+  onClickForTrigger: () => void;
 }
 
 function ReusableContextMenu({
@@ -217,6 +218,7 @@ function ReusableContextMenu({
   elementTrigger,
   items,
   handleOpenChange,
+  onClickForTrigger,
 }: ReusableCxtMenuProps) {
   const [selectedDialog, setSelectedDialog] = useState<string | null>(null);
 
@@ -228,7 +230,9 @@ function ReusableContextMenu({
 
   return (
     <ContextMenu onOpenChange={handleOpenChange}>
-      <ContextMenuTrigger className="">{elementTrigger}</ContextMenuTrigger>
+      <ContextMenuTrigger className="" onClick={onClickForTrigger}>
+        {elementTrigger}
+      </ContextMenuTrigger>
 
       <ContextMenuContent className="w-48">
         <ContextMenuLabel>{menuLabel}</ContextMenuLabel>

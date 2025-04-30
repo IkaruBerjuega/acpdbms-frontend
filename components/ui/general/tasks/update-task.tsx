@@ -12,7 +12,6 @@ import { useEffect } from "react";
 import { useTaskToUpdateDetails } from "@/hooks/states/create-store";
 import { toast } from "@/hooks/use-toast";
 import { requireError } from "@/lib/utils";
-import { error } from "console";
 
 export default function UpdateTaskForm({
   projectId,

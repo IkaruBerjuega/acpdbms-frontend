@@ -39,12 +39,8 @@ export default async function Page({
     member_filters,
     date_filter,
   } = await searchParams;
+
   const breadcrumbs: Breadcrumbs[] = [
-    {
-      href: "",
-      pageName: "Project Name",
-      active: false,
-    },
     {
       href: "/employee/tasks",
       pageName: "Tasks",

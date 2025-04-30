@@ -11,7 +11,6 @@ export default async function Page({
 }) {
   const { view, projectId } = await searchParams;
   const breadcrumbs = [
-    { pageName: "Client", href: "", active: false },
     { pageName: "Approval", href: "/client/approval", active: true },
   ];
 

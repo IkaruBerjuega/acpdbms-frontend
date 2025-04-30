@@ -5,7 +5,7 @@ import { ReusableContextMenu } from "../../context-menu";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { useSelectFiles, useTaskSelectFile } from "@/hooks/states/create-store";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { FileUIProps } from "@/lib/files-definitions";
 import { useRouter } from "next/navigation";
 
@@ -123,7 +123,7 @@ export function FileActionWrapper({
 
   const { push } = useRouter();
 
-  const handleViewFile = () => {
+  const viewFile = () => {
     let viewPath = "";
     const taskId = selectedFiles[0]?.task_id;
     const taskVersionNumber = selectedFiles[0]?.task_version_number;
@@ -146,17 +146,31 @@ export function FileActionWrapper({
     push(viewPath);
   };
 
+  const noOfClicks = useRef(0);
+
+  const handleViewFileDirect = () => {
+    if (noOfClicks.current <= 1) {
+      noOfClicks.current++;
+    }
+
+    if (selectedFiles && noOfClicks.current === 2) {
+      noOfClicks.current = 0;
+      viewFile();
+    }
+  };
+
   return (
     <ReusableContextMenu
       menuLabel={"File Actions"}
       elementTrigger={elementTrigger}
       handleOpenChange={handleOpenChange}
+      onClickForTrigger={handleViewFileDirect}
       items={[
         ...(!isArchived && selectedFiles.length === 1
           ? [
               {
                 actionName: "View",
-                onClick: handleViewFile,
+                onClick: viewFile,
                 btnSrc: "/button-svgs/table-action-view.svg",
                 isDialog: false,
               },

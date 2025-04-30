@@ -22,11 +22,6 @@ export default async function Page({
 
   const breadcrumbs: Breadcrumbs[] = [
     {
-      href: "",
-      pageName: "Project Name",
-      active: false,
-    },
-    {
       href: "/employee/tasks",
       pageName: "Tasks",
       active: false,

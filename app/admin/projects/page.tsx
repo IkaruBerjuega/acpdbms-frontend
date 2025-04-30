@@ -23,11 +23,6 @@ export default async function Page({
 
   const breadCrumbs = [
     {
-      href: "/admin/dashboard",
-      pageName: "Admin",
-      active: false,
-    },
-    {
       href: "/admin/projects/",
       pageName: "Projects",
       active: true,

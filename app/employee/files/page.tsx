@@ -14,12 +14,7 @@ export default async function Page({
   const queries = await searchParams;
   const breadcrumbs: Breadcrumbs[] = [
     {
-      href: "/employee",
-      pageName: "Admin",
-      active: false,
-    },
-    {
-      href: "/employee/files",
+      href: `/employee/files?projectId=${queries.projectId}`,
       pageName: "Files",
       active: true,
     },
