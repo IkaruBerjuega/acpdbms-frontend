@@ -50,35 +50,30 @@ export default function TaskCards() {
     {
       title: "Projects in Progress",
       value: metrics.projectsInProgress,
-      href: "/admin/projects?status=ongoing",
       helpText: "as of today",
       icon: <FolderOpen className="h-5 w-5 text-gray-500" />,
     },
     {
       title: "Projects Completed",
       value: metrics.projectsCompleted,
-      href: "/admin/projects?status=finished",
       helpText: "as of this year",
       icon: <FolderOpen className="h-5 w-5 text-gray-500" />,
     },
     {
       title: "Tasks in Progress",
       value: metrics.tasksInProgress,
-      href: "/admin/projects/tasks?status=ongoing",
       helpText: "as of today",
       icon: <ClipboardList className="h-5 w-5 text-gray-500" />,
     },
     {
       title: "Tasks Pending Review",
       value: metrics.tasksNeedsReview,
-      href: "/admin/projects/tasks?status=needs_review",
       helpText: "as of today",
       icon: <ClipboardList className="h-5 w-5 text-gray-500" />,
     },
     {
       title: "Tasks Completed",
       value: metrics.tasksCompleted,
-      href: "/admin/projects/tasks?status=finished",
       helpText: "as of today",
       icon: <ClipboardList className="h-5 w-5 text-gray-500" />,
     },
@@ -93,9 +88,8 @@ export default function TaskCards() {
       )}
       <div className="flex-grow grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
         {metricsData.map((item, index) => (
-          <a
+          <div
             key={index}
-            href={item.href}
             className="bg-white-primary rounded-lg border border-gray-300 p-6 flex flex-col justify-between shadow-sm hover:shadow-md transition-shadow"
           >
             <div className="flex items-center justify-between mb-2">
@@ -106,7 +100,7 @@ export default function TaskCards() {
               {item.value}
             </p>
             <p className="text-sm text-gray-500">{item.helpText}</p>
-          </a>
+          </div>
         ))}
       </div>
     </>

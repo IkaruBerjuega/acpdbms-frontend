@@ -276,7 +276,11 @@ export default function GrantProjectAccess() {
             }}
           />
           <div className="flex-row-end-start mt-4 ">
-            <Button onClick={() => next(step)} type="button">
+            <Button
+              onClick={() => next(step)}
+              type="button"
+              disabled={!watch("project_id")}
+            >
               Next
             </Button>
           </div>
