@@ -4,43 +4,53 @@ import type { NextRequest } from "next/server";
 const LARAVEL_AUTH_CHECK_URL = `${process.env.NEXT_PUBLIC_API_URL}/auth/check`;
 
 export async function middleware(req: NextRequest) {
-  const storedToken = req.cookies.get("token")?.value || "";
-  const storedRole = req.cookies.get("role")?.value || "";
-
-  const decodedToken = decodeURIComponent(storedToken);
-  const decodedRole = decodeURIComponent(storedRole);
-
+  const storedToken = req.cookies.get("token")?.value;
+  const storedRole = req.cookies.get("role")?.value;
   const isLoginPage = req.nextUrl.pathname === "/login";
+  const isProtectedPath = req.nextUrl.pathname.match(
+    /^\/(admin|employee|client)/
+  );
 
-  let token = "";
-  let role = "";
-
-  if (!storedToken && !storedRole) {
-    return isLoginPage
-      ? NextResponse.next()
-      : NextResponse.redirect(new URL("/login", req.url));
+  // If no token or role, redirect to login for protected paths
+  if (!storedToken || !storedRole) {
+    if (isProtectedPath) {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+    return NextResponse.next();
   }
 
+  let token: string;
+  let role: "admin" | "employee" | "client";
+
+  // Parse token
   try {
-    const parsedData = JSON.parse(decodedToken) as { token: string };
-    token = parsedData.token;
+    const parsedToken = JSON.parse(storedToken) as { token: string };
+    token = parsedToken.token;
   } catch {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return redirectToLogin(req, isProtectedPath);
   }
 
+  // Parse role
   try {
-    const parsedData = JSON.parse(decodedRole) as {
+    const parsedRole = JSON.parse(storedRole) as {
       role: "admin" | "employee" | "client";
     };
-    role = parsedData.role;
+    role = parsedRole.role;
   } catch {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return redirectToLogin(req, isProtectedPath);
   }
 
-  if (!token) {
-    return isLoginPage ? NextResponse.next() : addIsLoggedOutParam(req, role);
+  // Handle login page: delete cookies and redirect if authenticated
+  if (isLoginPage) {
+    const response = NextResponse.redirect(
+      new URL(getRoleRedirect(role), req.url)
+    );
+    response.cookies.delete("token");
+    response.cookies.delete("role");
+    return response;
   }
 
+  // Verify token with Laravel
   try {
     const laravelResponse = await fetch(LARAVEL_AUTH_CHECK_URL, {
       method: "GET",
@@ -50,47 +60,45 @@ export async function middleware(req: NextRequest) {
       },
     });
 
-    const url = new URL(req.url);
-
     if (!laravelResponse.ok) {
-      return addIsLoggedOutParam(req, role);
+      return redirectToLogin(req, isProtectedPath, role);
     }
 
-    // Laravel responded OK
-    // - Remove "isLoggedOut" from the URL if it exists
+    // Remove isLoggedOut param if present
+    const url = new URL(req.url);
     if (url.searchParams.has("isLoggedOut")) {
       url.searchParams.delete("isLoggedOut");
       return NextResponse.redirect(url);
     }
 
-    // Already at the login page and authenticated → redirect based on role
-    if (isLoginPage) {
-      const url = new URL(getRoleRedirect(role), req.url);
-      url.searchParams.delete("isLoggedOut");
-      return NextResponse.redirect(url);
-    }
-
-    //  Role-based protection
+    // Role-based path protection
     if (!req.nextUrl.pathname.startsWith(getRolePath(role))) {
       return NextResponse.redirect(new URL(getRoleRedirect(role), req.url));
     }
   } catch {
-    return addIsLoggedOutParam(req, role);
+    return redirectToLogin(req, isProtectedPath, role);
   }
 
   return NextResponse.next();
 }
 
-// Utility redirect function when invalid
-function addIsLoggedOutParam(req: NextRequest, role: string) {
-  const url = new URL(getRoleRedirect(role), req.url);
-  url.searchParams.set("isLoggedOut", "true");
+// Utility function for redirects
+function redirectToLogin(
+  req: NextRequest,
+  isProtectedPath: RegExpMatchArray | null,
+  role?: string
+) {
+  const url = new URL(role ? getRoleRedirect(role) : "/login", req.url);
 
-  const response = NextResponse.redirect(url);
+  // Add isLoggedOut param only for protected paths
+  if (isProtectedPath) {
+    url.searchParams.set("isLoggedOut", "true");
+  }
 
-  return response;
+  return NextResponse.redirect(url);
 }
 
+// Role-based redirect URLs
 const getRoleRedirect = (role: string) => {
   return (
     {
@@ -101,6 +109,7 @@ const getRoleRedirect = (role: string) => {
   );
 };
 
+// Role-based path prefixes
 const getRolePath = (role: string) => {
   return (
     {
