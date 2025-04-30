@@ -11,6 +11,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useTaskToUpdateDetails } from "@/hooks/states/create-store";
 import { toast } from "@/hooks/use-toast";
+import { requireError } from "@/lib/utils";
+import { error } from "console";
 
 export default function UpdateTaskForm({
   projectId,
@@ -31,7 +33,12 @@ export default function UpdateTaskForm({
   const { data: toPopulate } = useTaskToUpdateDetails();
   const dataToPopulate = toPopulate[0];
 
-  const { register, reset, handleSubmit } = methods;
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = methods;
 
   useEffect(() => {
     reset({
@@ -84,14 +91,18 @@ export default function UpdateTaskForm({
         label={"Task Name"}
         register={register}
         inputType={"default"}
-        required={false}
+        validationRules={{ required: requireError("Task Name") }}
+        required={true}
+        errorMessage={errors.task_name?.message}
       />
       <FormInput
         name={"task_description"}
         label={"Task Description"}
         register={register}
         inputType={"default"}
-        required={false}
+        validationRules={{ required: requireError("Task Description") }}
+        required={true}
+        errorMessage={errors.task_description?.message}
       />
 
       {dataToPopulate?.status === "to do" && (
@@ -101,7 +112,9 @@ export default function UpdateTaskForm({
           register={register}
           dataType="number"
           inputType={"default"}
-          required={false}
+          validationRules={{ required: requireError("Duration") }}
+          required={true}
+          errorMessage={errors.duration?.message}
         />
       )}
 
@@ -109,8 +122,8 @@ export default function UpdateTaskForm({
         <BtnDialog
           btnTitle={"Submit"}
           isLoading={updateTask.isLoading}
-          alt={"Add Employee Button"}
-          dialogTitle={"Add Employee"}
+          alt={"Update Task Button"}
+          dialogTitle={"Update Task"}
           dialogDescription={
             "Do you confirm on updating the selected task's details?"
           }
