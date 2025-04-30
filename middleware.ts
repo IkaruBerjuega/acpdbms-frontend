@@ -25,7 +25,7 @@ export async function middleware(req: NextRequest) {
     const parsedData = JSON.parse(decodedToken) as { token: string };
     token = parsedData.token;
   } catch {
-    return addIsLoggedOutParam(req);
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   try {
@@ -34,11 +34,11 @@ export async function middleware(req: NextRequest) {
     };
     role = parsedData.role;
   } catch {
-    return addIsLoggedOutParam(req);
+    return NextResponse.redirect(new URL("/login", req.url));
   }
 
   if (!token) {
-    return isLoginPage ? NextResponse.next() : addIsLoggedOutParam(req);
+    return isLoginPage ? NextResponse.next() : addIsLoggedOutParam(req, role);
   }
 
   try {
@@ -53,7 +53,7 @@ export async function middleware(req: NextRequest) {
     const url = new URL(req.url);
 
     if (!laravelResponse.ok) {
-      return addIsLoggedOutParam(req);
+      return addIsLoggedOutParam(req, role);
     }
 
     // Laravel responded OK
@@ -75,15 +75,15 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL(getRoleRedirect(role), req.url));
     }
   } catch {
-    return addIsLoggedOutParam(req);
+    return addIsLoggedOutParam(req, role);
   }
 
   return NextResponse.next();
 }
 
 // Utility redirect function when invalid
-function addIsLoggedOutParam(req: NextRequest) {
-  const url = new URL(req.url);
+function addIsLoggedOutParam(req: NextRequest, role: string) {
+  const url = new URL(getRoleRedirect(role), req.url);
   url.searchParams.set("isLoggedOut", "true");
 
   const response = NextResponse.redirect(url);
