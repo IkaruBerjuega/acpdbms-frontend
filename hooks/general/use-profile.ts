@@ -13,13 +13,17 @@ import {
 } from "@/lib/form-constants/form-constants";
 
 // fetches profile and projects for employees and clients
-export const useProfile = (userId: string) => {
+export const useProfile = (
+  userId: string,
+  initialData?: UserDetailsResponse
+) => {
   // get profile details
   const { data: profileDetails, error: profileError } =
     useApiQuery<UserDetailsResponse>({
       key: ["user-details", userId],
       url: `/users/${userId}`,
       enabled: !!userId,
+      initialData: initialData,
     });
 
   // determine project endpoints based on account type

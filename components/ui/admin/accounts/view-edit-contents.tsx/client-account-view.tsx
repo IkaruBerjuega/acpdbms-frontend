@@ -23,13 +23,16 @@ import { useProfile } from "@/hooks/general/use-profile";
 import { ViewEditCard } from "./project-view-card";
 import { adminUpdateProfile } from "@/lib/form-constants/form-constants";
 import USLocationSelector from "@/components/ui/general/location-selector";
+import { UserDetailsResponse } from "@/lib/definitions";
 
 export default function ClientAccView({
   id,
   isEdit,
+  detailsInitialData,
 }: {
   id: string;
   isEdit: boolean;
+  detailsInitialData?: UserDetailsResponse;
 }) {
   const queryClient = useQueryClient();
   const router = useRouter();
@@ -54,7 +57,7 @@ export default function ClientAccView({
     finishedProjects,
     ongoingProjects,
     updateProfileFromAdminMutation,
-  } = useProfile(id);
+  } = useProfile(id, detailsInitialData);
 
   // Function to update query parameters without modifying params directly
   const handleEdit = () => {

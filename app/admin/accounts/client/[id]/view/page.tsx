@@ -1,5 +1,7 @@
 import ClientAccView from "@/components/ui/admin/accounts/view-edit-contents.tsx/client-account-view";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import serverRequestAPI from "@/hooks/server-request";
+import { UserDetailsResponse } from "@/lib/definitions";
 
 export default async function Page({
   params,
@@ -13,6 +15,10 @@ export default async function Page({
   const { edit } = await searchParams;
 
   const isEditMode = edit === "true" ? true : false;
+  const initialData: UserDetailsResponse = await serverRequestAPI({
+    auth: true,
+    url: `/users/${id}`,
+  });
 
   return (
     <>
@@ -32,7 +38,11 @@ export default async function Page({
       />
 
       <div className="flex-1 overflow-y-auto min-h-0">
-        <ClientAccView id={id} isEdit={isEditMode} />
+        <ClientAccView
+          id={id}
+          isEdit={isEditMode}
+          detailsInitialData={initialData}
+        />
       </div>
     </>
   );

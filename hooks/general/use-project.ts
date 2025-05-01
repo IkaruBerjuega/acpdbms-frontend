@@ -19,12 +19,10 @@ interface useProjectListProps<T> {
 // Hook for fetching the project list
 export const useProjectList = <T extends ProjectListResponseInterface>({
   isArchived,
-  initialData,
 }: useProjectListProps<T>) => {
   return useApiQuery<T[]>({
-    key: !isArchived ? "projects" : "projects-archived",
+    key: !isArchived ? ["projects"] : ["projects-archived"],
     url: !isArchived ? "/project-list" : "/projects/archived",
-    initialData,
   });
 };
 

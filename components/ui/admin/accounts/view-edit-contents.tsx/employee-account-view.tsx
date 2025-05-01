@@ -24,13 +24,16 @@ import { useProfile } from "@/hooks/general/use-profile";
 import { ViewEditCard } from "./project-view-card";
 import { adminUpdateProfile } from "@/lib/form-constants/form-constants";
 import USLocationSelector from "@/components/ui/general/location-selector";
+import { UserDetailsResponse } from "@/lib/definitions";
 
 export default function EmpAccView({
   id,
   isEdit,
+  detailsInitialData,
 }: {
   id: string;
   isEdit: boolean;
+  detailsInitialData?: UserDetailsResponse;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -71,7 +74,7 @@ export default function EmpAccView({
     finishedProjects,
     ongoingProjects,
     updateProfileFromAdminMutation,
-  } = useProfile(id);
+  } = useProfile(id, detailsInitialData);
 
   // Populate form data when profileDetails change.
   useEffect(() => {
