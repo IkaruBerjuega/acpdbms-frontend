@@ -23,10 +23,11 @@ export default async function Page({
     client: isArchived ? "/clients-archived" : "/clients-list",
   };
 
-  const initialData: AccountsTableType[] = await serverRequestAPI({
-    url: urlMap[role],
-    auth: true,
-  });
+  const initialData: AccountsTableType[] =
+    (await serverRequestAPI({
+      url: urlMap[role],
+      auth: true,
+    })) || [];
 
   const routeMap = {
     employee: isArchived
