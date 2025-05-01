@@ -5,7 +5,7 @@ import Hero from "@/components/ui/homepage/hero";
 import Navbar from "@/components/ui/homepage/navbar";
 import Process from "@/components/ui/homepage/process";
 import RecentProjects from "@/components/ui/homepage/recent-projects";
-import serverRequestAPI from "@/hooks/server-request";
+import { publicRequestAPI } from "@/hooks/server-request";
 import {
   DynamicContactSchema,
   LogoResponse,
@@ -15,9 +15,9 @@ import {
 export default async function Page() {
   const [logoResponse, contactDetailsResponse, recentProjectImagesResponse] =
     await Promise.all([
-      serverRequestAPI({ url: "/settings/logo", auth: false }),
-      serverRequestAPI({ url: "/contact-details", auth: false }),
-      serverRequestAPI({ url: "/recent-projects", auth: false }),
+      publicRequestAPI({ url: "/settings/logo" }),
+      publicRequestAPI({ url: "/contact-details" }),
+      publicRequestAPI({ url: "/recent-projects" }),
     ]);
 
   const logoUrl =

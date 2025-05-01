@@ -116,7 +116,10 @@ export const usePhases = (projectId: string) => {
   });
 };
 
-export const useGetActivePhases = (projectId: string, initialData: Phase[]) => {
+export const useGetActivePhases = (
+  projectId: string,
+  initialData?: Phase[]
+) => {
   return useApiQuery<Phase[]>({
     key: ["phases-active", projectId],
     url: `/phases-active/${projectId}`,
@@ -127,7 +130,7 @@ export const useGetActivePhases = (projectId: string, initialData: Phase[]) => {
 
 export const useGetArchivedPhases = (
   projectId: string,
-  initialData: Phase[]
+  initialData?: Phase[]
 ) => {
   return useApiQuery<Phase[]>({
     key: ["phases-archived", projectId],

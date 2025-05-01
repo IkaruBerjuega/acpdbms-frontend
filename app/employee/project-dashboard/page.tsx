@@ -1,7 +1,7 @@
 import ProjectView from "@/components/ui/general/project-view";
 import { ProjectSelector } from "@/components/ui/general/project-selector";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import serverRequestAPI from "@/hooks/server-request";
+import { authRequestAPI } from "@/hooks/server-request";
 import {
   Phase,
   ProjectDetailsInterface,
@@ -39,25 +39,21 @@ export default async function Page({ searchParams }: PageProps) {
   }
 
   //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
-  const initialData: ProjectDetailsInterface = await serverRequestAPI({
+  const initialData = await authRequestAPI<ProjectDetailsInterface>({
     url: `/project-view/${_projectId}`,
-    auth: true,
   });
 
   //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
-  const teamMembers: TeamMemberDashboardResponse = await serverRequestAPI({
+  const teamMembers = await authRequestAPI<TeamMemberDashboardResponse>({
     url: `/projects/${_projectId}/team-members`,
-    auth: true,
   });
 
-  const activePhases: Phase[] = await serverRequestAPI({
+  const activePhases = await authRequestAPI<Phase[]>({
     url: `/phases-active/${_projectId}`,
-    auth: true,
   });
 
-  const archivedPhases: Phase[] = await serverRequestAPI({
+  const archivedPhases = await authRequestAPI<Phase[]>({
     url: `/phases-archived/${_projectId}`,
-    auth: true,
   });
 
   return (

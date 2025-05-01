@@ -1,6 +1,6 @@
 import ClientAccView from "@/components/ui/admin/accounts/view-edit-contents.tsx/client-account-view";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import serverRequestAPI from "@/hooks/server-request";
+import { authRequestAPI } from "@/hooks/server-request";
 import { UserDetailsResponse } from "@/lib/definitions";
 
 export default async function Page({
@@ -15,8 +15,7 @@ export default async function Page({
   const { edit } = await searchParams;
 
   const isEditMode = edit === "true" ? true : false;
-  const initialData: UserDetailsResponse = await serverRequestAPI({
-    auth: true,
+  const initialData = await authRequestAPI<UserDetailsResponse>({
     url: `/users/${id}`,
   });
 

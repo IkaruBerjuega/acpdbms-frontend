@@ -1,6 +1,6 @@
 import EmpAccView from "@/components/ui/admin/accounts/view-edit-contents.tsx/employee-account-view";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import serverRequestAPI from "@/hooks/server-request";
+import { authRequestAPI } from "@/hooks/server-request";
 import { UserDetailsResponse } from "@/lib/definitions";
 
 export default async function Page({
@@ -14,10 +14,10 @@ export default async function Page({
   const { id } = await params;
   const { edit } = await searchParams;
 
-  const initialData: UserDetailsResponse = await serverRequestAPI({
-    auth: true,
-    url: `/users/${id}`,
-  });
+  const initialData =
+    (await authRequestAPI<UserDetailsResponse>({
+      url: `/users/${id}`,
+    })) || undefined;
 
   const isEditMode = edit === "true" ? true : false;
   return (

@@ -64,7 +64,7 @@ import { useProjectSelectStore } from "@/hooks/states/create-store";
 interface ProjectDetails {
   id: string;
   edit: string;
-  projectDetailsInitialData: ProjectDetailsInterface;
+  projectDetailsInitialData?: ProjectDetailsInterface;
   isAdmin?: boolean;
 }
 
@@ -766,7 +766,7 @@ function TeamMembers({
   teamInitialData,
 }: {
   id: string;
-  teamInitialData: TeamMemberDashboardResponse;
+  teamInitialData?: TeamMemberDashboardResponse;
 }) {
   const { data, isLoading } = useTeamDetailsForDashboard(id, teamInitialData);
   const { data: hasPermission } = useCheckViceManagerPermission(id);
@@ -985,8 +985,8 @@ function Phases({
   archivedPhasesInitialData,
 }: {
   id: string;
-  activePhasesInitialData: Phase[];
-  archivedPhasesInitialData: Phase[];
+  activePhasesInitialData?: Phase[];
+  archivedPhasesInitialData?: Phase[];
 }) {
   const phasesIconSrc = "/button-svgs/tasks-header-phases.svg";
 
@@ -1036,10 +1036,10 @@ export default function ProjectView({
 }: {
   id: string;
   edit: string;
-  projectDetailsInitialData: ProjectDetailsInterface;
-  teamInitialData: TeamMemberDashboardResponse;
-  activePhaseInitialData: Phase[];
-  archivedPhasesInitialData: Phase[];
+  projectDetailsInitialData?: ProjectDetailsInterface;
+  teamInitialData?: TeamMemberDashboardResponse;
+  activePhaseInitialData?: Phase[];
+  archivedPhasesInitialData?: Phase[];
   isAdmin?: boolean;
 }) {
   return (

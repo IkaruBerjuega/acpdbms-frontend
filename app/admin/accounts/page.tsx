@@ -1,7 +1,7 @@
 import AccountsTableHeaderActions from "@/components/ui/admin/accounts/table-header";
 import Table from "@/components/ui/admin/accounts/table";
 import { AccountsTableType, Breadcrumbs } from "@/lib/definitions";
-import serverRequestAPI from "@/hooks/server-request";
+import { authRequestAPI } from "@/hooks/server-request";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Sidepanel from "@/components/ui/admin/accounts/sidepanel";
 
@@ -24,9 +24,8 @@ export default async function Page({
   };
 
   const initialData: AccountsTableType[] =
-    (await serverRequestAPI({
+    (await authRequestAPI({
       url: urlMap[role],
-      auth: true,
     })) || [];
 
   const routeMap = {

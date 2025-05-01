@@ -1,6 +1,6 @@
 import ProjectList from "@/components/ui/admin/projects/project-list";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import serverRequestAPI from "@/hooks/server-request";
+import { authRequestAPI } from "@/hooks/server-request";
 import { ProjectListResponseInterface } from "@/lib/definitions";
 
 export default async function Page({
@@ -15,10 +15,9 @@ export default async function Page({
 
   const url = isArchived ? "/projects/archived" : "/project-list";
 
-  const initialData: ProjectListResponseInterface[] =
-    (await serverRequestAPI({
+  const initialData =
+    (await authRequestAPI<ProjectListResponseInterface[]>({
       url: url,
-      auth: true,
     })) || [];
 
   const breadCrumbs = [

@@ -1,7 +1,7 @@
 import FileReview from "@/components/ui/general/file-review";
 import { ProjectSelector } from "@/components/ui/general/project-selector";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import serverRequestAPI from "@/hooks/server-request";
+import { authRequestAPI } from "@/hooks/server-request";
 import { Breadcrumbs } from "@/lib/definitions";
 import { TaskVersionsResponse } from "@/lib/tasks-definitions";
 
@@ -21,9 +21,8 @@ export default async function Page({
   const { version, projectId, view_files, view_comments } = await searchParams;
 
   //for initial data
-  const initialData: TaskVersionsResponse = await serverRequestAPI({
+  const initialData = await authRequestAPI<TaskVersionsResponse>({
     url: `/tasks/${taskId}/versions`,
-    auth: true,
   });
 
   const breadcrumbs: Breadcrumbs[] = [

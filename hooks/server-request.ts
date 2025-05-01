@@ -1,10 +1,5 @@
 import { cookies } from "next/headers";
 
-interface ServerRequestAPI {
-  url: string;
-  auth: boolean;
-}
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 if (!API_URL) {
   throw new Error(
@@ -12,44 +7,54 @@ if (!API_URL) {
   );
 }
 
-export default async function serverRequestAPI({
+// 🔓 For public/static requests — eligible for caching
+export async function publicRequestAPI<T>({
   url,
-  auth,
-}: ServerRequestAPI) {
-  const tokenResponse = (await cookies()).get("token")?.value;
-
-  let token;
-  if (tokenResponse) {
-    token = JSON.parse(tokenResponse).token;
-  }
-
-  let res;
+}: {
+  url: string;
+}): Promise<T | undefined> {
   try {
-    res = await fetch(`${API_URL}${url}`, {
+    const res = await fetch(`${API_URL}${url}`, {
       method: "GET",
-      cache: "force-cache",
+      cache: "force-cache", // or: next: { revalidate: 60 }
       headers: {
         "Content-Type": "application/json",
-        ...(auth && !!token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
+
+    if (!res.ok) return undefined;
+
+    return await res.json();
   } catch (error) {
-    // console.error(`Fetch failed for ${url}:`, error);
-    return null;
+    console.error(`Public fetch failed for ${url}:`, error);
+    return undefined;
   }
+}
 
-  if (!res.ok) {
-    // console.log(`HTTP error ${res.status} for ${url}:`, await res.text());
-    return null;
-  }
-
-  let responseData;
+// 🔒 For dynamic/authenticated requests — no caching
+export async function authRequestAPI<T>({
+  url,
+}: {
+  url: string;
+}): Promise<T | undefined> {
   try {
-    responseData = await res.json();
-  } catch (error) {
-    // console.error(`Failed to parse JSON response for ${url}:`, error);
-    return null;
-  }
+    const tokenResponse = (await cookies()).get("token")?.value;
+    const token = tokenResponse ? JSON.parse(tokenResponse).token : null;
 
-  return responseData || [];
+    const res = await fetch(`${API_URL}${url}`, {
+      method: "GET",
+      cache: "no-store",
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
+
+    if (!res.ok) return undefined;
+
+    return await res.json();
+  } catch (error) {
+    console.error(`Auth fetch failed for ${url}:`, error);
+    return undefined;
+  }
 }

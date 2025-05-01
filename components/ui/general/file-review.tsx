@@ -39,7 +39,7 @@ export default function FileReview({
 }: {
   taskId: string;
   version: string | null;
-  initialData: TaskVersionsResponse;
+  initialData?: TaskVersionsResponse;
   role: "admin" | "manager" | "client";
   reviewMode: boolean;
   projectId: string;
