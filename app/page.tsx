@@ -1,3 +1,5 @@
+"use client";
+
 import About from "@/components/ui/homepage/about";
 import ContactForm from "@/components/ui/homepage/contact-form";
 import Footer from "@/components/ui/homepage/footer";
