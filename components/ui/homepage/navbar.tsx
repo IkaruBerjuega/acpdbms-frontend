@@ -38,7 +38,7 @@ export default function Navbar() {
   return (
     <>
       <nav className="hidden lg:flex-row-between-center w-full shadow-sm relative lg:fixed homepage-nav-bar-padding bg-white-primary  z-50">
-        <div className="hidden lg:flex gap-6 text-md leading-none">
+        <div className="hidden lg:flex gap-10 text-sm leading-none">
           {items.map((item, index) => (
             <Link key={index} href={item.link}>
               {item.name}
@@ -49,9 +49,10 @@ export default function Navbar() {
           {buttonItems.map((item, index) => (
             <ButtonLink
               key={index}
+              size={"sm"}
               variant={item.name === "Log in" ? "default" : "outline"}
               href={item.link}
-              className="font-semibold text-md"
+              className="font-semibold text-sm"
             >
               {item.name}
             </ButtonLink>

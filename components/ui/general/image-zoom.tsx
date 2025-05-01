@@ -93,10 +93,10 @@ export function ImageZoom({ src, alt, className }: ImageZoomProps) {
   }, []);
 
   return (
-    <div className="flex flex-col gap-4 relative flex-grow">
+    <div className="flex flex-col gap-4 relative flex-grow min-h-0 ">
       <div
         ref={containerRef}
-        className={`relative overflow-hidden border border-gray-200 bg-black-primary rounded-lg ${className}`}
+        className={`relative overflow-hidden border border-gray-200 bg-black-primary rounded-lg flex-grow ${className}`}
         style={{
           cursor: isDragging ? "grabbing" : "grab",
         }}
