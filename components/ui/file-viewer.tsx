@@ -1,11 +1,9 @@
 "use client";
 import { TaskFile } from "@/lib/files-definitions";
 import { getFileExtension } from "@/lib/utils";
-import Image from "next/image";
 import { ButtonLink } from "./button";
-import { useState } from "react";
-import { MdOutlineZoomIn, MdOutlineZoomOut } from "react-icons/md";
 import { Download } from "lucide-react";
+import { ImageZoom } from "./general/image-zoom";
 
 interface FileViewerProps {
   file: TaskFile | undefined;
@@ -36,8 +34,6 @@ const DownloadFileOption = ({
 //dwg, dxf, dwf, iges, step, and stl. - cad files
 
 export default function FileViewer({ file }: FileViewerProps) {
-  const [zoom, setZoom] = useState<number>(100);
-
   if (!file) {
     return (
       <div className=" flex-row-center flex-grow  bg-white-primary rounded-md shadow-md">
@@ -57,21 +53,6 @@ export default function FileViewer({ file }: FileViewerProps) {
 
   const fileUrl = file.path;
 
-  const handleZoom = ({ mode }: { mode: "out" | "in" }) => {
-    const interval = 25;
-
-    if (mode === "in" && zoom + interval > 150) {
-      return;
-    }
-    if (mode === "out" && zoom - interval < 50) return;
-
-    if (mode === "in") {
-      setZoom((prev) => prev + interval);
-      return;
-    }
-    setZoom((prev) => prev - interval);
-  };
-
   if (isNotViewable) {
     return (
       <div className="flex-row-center flex-grow  bg-white-primary rounded-md shadow-md">
@@ -81,36 +62,7 @@ export default function FileViewer({ file }: FileViewerProps) {
   }
 
   if (isImage) {
-    return (
-      <div className="flex-grow flex-col-center bg-black-primary overflow-auto">
-        <div className="flex-row-end-center w-full gap-2 text-4xl absolute z-50 top-4 px-4">
-          <MdOutlineZoomIn
-            className="text-white-primary hover:text-slate-400 cursor-pointer"
-            onClick={() => handleZoom({ mode: "in" })}
-          />
-          <MdOutlineZoomOut
-            className="text-white-primary hover:text-slate-400 cursor-pointer"
-            onClick={() => handleZoom({ mode: "out" })}
-          />
-        </div>
-
-        <Image
-          width={1000}
-          height={1000}
-          style={{
-            height: "100%",
-            objectFit: "contain",
-            userSelect: "none",
-            transition: "transform 200ms ease-in-out",
-            transform: `scale(${zoom / 100})`,
-            transformOrigin: "center",
-          }}
-          alt={file.name}
-          src={fileUrl}
-          draggable={false}
-        />
-      </div>
-    );
+    return <ImageZoom src={file.path} alt={file.name} className="flex-grow" />;
   }
 
   return (
