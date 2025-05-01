@@ -17,12 +17,10 @@ import { requestAPI } from "@/hooks/tanstack-query";
 
 export default function AccountsTableHeaderActions({
   roleValue,
-  archived,
 }: {
   roleValue: "employee" | "client";
-  archived: string | null;
 }) {
-  const { params } = useQueryParams();
+  const { params, paramsKey } = useQueryParams();
   const { replace } = useRouter();
   const pathname = usePathname();
   const queryClient = useQueryClient();
@@ -31,7 +29,7 @@ export default function AccountsTableHeaderActions({
   const role = roleValue || "employee";
   const isClient = role === "client";
   const tableName = isClient ? "Client" : "Employee";
-  const isArchived = archived === "true";
+  const isArchived = paramsKey["archived"] === "true";
 
   // Function to update query parameters without modifying params directly
   const createQueryString = useCallback(

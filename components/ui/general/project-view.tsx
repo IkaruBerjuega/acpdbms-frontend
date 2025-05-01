@@ -29,12 +29,7 @@ import { Badge } from "@/components/ui/badge";
 import { getStatusColor } from "./data-table-components/create-table-columns";
 import { toast } from "@/hooks/use-toast";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  Phase,
-  ProjectDetailsInterface,
-  TeamMemberDashboard,
-  TeamMemberDashboardResponse,
-} from "@/lib/definitions";
+import { Phase, TeamMemberDashboard } from "@/lib/definitions";
 import {
   useCheckViceManagerPermission,
   useEditProject,
@@ -60,20 +55,19 @@ import Profile from "./profile";
 import { StatusNotice } from "../hover-card";
 import USLocationSelector from "./location-selector";
 import { useProjectSelectStore } from "@/hooks/states/create-store";
+import {
+  ProjectDetailsSkeleton,
+  PhasesSkeleton,
+  MemberCardSkeleton,
+} from "./skeletons/project-view-skeleton";
 
 interface ProjectDetails {
   id: string;
   edit: string;
-  projectDetailsInitialData: ProjectDetailsInterface;
   isAdmin?: boolean;
 }
 
-function ProjectDetails({
-  id,
-  edit,
-  projectDetailsInitialData,
-  isAdmin = true,
-}: ProjectDetails) {
+function ProjectDetails({ id, edit, isAdmin = true }: ProjectDetails) {
   const [isHovered, setHovered] = useState<boolean>(false);
 
   const methods = useForm<ProjectFormSchemaType>({
@@ -114,10 +108,7 @@ function ProjectDetails({
 
   const queryClient = useQueryClient();
 
-  const { project: projectDetails } = useViewProject(
-    id,
-    projectDetailsInitialData
-  );
+  const { project: projectDetails, isLoading } = useViewProject(id);
   const { editDetails, uploadPhoto } = useEditProject(id);
 
   const processForm: SubmitHandler<ProjectUpdateRequest> = async (data) => {
@@ -212,6 +203,10 @@ function ProjectDetails({
   };
 
   const canEdit = status !== "archived" && status !== "finished";
+
+  if (isLoading) {
+    return <ProjectDetailsSkeleton />;
+  }
 
   return (
     <Card className="border-none shadow-md  h-fit ">
@@ -761,14 +756,8 @@ function Member({
   );
 }
 
-function TeamMembers({
-  id,
-  teamInitialData,
-}: {
-  id: string;
-  teamInitialData: TeamMemberDashboardResponse;
-}) {
-  const { data, isLoading } = useTeamDetailsForDashboard(id, teamInitialData);
+function TeamMembers({ id }: { id: string }) {
+  const { data, isLoading } = useTeamDetailsForDashboard(id);
   const { data: hasPermission } = useCheckViceManagerPermission(id);
   const [teamMemberId, setteamMemberId] = useState<string>("");
   const { toggleVicePermission, deactivateUsersFromTeam } = useProjectActions(
@@ -838,9 +827,17 @@ function TeamMembers({
 
   if (isLoading) {
     return (
-      <Card className="border-none shadow-md w-full h-full ">
-        <CardContent className="p-6">loading...</CardContent>
-      </Card>
+      <div className="space-y-2">
+        <Card className="border-none shadow-md">
+          <CardContent className="system-padding py-2">
+            <div className="flex items-center">
+              <AiOutlineTeam className="h-5 w-5 text-maroon-600 mr-2" />
+              <h2 className="font-semibold text-lg text-maroon-600">Team</h2>
+            </div>
+          </CardContent>
+        </Card>
+        <MemberCardSkeleton />
+      </div>
     );
   }
 
@@ -979,25 +976,15 @@ function PhasesMapping({
   );
 }
 
-function Phases({
-  id,
-  activePhasesInitialData,
-  archivedPhasesInitialData,
-}: {
-  id: string;
-  activePhasesInitialData: Phase[];
-  archivedPhasesInitialData: Phase[];
-}) {
+function Phases({ id }: { id: string }) {
   const phasesIconSrc = "/button-svgs/tasks-header-phases.svg";
 
-  const { data: activePhases } = useGetActivePhases(
-    id,
-    activePhasesInitialData
-  );
-  const { data: archivedPhases } = useGetArchivedPhases(
-    id,
-    archivedPhasesInitialData
-  );
+  const { data: activePhases, isLoading: activeLoading } =
+    useGetActivePhases(id);
+  const { data: archivedPhases, isLoading: archivedLoading } =
+    useGetArchivedPhases(id);
+
+  if (activeLoading || archivedLoading) return <PhasesSkeleton />;
 
   return (
     <Card className="shadow-md h-fit border-none ">
@@ -1028,37 +1015,20 @@ function Phases({
 export default function ProjectView({
   id,
   edit,
-  projectDetailsInitialData,
-  teamInitialData,
-  activePhaseInitialData,
-  archivedPhasesInitialData,
   isAdmin = true,
 }: {
   id: string;
   edit: string;
-  projectDetailsInitialData: ProjectDetailsInterface;
-  teamInitialData: TeamMemberDashboardResponse;
-  activePhaseInitialData: Phase[];
-  archivedPhasesInitialData: Phase[];
   isAdmin?: boolean;
 }) {
   return (
     <div className="flex-col-start xl:flex-row-start gap-2  min-h-0 overflow-y-auto relative transition-all duration-200 overflow-visible ">
       <div className="w-full xl:w-[75%] space-y-2  xl:h-full overflow-visible ">
-        <ProjectDetails
-          id={id}
-          edit={edit}
-          projectDetailsInitialData={projectDetailsInitialData}
-          isAdmin={isAdmin}
-        />
-        <Phases
-          id={id}
-          activePhasesInitialData={activePhaseInitialData}
-          archivedPhasesInitialData={archivedPhasesInitialData}
-        />
+        <ProjectDetails id={id} edit={edit} isAdmin={isAdmin} />
+        <Phases id={id} />
       </div>
       <div className="xl:flex-grow xl:h-full ">
-        <TeamMembers id={id} teamInitialData={teamInitialData} />
+        <TeamMembers id={id} />
       </div>
     </div>
   );

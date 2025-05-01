@@ -4,6 +4,8 @@ import { File, FilesPageProps } from "@/lib/files-definitions";
 import { Fragment, useEffect, useState } from "react";
 import FileCard from "./file-card";
 import FileRow from "./file-row";
+import { FileCardSkeleton } from "../skeletons/file-card-skeleton";
+import { FileRowSkeleton } from "../skeletons/file-row-skeleton";
 
 interface FileListProps<T> extends FilesPageProps {
   projectFiles: T[] | undefined;
@@ -59,7 +61,7 @@ export default function FileList<T extends File>(props: FileListProps<T>) {
     <div
       className={`flex-grow  ${
         isCardView
-          ? " grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6  gap-4 auto-rows-max "
+          ? " grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4  gap-4 auto-rows-max "
           : "flex-col-start gap-2"
       } bg-white-primary rounded-b-md system-padding overflow-y-auto shadow-md`}
     >
@@ -108,7 +110,13 @@ export default function FileList<T extends File>(props: FileListProps<T>) {
           )}
         </>
       ) : (
-        "Loading files..."
+        <>
+          {isCardView ? (
+            <FileCardSkeleton count={2} />
+          ) : (
+            <FileRowSkeleton count={2} />
+          )}
+        </>
       )}
     </div>
   );

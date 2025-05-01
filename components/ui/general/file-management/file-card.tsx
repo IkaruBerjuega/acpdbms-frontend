@@ -77,7 +77,7 @@ export default function FileCard({
           onContextMenu={handleSelectFiles}
           className={`${
             isSelected && "bg-gray-200"
-          } overflow-hidden  hover:shadow-md transition-all duration-200 hover:translate-y-[-1px] border-gray-200 group max-w-xs cursor-pointer flex-col-start h-[175px]`}
+          } overflow-hidden  hover:shadow-md transition-all duration-200 hover:translate-y-[-1px] border-gray-200 group w-full cursor-pointer flex-col-start h-[175px]`}
         >
           <div className="relative bg-gray-50 p-8 flex justify-center items-center group-hover:bg-gray-100 transition-colors">
             <FileIcon fileType={file.type} />

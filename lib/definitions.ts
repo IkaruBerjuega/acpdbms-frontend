@@ -1,4 +1,10 @@
-import { CellContext, HeaderContext, Row } from "@tanstack/react-table";
+import {
+  AccessorKeyColumnDefBase,
+  CellContext,
+  HeaderContext,
+  IdIdentifier,
+  Row,
+} from "@tanstack/react-table";
 import { FilterType } from "./filter-types";
 
 export interface UserInterface {
@@ -109,6 +115,12 @@ export interface ProjectListResponseInterface {
   revision?: number | null;
   revision_of?: number | null;
   can_be_finished: boolean;
+}
+
+export interface ProjectComponentProps {
+  columns: (AccessorKeyColumnDefBase<ProjectListResponseInterface, unknown> &
+    Partial<IdIdentifier<ProjectListResponseInterface, unknown>>)[];
+  projectList: ProjectListResponseInterface[] | undefined;
 }
 
 export interface ProjectDetailsInterface {

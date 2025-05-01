@@ -1,12 +1,13 @@
+"use client";
+
 import AddProject from "@/components/ui/admin/projects/create/add-project";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useQueryParams } from "@/hooks/use-query-params";
 
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ tab: "new" | "duplicate" | null }>;
-}) {
-  const { tab } = await searchParams;
+export default function Page() {
+  const { paramsKey } = useQueryParams();
+  const { tab }: { tab?: "new" | "duplicate" } = paramsKey;
+
   return (
     <>
       <SidebarTrigger

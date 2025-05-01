@@ -1,21 +1,23 @@
+"use client";
+
 import ProjectView from "@/components/ui/general/project-view";
 import { ProjectSelector } from "@/components/ui/general/project-selector";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import serverRequestAPI from "@/hooks/server-request";
-import {
-  Phase,
-  ProjectDetailsInterface,
-  TeamMemberDashboardResponse,
-} from "@/lib/definitions";
+import { useQueryParams } from "@/hooks/use-query-params";
 
 interface PageProps {
-  searchParams: Promise<{ edit?: string; projectId: string | null }>;
+  edit?: string;
+  projectId?: string;
 }
 
-export default async function Page({ searchParams }: PageProps) {
-  //await search params to destructure it
+export default function Page() {
+  const { paramsKey } = useQueryParams();
 
-  const { edit = "false", projectId } = await searchParams;
+  const _params = paramsKey;
+
+  const params: PageProps = _params;
+
+  const { edit = "false", projectId = "" } = params;
 
   const pageRoute = `/employee/project-dashboard?projectId=${projectId}`;
 
@@ -33,49 +35,19 @@ export default async function Page({ searchParams }: PageProps) {
     return (
       <div className="flex-row-between-center w-full">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
-        <ProjectSelector role="employee" projId={projectId} />
+        <ProjectSelector role="employee" />
       </div>
     );
   }
-
-  //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
-  const initialData: ProjectDetailsInterface = await serverRequestAPI({
-    url: `/project-view/${_projectId}`,
-    auth: true,
-  });
-
-  //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
-  const teamMembers: TeamMemberDashboardResponse = await serverRequestAPI({
-    url: `/projects/${_projectId}/team-members`,
-    auth: true,
-  });
-
-  const activePhases: Phase[] = await serverRequestAPI({
-    url: `/phases-active/${_projectId}`,
-    auth: true,
-  });
-
-  const archivedPhases: Phase[] = await serverRequestAPI({
-    url: `/phases-archived/${_projectId}`,
-    auth: true,
-  });
 
   return (
     <>
       <div className="flex-row-between-center w-full">
         <SidebarTrigger breadcrumbs={breadcrumbs} />
-        <ProjectSelector role="employee" projId={projectId} />
+        <ProjectSelector role="employee" />
       </div>
       {_projectId ? (
-        <ProjectView
-          id={_projectId}
-          edit={edit}
-          projectDetailsInitialData={initialData}
-          teamInitialData={teamMembers}
-          activePhaseInitialData={activePhases}
-          archivedPhasesInitialData={archivedPhases}
-          isAdmin={false}
-        />
+        <ProjectView id={_projectId} edit={edit} isAdmin={false} />
       ) : (
         "Select a project"
       )}

@@ -22,6 +22,7 @@ import {
 import { useForm } from "react-hook-form";
 import FormInput from "../../general/form-components/form-input";
 import { ButtonTasksDndFilter } from "./tasks-dnd-filters";
+import { TaskCardSkeleton } from "../../general/skeletons/task-card-skeleton";
 
 export default function TasksDND({
   projectId,
@@ -43,7 +44,6 @@ export default function TasksDND({
   //tasks
   const { data: taskList, isLoading } = useGetTasks({
     projectId: projectId,
-    initialData: { tasks: [] },
     isGeneral,
   });
 
@@ -355,7 +355,11 @@ export default function TasksDND({
   };
 
   if (isLoading) {
-    return <div className="py-2">Loading Tasks...</div>;
+    return (
+      <div className="min-w-[250px] xl:min-w-0 xl:w-1/5 flex-col-start gap-1 overflow-y-auto">
+        <TaskCardSkeleton className="w-full" />
+      </div>
+    );
   }
 
   return (
@@ -364,28 +368,30 @@ export default function TasksDND({
         <ButtonTasksDndFilter />
       </div>
 
-      {tasks?.length !== 0 ? (
-        <div className="w-full flex-col-start overflow-x-auto min-h-0 flex-grow">
-          <div className="flex-grow flex-row-start mt-4 ">
-            {TASK_STATUSES.map((status) => {
-              if (status === "cancelled") return;
-              return (
-                <TaskColumn
-                  key={status}
-                  columnStatus={status}
-                  tasks={
-                    convertedTasks.filter((task) => task.status === status) ??
-                    []
-                  }
-                  moveTask={moveTask}
-                />
-              );
-            })}
-          </div>
+      <div className="w-full flex-col-start overflow-x-auto min-h-0 flex-grow">
+        <div className="flex-grow flex-row-start mt-4 ">
+          {tasks?.length === 0 ? (
+            <>No Tasks..</>
+          ) : (
+            <>
+              {TASK_STATUSES.map((status) => {
+                if (status === "cancelled") return;
+                return (
+                  <TaskColumn
+                    key={status}
+                    columnStatus={status}
+                    tasks={
+                      convertedTasks.filter((task) => task.status === status) ??
+                      []
+                    }
+                    moveTask={moveTask}
+                  />
+                );
+              })}
+            </>
+          )}
         </div>
-      ) : (
-        <div className="py-2">No Tasks </div>
-      )}
+      </div>
 
       {open && (
         <DialogNoBtn

@@ -14,11 +14,9 @@ import {
 
 export const useGetTasks = ({
   projectId,
-  initialData,
   isGeneral,
 }: {
   projectId: string; // Allow undefine
-  initialData?: TasksResponse;
   isGeneral: boolean;
 }) => {
   return useApiQuery<TasksResponse>({
@@ -26,7 +24,6 @@ export const useGetTasks = ({
     url: isGeneral
       ? `/projects/${projectId}/tasks `
       : `/projects/${projectId}/assigned-tasks`,
-    initialData: { tasks: [] },
     enabled: Boolean(projectId),
   });
 };

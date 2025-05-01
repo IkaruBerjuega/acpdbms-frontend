@@ -25,13 +25,7 @@ import { useQueryParams } from "@/hooks/use-query-params";
 import { requestAPI } from "@/hooks/tanstack-query";
 import Image from "next/image";
 
-export function ProjectSelector({
-  role,
-  projId,
-}: {
-  role: "employee" | "client";
-  projId: string | null;
-}) {
+export function ProjectSelector({ role }: { role: "employee" | "client" }) {
   const { data: projects } = useAssociatedProjects({ role: role });
   const {
     data: tempProjectSelected,
@@ -39,9 +33,9 @@ export function ProjectSelector({
     resetData: resetProjectSelectStore,
   } = useProjectSelectStore();
 
+  const { params, paramsKey } = useQueryParams();
+  const projId = paramsKey["projectId"];
   const projectId = projId?.split("_")[0] || tempProjectSelected[0]?.projectId;
-
-  const { params } = useQueryParams();
 
   const hasProjectId = !!projectId || !!tempProjectSelected[0]?.projectId;
 

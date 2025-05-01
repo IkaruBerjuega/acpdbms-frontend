@@ -1,3 +1,5 @@
+"use client";
+
 import Dashboard from "@/components/ui/admin/dashboard/dashboard";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 

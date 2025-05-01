@@ -8,13 +8,12 @@ import {
 import { useCreateTableColumns } from "../../general/data-table-components/create-table-columns";
 import DataTable from "../../general/data-table-components/data-table";
 import { useAccounts } from "@/hooks/api-calls/admin/use-account";
+import { DataTableSkeleton } from "../../general/skeletons/data-table-skeleton";
 
 export default function Table<T extends AccountsTableType>({
-  initialData,
   role,
   isArchived,
 }: {
-  initialData: T[];
   role: "employee" | "client";
   isArchived: boolean;
 }) {
@@ -178,16 +177,15 @@ export default function Table<T extends AccountsTableType>({
   const transformedColumns = useCreateTableColumns<T>(columns, tableName);
 
   //dynamically set useAccounts hook argument to
-  const { data, isPending } = useAccounts<T>({
+  const { data, isLoading } = useAccounts<T>({
     role: role,
     isArchived: isArchived,
-    initialData: initialData,
   });
 
   if (!role) return <>Please select a role</>;
 
-  if (isPending) {
-    return <>Loading...</>;
+  if (isLoading) {
+    return <DataTableSkeleton />;
   }
 
   if (!data || data.length === 0) {

@@ -11,6 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { CustomDropdownMenu } from "../../dropdown-menu";
 import Image from "next/image";
 import { Button } from "../../button";
+import { NotificationItemSkeleton } from "../skeletons/notification-item-skeleton";
 
 interface NotificationComponentProps extends NotificationFilters {
   setIntervalFilter: (interval: NotificationFilters["filter"]) => void;
@@ -189,7 +190,7 @@ export default function NotificationsComponent({
           </>
         ) : (
           <div className="flex-col-center text-slate-400  mt-10">
-            Loading...
+            <NotificationItemSkeleton />
           </div>
         )}
       </div>

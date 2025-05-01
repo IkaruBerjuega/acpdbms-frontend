@@ -49,14 +49,14 @@ export interface FilesResponse {
 }
 
 export interface FilesPageProps {
-  query: string | null;
-  archived: "true" | null;
-  projectId: string | null;
-  phaseId: string | null;
-  taskId: string | null;
-  taskVersionId: string | null;
-  tab: "card" | "row" | undefined;
-  filters: "true" | null;
+  query?: string;
+  archived?: "true";
+  projectId?: string;
+  phaseId?: string;
+  taskId?: string;
+  taskVersionId?: string;
+  tab?: "card" | "row";
+  filters?: "true";
 }
 
 export interface FileUIProps {

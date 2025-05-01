@@ -1,16 +1,19 @@
+"use client";
+
 import AccountSettings from "@/components/ui/general/account-settings/account-settings-wrapper";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useQueryParams } from "@/hooks/use-query-params";
 import { Breadcrumbs } from "@/lib/definitions";
 import { Suspense } from "react";
 
-export default async function SettingsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{
-    tab: "profile" | "security" | "notification" | null;
-  }>;
-}) {
-  const { tab } = await searchParams;
+interface PageProps {
+  tab?: "profile" | "security" | "notification";
+}
+
+export default function Page() {
+  const { paramsKey } = useQueryParams();
+  const params: PageProps = paramsKey;
+  const { tab = "profile" } = params;
 
   // Default to 'contacts' if no tab is specified in the URL
   const activeTab = tab ? tab : "profile";
