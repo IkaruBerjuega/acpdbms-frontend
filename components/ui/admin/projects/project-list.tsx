@@ -3,7 +3,6 @@
 import ProjectsTableHeaderActions from "@/components/ui/admin/projects/table-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Table from "@/components/ui/admin/projects/table";
-import { ProjectListResponseInterface } from "@/lib/definitions";
 import { AddBtn } from "../../button";
 import { VscListSelection } from "react-icons/vsc";
 import { PiCardsThreeLight } from "react-icons/pi";

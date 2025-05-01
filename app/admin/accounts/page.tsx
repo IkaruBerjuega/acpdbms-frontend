@@ -1,7 +1,6 @@
 import AccountsTableHeaderActions from "@/components/ui/admin/accounts/table-header";
 import Table from "@/components/ui/admin/accounts/table";
-import { AccountsTableType, Breadcrumbs } from "@/lib/definitions";
-import { authRequestAPI } from "@/hooks/server-request";
+import { Breadcrumbs } from "@/lib/definitions";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import Sidepanel from "@/components/ui/admin/accounts/sidepanel";
 
