@@ -9,13 +9,7 @@ import { VscListSelection } from "react-icons/vsc";
 import { PiCardsThreeLight } from "react-icons/pi";
 import Cards from "./project-cards-wrapper";
 
-export default function ProjectList({
-  isArchived,
-  initialData,
-}: {
-  isArchived: boolean;
-  initialData: ProjectListResponseInterface[];
-}) {
+export default function ProjectList({ isArchived }: { isArchived: boolean }) {
   return (
     <Tabs
       defaultValue={"list"}
@@ -48,11 +42,11 @@ export default function ProjectList({
       <main className="w-full  flex-col-start gap-2 bg-white-primary rounded-b-lg shadow-md system-padding overflow-y-auto flex-1 ">
         {/* Table View */}
         <TabsContent value="list" className="flex-grow">
-          <Table isArchived={isArchived} initialData={initialData} />
+          <Table isArchived={isArchived} />
         </TabsContent>
         {/* Card View */}
         <TabsContent value="card" className="flex-grow">
-          <Cards isArchived={isArchived} initialData={initialData} />
+          <Cards isArchived={isArchived} />
         </TabsContent>
       </main>
     </Tabs>

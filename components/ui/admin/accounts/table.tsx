@@ -10,11 +10,9 @@ import DataTable from "../../general/data-table-components/data-table";
 import { useAccounts } from "@/hooks/api-calls/admin/use-account";
 
 export default function Table<T extends AccountsTableType>({
-  initialData,
   role,
   isArchived,
 }: {
-  initialData: T[];
   role: "employee" | "client";
   isArchived: boolean;
 }) {
@@ -181,7 +179,6 @@ export default function Table<T extends AccountsTableType>({
   const { data, isPending } = useAccounts<T>({
     role: role,
     isArchived: isArchived,
-    initialData: initialData,
   });
 
   if (!role) return <>Please select a role</>;

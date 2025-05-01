@@ -4,20 +4,13 @@ import ProjectCards from "../../general/data-table-components/project-cards";
 import { columns } from "./project-columns";
 import { ProjectListResponseInterface } from "@/lib/definitions";
 
-export default function Cards({
-  isArchived,
-  initialData,
-}: {
-  isArchived: boolean;
-  initialData: ProjectListResponseInterface[];
-}) {
+export default function Cards({ isArchived }: { isArchived: boolean }) {
   const transformedColumns =
     useCreateTableColumns<ProjectListResponseInterface>(columns, "Projects");
 
   const { data: projectList, isLoading } =
     useProjectList<ProjectListResponseInterface>({
       isArchived: isArchived,
-      initialData: initialData,
     });
 
   if (isLoading) return <p>Loading...</p>;

@@ -13,13 +13,6 @@ export default async function Page({
   const { archived } = await searchParams;
   const isArchived = archived === "true";
 
-  const url = isArchived ? "/projects/archived" : "/project-list";
-
-  const initialData =
-    (await authRequestAPI<ProjectListResponseInterface[]>({
-      url: url,
-    })) || [];
-
   const breadCrumbs = [
     {
       href: "/admin/projects/",
@@ -31,7 +24,7 @@ export default async function Page({
   return (
     <>
       <SidebarTrigger breadcrumbs={breadCrumbs} />
-      <ProjectList isArchived={isArchived} initialData={initialData} />
+      <ProjectList isArchived={isArchived} />
     </>
   );
 }

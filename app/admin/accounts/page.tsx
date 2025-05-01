@@ -18,16 +18,6 @@ export default async function Page({
   const { role = "employee", archived, add } = await searchParams;
   const isArchived = archived === "true";
 
-  const urlMap = {
-    employee: isArchived ? "/employees-archived" : "/employees-list",
-    client: isArchived ? "/clients-archived" : "/clients-list",
-  };
-
-  const initialData: AccountsTableType[] =
-    (await authRequestAPI({
-      url: urlMap[role],
-    })) || [];
-
   const routeMap = {
     employee: isArchived
       ? {
@@ -70,11 +60,7 @@ export default async function Page({
       <div className="flex-grow flex-row-start gap-2 relative flex-1  min-h-0  min-w-0">
         <div className="rounded-bl-lg bg-white-primary shadow-md  h-full w-full overflow-hidden min-w-0">
           <div className="overflow-y-auto h-full system-padding">
-            <Table
-              initialData={initialData}
-              role={role}
-              isArchived={isArchived}
-            />
+            <Table role={role} isArchived={isArchived} />
           </div>
         </div>
         <Sidepanel activeKey={activeKey} isEmployee={isEmployee} />

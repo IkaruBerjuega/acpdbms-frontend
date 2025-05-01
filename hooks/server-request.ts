@@ -43,7 +43,7 @@ export async function authRequestAPI<T>({
 
     const res = await fetch(`${API_URL}${url}`, {
       method: "GET",
-      cache: "no-store",
+      cache: "force-cache", // or: next: { revalidate: 60 }
       headers: {
         "Content-Type": "application/json",
         ...(token ? { Authorization: `Bearer ${token}` } : {}),

@@ -7,13 +7,12 @@ import {
 import { useProjectList } from "@/hooks/general/use-project";
 import { useCreateTableColumns } from "../../general/data-table-components/create-table-columns";
 import DataTable from "../../general/data-table-components/data-table";
+import { DataTableSkeleton } from "../../skeletons/data-table-skeleton";
 
 export default function Table<T extends ProjectListResponseInterface>({
   isArchived,
-  initialData,
 }: {
   isArchived: boolean;
-  initialData: T[];
 }) {
   const columns: ColumnInterfaceProp[] = [
     {
@@ -123,11 +122,10 @@ export default function Table<T extends ProjectListResponseInterface>({
 
   const { data: projectList, isLoading } = useProjectList<T>({
     isArchived: isArchived,
-    initialData: initialData,
   });
 
   if (isLoading) {
-    return <>Loading</>;
+    return <DataTableSkeleton rowCount={5} />;
   }
 
   if (!projectList || projectList.length === 0) {
