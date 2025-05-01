@@ -17,14 +17,9 @@ export default async function Page({ searchParams }: PageProps) {
 
   const { edit = "false", projectId } = await searchParams;
 
-  const pageRoute = `/employee/project-details/${projectId}/view`;
+  const pageRoute = `/employee/project-dashboard?projectId=${projectId}`;
 
   const breadcrumbs = [
-    {
-      pageName: "Employee",
-      href: "",
-      active: false,
-    },
     {
       pageName: "View Project Details",
       href: pageRoute,
@@ -33,6 +28,15 @@ export default async function Page({ searchParams }: PageProps) {
   ];
 
   const _projectId = projectId?.split("_")[0];
+
+  if (!_projectId) {
+    return (
+      <div className="flex-row-between-center w-full">
+        <SidebarTrigger breadcrumbs={breadcrumbs} />
+        <ProjectSelector role="employee" projId={projectId} />
+      </div>
+    );
+  }
 
   //server request for initial data, pass it to project view then pass the useApiQuery hook as argument.
   const initialData: ProjectDetailsInterface = await serverRequestAPI({

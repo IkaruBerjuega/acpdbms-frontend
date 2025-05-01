@@ -12,6 +12,8 @@ import { useQueryClient } from "@tanstack/react-query";
 import { AddBtn } from "../../button";
 import { titleCase } from "@/lib/utils";
 import { useQueryParams } from "@/hooks/use-query-params";
+import { BtnGenerateCSVReport } from "../../general/btn-reports";
+import { requestAPI } from "@/hooks/tanstack-query";
 
 export default function AccountsTableHeaderActions({
   roleValue,
@@ -55,8 +57,21 @@ export default function AccountsTableHeaderActions({
 
   // Archive accounts logic
   const { data, resetData } = useCheckboxStore();
-  const { archiveAcc } = useAccountActions();
+  const { archiveAcc } = useAccountActions({ userId: "" });
   const { mutate } = archiveAcc;
+
+  const generateReportConfig = {
+    employee: {
+      title: isArchived
+        ? "Archived Employees Account"
+        : "Active Employees Account",
+      url: isArchived ? "/employees-archived" : "/employees-list",
+    },
+    client: {
+      title: isArchived ? "Archived Clients Account" : "Active Clients Account",
+      url: isArchived ? "/clients-archived" : "/clients-list",
+    },
+  };
 
   return (
     <DataTableHeader
@@ -114,7 +129,22 @@ export default function AccountsTableHeaderActions({
         ),
       }}
       onShowArchive={true}
-      onGenerateReport={true}
+      onGenerateReportElement={
+        <BtnGenerateCSVReport
+          onClick={async () => {
+            const accounts = await requestAPI({
+              url: generateReportConfig[role].url,
+              body: null,
+              contentType: "application/json",
+              auth: true,
+              method: "GET",
+            });
+
+            return accounts;
+          }}
+          label={generateReportConfig[role].title}
+        />
+      }
       additionalElement={
         <>
           {!isClient && (

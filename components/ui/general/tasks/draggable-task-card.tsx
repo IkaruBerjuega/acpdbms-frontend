@@ -12,6 +12,7 @@ import { LegacyRef, useCallback } from "react";
 import {
   useProjectSelectStore,
   useSelectedTaskStatus,
+  useTaskToUpdateDetails,
 } from "@/hooks/states/create-store";
 import { TaskItem, TaskItemProps, TaskStatuses } from "@/lib/tasks-definitions";
 import { ItemTypes } from "@/lib/definitions";
@@ -170,7 +171,16 @@ export default function TaskCard(props: TaskCardProps) {
     createQueryString("taskId", String(id));
   }
 
+  const { setData: setToUpdateDetails } = useTaskToUpdateDetails();
+
+  function onUpdateTaskClick() {
+    setToUpdateDetails([props]);
+    createQueryString("taskId", String(id));
+    createQueryString("sheet", "update_task");
+  }
+
   const { data: projectSelected } = useProjectSelectStore();
+  const { setData: setTaskStatus } = useSelectedTaskStatus();
   const isUserMember = projectSelected[0]?.userRole === "Member";
 
   //check if there is projectId url parameter
@@ -195,7 +205,7 @@ export default function TaskCard(props: TaskCardProps) {
     goTo(
       `/employee/tasks/${id}/view-files?view_files=true&version=${version}&projectId=${projectId}`
     );
-    localStorage.setItem("selectedTaskStatus", status);
+    setTaskStatus([status]);
   }
 
   //link to go to task details
@@ -245,6 +255,29 @@ export default function TaskCard(props: TaskCardProps) {
     }
   }
 
+  const cannotSetToDo = ["in progress", "paused", "to do", "cancelled"];
+  const cannotSetToInProgress = [
+    "in progress",
+    "needs review",
+    "done",
+    "cancelled",
+  ];
+  const cannotSetToPause = [
+    "to do",
+    "needs review",
+    "paused",
+    "done",
+    "cancelled",
+  ];
+  const cannotSetToNeedsReview = ["needs review", "to do", "done", "cancelled"];
+  const cannotSetToDone = [
+    "to do",
+    "in progress",
+    "paused",
+    "cancelled",
+    "done",
+  ];
+
   const taskName =
     version > 0 ? (
       <div>
@@ -265,7 +298,7 @@ export default function TaskCard(props: TaskCardProps) {
       <div className="w-full flex-row-between-center">
         <div className="flex-row-start-center">
           <Badge className={`${phaseColor?.dark} ${phaseColor?.light} `}>
-            {phase_category}
+            {titleCase(phase_category)}
           </Badge>
           {isInNeedsReview && (
             <Badge className={` ${reviewStatus.color}`}>
@@ -288,6 +321,127 @@ export default function TaskCard(props: TaskCardProps) {
                 isDialog: false,
                 href: detailsLink,
               },
+              {
+                label: "Update Task",
+                iconSrc: "/button-svgs/table-action-edit.svg",
+                className: "",
+                alt: "Edit Task Button",
+                isDialog: false,
+                onClick: () => onUpdateTaskClick(),
+              },
+
+              ...(!cannotSetToDo.includes(status)
+                ? [
+                    {
+                      label: "Create New Version",
+                      iconSrc: "/button-svgs/checklist.svg",
+                      className: "",
+                      alt: "Set to To do  Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "to do",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
+
+              ...(!cannotSetToInProgress.includes(status)
+                ? [
+                    {
+                      label: "Set to ongoing",
+                      iconSrc: "/button-svgs/table-action-continue.svg",
+                      className: "",
+                      alt: "Continue/Set to Ongoing Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "in progress",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
+
+              ...(!cannotSetToPause.includes(status)
+                ? [
+                    {
+                      label: "Set To On-hold",
+                      iconSrc: "/button-svgs/table-action-onhold.svg",
+                      className: "",
+                      alt: "Set to Onhold Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "paused",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
+
+              ...(!cannotSetToNeedsReview.includes(status)
+                ? [
+                    {
+                      label: "Set To Review",
+                      iconSrc: "/button-svgs/review.svg",
+                      className: "",
+                      alt: "Set to Review Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "needs review",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
+
+              ...(!cannotSetToDone.includes(status)
+                ? [
+                    {
+                      label: "Finish",
+                      iconSrc: "/button-svgs/table-action-finish.svg",
+                      className: "",
+                      alt: "Set to Done or Finish Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "done",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
+              ...(status === "to do"
+                ? [
+                    {
+                      label: "Cancel",
+                      iconSrc: "/button-svgs/table-action-cancel.svg",
+                      className: "",
+                      alt: "Set to Cancel  Task Button",
+                      isDialog: false,
+                      onClick: () => {
+                        moveTask({
+                          id: id,
+                          droppedStatus: "cancelled",
+                          recentStatus: status,
+                        });
+                      },
+                    },
+                  ]
+                : []),
             ]}
             btnVariant={"ghost"}
           />

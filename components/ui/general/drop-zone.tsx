@@ -20,6 +20,7 @@ interface DropzoneProps {
     register: UseFormRegister<any>; // eslint-disable-line
   };
   maxSize?: number; // Size in bytes
+  showList?: boolean;
 }
 
 const Dropzone = ({
@@ -32,6 +33,7 @@ const Dropzone = ({
   },
   showImages = false,
   formInput,
+  showList = true,
   maxSize = 2 * 1024 * 1024, // Default to 2MB to match backend
 }: DropzoneProps) => {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -137,7 +139,7 @@ const Dropzone = ({
 
       {uploadedFiles.length > 0 && (
         <div className="mt-4">
-          {!showImages ? (
+          {showList ? (
             <ul className="space-y-2">
               {uploadedFiles.map((file, index) => (
                 <li
@@ -161,7 +163,7 @@ const Dropzone = ({
                 </li>
               ))}
             </ul>
-          ) : (
+          ) : showImages ? (
             <div className="flex flex-wrap justify-center">
               {uploadedFiles.map((file, index) => {
                 const fileUrl = URL.createObjectURL(file);
@@ -198,7 +200,7 @@ const Dropzone = ({
                 );
               })}
             </div>
-          )}
+          ) : null}
         </div>
       )}
     </div>

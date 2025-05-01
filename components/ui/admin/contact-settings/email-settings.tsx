@@ -57,7 +57,13 @@ export function EmailSettings({ email }: { email: ContactDetails[] }) {
     toast({ title, description: response.message || successMessage });
     queryClient.invalidateQueries({ queryKey: ["siteContactDetails"] });
     toggleEdit(false);
-    reset({ email: response.contact_details[0]?.value || "" });
+
+    const email = response.contact_details.find(
+      (contactDetail) => contactDetail.type === "email"
+    );
+    reset({
+      email: email?.value,
+    });
   };
 
   const processForm: SubmitHandler<EmailFormData> = (data) => {

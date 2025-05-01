@@ -40,7 +40,7 @@ export default function FileReview({
   taskId: string;
   version: string | null;
   initialData: TaskVersionsResponse;
-  role: "manager" | "client";
+  role: "admin" | "manager" | "client";
   reviewMode: boolean;
   projectId: string;
   view_files: string | null;
@@ -143,9 +143,9 @@ export default function FileReview({
         <div className="h-full flex-grow relative flex-col-start gap-2">
           <div className="w-full flex-row-end-center gap-2">
             <Button
-              className={`border-none shadow-md flex-row-center gap-2 ${
+              className={` shadow-md flex-row-center gap-2 ${
                 !filePanelIsOpen && "bg-gray-100"
-              }`}
+              } bg-white-primary hover:bg-white-primary`}
               variant="outline"
               onClick={openFiles}
             >
@@ -153,9 +153,9 @@ export default function FileReview({
               <span>View Files</span>
             </Button>
             <Button
-              className={`border-none shadow-md flex-row-center gap-2 ${
+              className={` shadow-md flex-row-center gap-2 ${
                 !commentsIsOpen && "bg-gray-100"
-              }`}
+              } bg-white-primary hover:bg-white-primary`}
               variant="outline"
               onClick={openComments}
             >

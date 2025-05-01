@@ -13,7 +13,7 @@ export default async function Page({
   const { archived } = await searchParams;
   const isArchived = archived === "true";
 
-  const url = isArchived ? "/projects-archived" : "/project-list";
+  const url = isArchived ? "/projects/archived" : "/project-list";
 
   const initialData: ProjectListResponseInterface[] =
     (await serverRequestAPI({
@@ -22,11 +22,6 @@ export default async function Page({
     })) || [];
 
   const breadCrumbs = [
-    {
-      href: "",
-      pageName: "Admin",
-      active: false,
-    },
     {
       href: "/admin/projects/",
       pageName: "Projects",

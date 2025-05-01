@@ -51,11 +51,6 @@ export default async function Page({
 
   const breadcrumbs: Breadcrumbs[] = [
     {
-      href: "",
-      pageName: "Admin",
-      active: false,
-    },
-    {
       href: routeMap[role].href,
       pageName: routeMap[role].pageName,
       active: true,

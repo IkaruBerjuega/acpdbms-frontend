@@ -1,46 +1,70 @@
 "use client";
 
 import { toast } from "@/hooks/use-toast";
-import type { UploadLogoType } from "@/lib/definitions";
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Dropzone from "../../general/drop-zone";
-import {
-  useForm,
-  type SubmitHandler,
-  FormProvider,
-  Controller,
-} from "react-hook-form";
 import { DialogFooter } from "../../dialog";
 import { UploadDialog } from "./upload-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSettingsActions } from "@/hooks/general/use-admin-settings";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Cropper from "../../general/cropper";
+import { base64ToFile, urlToFile } from "@/lib/utils";
+import Image from "next/image";
+import { LoadingCircle } from "../../general/loading-circle";
 
-export function LogoUpload() {
+export function LogoUpload({ logoUrl }: { logoUrl: string | undefined }) {
   const queryClient = useQueryClient();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { uploadLogo } = useSettingsActions();
 
-  const methods = useForm<UploadLogoType>({
-    mode: "onSubmit",
-    defaultValues: { logo: undefined },
-  });
+  const isSubmitting = uploadLogo.isLoading;
 
-  const {
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors },
-  } = methods;
+  //recently uploaded logo
 
-  const toggleUpload = (open: boolean) => {
+  const [openCropper, setOpenCropper] = useState<boolean>(false);
+  const [initialImage, setInitialImage] = useState<File | undefined>();
+  const [image, setImage] = useState<File | undefined>();
+
+  const setImageStateContainersToUploadedLogoUrl = () => {
+    if (logoUrl) {
+      urlToFile(logoUrl, "logo")
+        .then((file) => {
+          setInitialImage(file);
+          setImage(file);
+        })
+        .catch(() => {
+          setInitialImage(undefined);
+          setImage(undefined);
+        });
+    }
+  };
+
+  useEffect(() => {
+    setImageStateContainersToUploadedLogoUrl();
+  }, [logoUrl]);
+
+  const onImageDropdown = (fileImage: File) => {
+    setImage(fileImage);
+    setInitialImage(fileImage);
+    setOpenCropper(true);
+  };
+
+  const handleSetCroppedImage = (imageUrl: string) => {
+    const imageFile = base64ToFile(imageUrl, "logo");
+    setImage(imageFile);
+    setOpenCropper(false);
+  };
+
+  const closeUpload = (open: boolean) => {
     if (!open) {
-      reset();
       setIsOpen(false);
+      setOpenCropper(false);
+      setImageStateContainersToUploadedLogoUrl();
     } else {
-      setIsOpen(open);
+      setIsOpen(true);
     }
   };
 
@@ -50,8 +74,7 @@ export function LogoUpload() {
       description: response.message || "Logo uploaded successfully.",
     });
     queryClient.invalidateQueries({ queryKey: ["logo"] });
-    reset();
-    toggleUpload(false);
+    closeUpload(false);
   };
 
   const onError = (error: { message?: string }) => {
@@ -65,8 +88,8 @@ export function LogoUpload() {
     queryClient.invalidateQueries({ queryKey: ["site-logo"] });
   };
 
-  const processForm: SubmitHandler<UploadLogoType> = (data) => {
-    if (!data.logo || data.logo.length === 0) {
+  const handleUploadLogo = () => {
+    if (!image) {
       toast({
         variant: "destructive",
         title: "Upload Failed",
@@ -74,77 +97,111 @@ export function LogoUpload() {
       });
       return;
     }
-
     const formData = new FormData();
-    formData.append("logo", data.logo[0]);
-
+    formData.append("logo", image);
     console.log("processForm - Uploading logo", { formData });
-
     uploadLogo.mutate(formData, {
       onSuccess,
       onError,
     });
   };
 
-  const isSubmitting = uploadLogo.isLoading;
-
   return (
-    <UploadDialog
-      title="Upload Logo"
-      description="Update your site's logo. Recommended size: 200x60px."
-      open={isOpen}
-      onOpenChange={(open) => {
-        if (!isSubmitting) {
-          toggleUpload(open);
+    <>
+      <UploadDialog
+        showCloseButton={false}
+        title="Update Logo"
+        description="Recommended size: 512x512"
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (open) {
+            if (!isSubmitting) {
+              closeUpload(open);
+            }
+          }
+        }}
+        trigger={
+          <Button onClick={() => closeUpload(true)} className="gap-2">
+            <Upload className="h-4 w-4" />
+            Update Logo
+          </Button>
         }
-      }}
-      trigger={
-        <Button onClick={() => toggleUpload(true)} className="gap-2">
-          <Upload className="h-4 w-4" />
-          Upload Logo
-        </Button>
-      }
-    >
-      <FormProvider {...methods}>
-        <form onSubmit={handleSubmit(processForm)} className="space-y-4">
+      >
+        <div className="space-y-4">
           <div className="space-y-2">
-            <Controller
-              name="logo"
-              control={control}
-              rules={{ required: "Please select a logo file." }}
-              render={({ field: { onChange } }) => (
-                <Dropzone
-                  onDrop={(acceptedFiles) => onChange(acceptedFiles)}
-                  accept={{
-                    "image/jpeg": [],
-                    "image/png": [],
-                    "image/webp": [],
-                  }}
-                  showImages={true}
-                />
-              )}
+            <Dropzone
+              onDrop={(acceptedFiles) => {
+                onImageDropdown(acceptedFiles[0]);
+              }}
+              accept={{
+                "image/jpeg": [],
+                "image/png": [],
+                "image/webp": [],
+              }}
+              showImages={false}
+              showList={false}
             />
-            {errors.logo && (
-              <p className="text-sm text-destructive">
-                {errors.logo.message || "Please provide a valid logo file."}
-              </p>
+            {image && initialImage && (
+              <div
+                className="w-full relative transition-all  duration-200 cursor-pointer hover:scale-95 "
+                onClick={() => {
+                  onImageDropdown(initialImage);
+                }}
+              >
+                <Image
+                  src={URL.createObjectURL(image)}
+                  className="object-contain w-full"
+                  width={1000}
+                  height={1000}
+                  alt={"logo image"}
+                />
+
+                <div className="absolute text-white-primary transition-all top-0 r-0 w-full h-full bg-black-primary/20 flex-col-center">
+                  Click to crop
+                </div>
+              </div>
             )}
           </div>
           <DialogFooter>
             <Button
               type="button"
               variant="outline"
-              onClick={() => toggleUpload(false)}
+              onClick={() => closeUpload(false)}
               disabled={isSubmitting}
             >
               Cancel
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Uploading..." : "Upload Logo"}
+            <Button
+              disabled={isSubmitting}
+              onClick={handleUploadLogo}
+              className="w-fit"
+            >
+              {isSubmitting ? (
+                <>
+                  {" "}
+                  <span className="w-fit">Uploading </span>
+                  <LoadingCircle size={16} />
+                </>
+              ) : (
+                "Upload Logo"
+              )}
             </Button>
           </DialogFooter>
-        </form>
-      </FormProvider>
-    </UploadDialog>
+        </div>
+
+        {openCropper && (
+          <Cropper
+            image={initialImage}
+            open={openCropper}
+            onSave={(imageUrl: string) => handleSetCroppedImage(imageUrl)}
+            dialogTitle={"Cropper"}
+            dialogDesc={"Maintain an aspect ratio 1:1 for a better logo"}
+            onClose={() => {
+              setOpenCropper(false);
+            }}
+          />
+        )}
+      </UploadDialog>
+    </>
   );
 }

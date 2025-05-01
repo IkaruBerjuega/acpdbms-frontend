@@ -23,14 +23,18 @@ export default function ProjectDetails() {
     watch,
   } = useFormContext<StepInputs>();
 
-  const { data } = useAccounts<ClientInterface>({
+  const { data: clientAccounts } = useAccounts<ClientInterface>({
     role: "client",
     isArchived: false,
   });
 
+  const nonPendingClientAccounts = clientAccounts?.filter(
+    (account) => account.status !== "pending"
+  );
+
   // map clientAccounts to the items expected by FormInput
   const clientItems: ClientItem[] =
-    data?.map((client: ClientInterface) => ({
+    nonPendingClientAccounts?.map((client: ClientInterface) => ({
       value: String(client.id), // id is a string
       label: client.full_name,
     })) || [];
@@ -56,8 +60,6 @@ export default function ProjectDetails() {
                 items={clientItems}
                 placeholder="Ex. John Doe"
                 onSelect={(item: ClientItem) => {
-                  console.log("Selected item:", item);
-                  console.log("Setting client_id:", Number(item.value));
                   // Convert the string id to a number for client_id
                   setValue("client_id", Number(item.value));
                   setValue("client_name", item.label);
@@ -142,11 +144,6 @@ export default function ProjectDetails() {
               stateFieldName="state"
               cityFieldName="city_town"
               zipcodeFieldName="zip_code"
-              onStateChange={(state) => console.log("State changed:", state)}
-              onCityChange={(city) => console.log("City changed:", city)}
-              onZipcodeChange={(zipcode) =>
-                console.log("Zipcode changed:", zipcode)
-              }
             />
             <FormInput
               name="street"

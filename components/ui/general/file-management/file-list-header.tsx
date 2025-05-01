@@ -46,57 +46,8 @@ export default function FileListHeaderActions({
   return (
     <DataTableHeader
       tableName={"Files"}
-      onArchive={{
-        fn: () => {
-          // const userIds = (data as File[]).map((file) => file.file_id);
-          // mutate(
-          //   { user_ids: userIds },
-          //   {
-          //     onSuccess: (response: { message: string }) => {
-          //       toast({
-          //         title: "Archive Accounts",
-          //         description:
-          //           response?.message ||
-          //           "Successfully archived the selected accounts.",
-          //       });
-          //       queryClient.invalidateQueries({
-          //         queryKey: [
-          //           isClient
-          //             ? !isArchived
-          //               ? "clients"
-          //               : "clients-archived"
-          //             : !isArchived
-          //             ? "employees"
-          //             : "employees-archived",
-          //         ],
-          //       });
-          //       resetData();
-          //     },
-          //     onError: (error: { message: string }) => {
-          //       toast({
-          //         title: "Archive Accounts",
-          //         description:
-          //           error?.message ||
-          //           "An error occurred while processing the request.",
-          //       });
-          //     },
-          //   }
-          // );
-        },
-        archiveDialogContent: (
-          <div className="flex-col-center-start max-h-[200px] overflow-y-auto">
-            {/* {(data as AccountsTableType[]).map(
-              (account: AccountsTableType, index) => (
-                <p key={index} className="text-xs">
-                  - {account.full_name}
-                </p>
-              )
-            )} */}
-          </div>
-        ),
-      }}
       onShowArchive={true}
-      onGenerateReport={true}
+      onGenerateReportElement={<></>}
       additionalElement={
         <>
           <Button

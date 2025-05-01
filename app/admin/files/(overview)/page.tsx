@@ -13,11 +13,6 @@ export default async function Page({
   const queries = await searchParams;
   const breadcrumbs: Breadcrumbs[] = [
     {
-      href: "/admin",
-      pageName: "Admin",
-      active: false,
-    },
-    {
       href: "/admin/files",
       pageName: "Files",
       active: true,
@@ -27,7 +22,7 @@ export default async function Page({
   return (
     <>
       <SidebarTrigger breadcrumbs={breadcrumbs} />
-      <Files {...queries} isAdmin={true} />
+      <Files {...queries} role={"admin"} />
     </>
   );
 }

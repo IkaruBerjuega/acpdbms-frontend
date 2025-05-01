@@ -31,7 +31,7 @@ export default function AddClient() {
   });
 
   //api
-  const { addClient } = useAccountActions();
+  const { addClient } = useAccountActions({ userId: "" });
 
   const { mutate, isLoading } = addClient;
 

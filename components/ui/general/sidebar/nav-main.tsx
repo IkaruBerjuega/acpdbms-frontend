@@ -61,6 +61,7 @@ import {
 } from "@/components/ui/sidebar";
 import { VscGithubProject } from "react-icons/vsc";
 import { useQueryParams } from "@/hooks/use-query-params";
+import { useProjectSelectStore } from "@/hooks/states/create-store";
 
 interface NavigationInterface {
   title: string;
@@ -96,16 +97,24 @@ export function NavMain({ role }: { role: "admin" | "employee" | "client" }) {
       title: "Files",
       url: "/admin/files",
       icon: LiaFileSolid,
-      query: "filters=true&tab=row",
+      query: "tab=row",
     },
   ];
 
+  const { data: projectSelected } = useProjectSelectStore();
+  const canAccessEmployeeProjectDashboard =
+    projectSelected[0]?.userRole !== "Member";
+
   const employeeNavs = [
-    {
-      title: "Project Dashboard",
-      url: `/employee/project-dashboard`,
-      icon: MdOutlineDashboard,
-    },
+    ...(canAccessEmployeeProjectDashboard
+      ? [
+          {
+            title: "Project Dashboard",
+            url: `/employee/project-dashboard`,
+            icon: MdOutlineDashboard,
+          },
+        ]
+      : []),
     {
       title: "Tasks",
       url: "/employee/tasks",
@@ -116,7 +125,7 @@ export function NavMain({ role }: { role: "admin" | "employee" | "client" }) {
       title: "Files",
       url: "/employee/files",
       icon: LiaFileSolid,
-      query: "filters=true&tab=row",
+      query: "tab=row",
     },
   ];
 
@@ -131,7 +140,7 @@ export function NavMain({ role }: { role: "admin" | "employee" | "client" }) {
       title: "Files",
       url: "/client/files",
       icon: LiaFileSolid,
-      query: "filters=true&tab=row",
+      query: "tab=row",
     },
   ];
 

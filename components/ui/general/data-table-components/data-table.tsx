@@ -42,7 +42,8 @@ export default function DataTable<T>({
   const { table, filterComponents, filters, pagination } = useCustomTable<T>(
     data,
     columns,
-    10
+    10,
+    true
   );
 
   return (

@@ -1,6 +1,7 @@
 export interface OnlineUser {
   name: string;
   role: string;
+  profile_picture_url: string | null;
 }
 
 export interface DashboardStatistics {
@@ -15,10 +16,10 @@ export interface TaskStatistics {
 }
 
 export type TaskCountIntervalTypes =
-  | "7_days"
-  | "4_weeks"
-  | "12_months"
-  | "3_years";
+  | '7_days'
+  | '4_weeks'
+  | '12_months'
+  | '3_years';
 
 export interface TaskStatsGraphData {
   date?: string;
@@ -50,4 +51,5 @@ export interface TicketDetails {
   content: string;
   date: string | null;
   status: string;
+  profile_picture_url: string;
 }

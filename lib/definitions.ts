@@ -105,7 +105,7 @@ export interface ProjectListResponseInterface {
   image_url: string | null;
   project_manager: string;
   project_description: string;
-  user_role?: "Project Manager" | "Vice Manager" | "Member";
+  user_role: "Project Manager" | "Vice Manager" | "Member";
   revision?: number | null;
   revision_of?: number | null;
   can_be_finished: boolean;
@@ -160,7 +160,7 @@ export type AccountActions =
   | "archive"
   | "activate"
   | "unarchive"
-  | undefined;
+  | "delete";
 
 export type ProjectActions =
   | "archive"
@@ -181,7 +181,7 @@ export interface ProjectSelector {
   projectId: string;
   projectName: string;
   userRole?: ProjectListResponseInterface["user_role"];
-  hasVicePermission: boolean;
+  hasVicePermission?: boolean;
 }
 
 export const ItemTypes = {
@@ -213,7 +213,7 @@ export interface TeamMemberDashboardResponse {
 }
 
 export interface ViceManagerPermissionResponse {
-  vice_manager_permission?: boolean;
+  vice_manager_permission: boolean;
 }
 
 export interface ContactDetails {
@@ -368,6 +368,7 @@ export type TicketData = {
   content: string;
   date: string;
   status: string;
+  profile_picture_url: string;
 };
 
 export type ProjectLocationYear = {

@@ -252,7 +252,7 @@ export default function EmpAccView({
                     />
 
                     {/* Address */}
-                    <div className="lg:col-span-4 col-span-1">
+                    <div className="lg:col-span-4 md:col-span-2 col-span-1">
                       <Separator className="my-4" />
                       <div className="flex items-center mb-4">
                         <MapPin className="h-5 w-5 text-primary mr-2" />
@@ -261,25 +261,23 @@ export default function EmpAccView({
                         </h2>
                       </div>
                     </div>
-                    <div className="lg:col-span-3 col-span-1">
-                      <USLocationSelector
-                        control={control}
-                        stateFieldName="state"
-                        cityFieldName="city_town"
-                        zipcodeFieldName="zip_code"
-                        onStateChange={(state) =>
-                          console.log("State changed:", state)
-                        }
-                        onCityChange={(city) =>
-                          console.log("City changed:", city)
-                        }
-                        onZipcodeChange={(zipcode) =>
-                          console.log("Zipcode changed:", zipcode)
-                        }
-                        setValue={setValue}
-                      />
-                    </div>
 
+                    <USLocationSelector
+                      control={control}
+                      stateFieldName="state"
+                      cityFieldName="city_town"
+                      zipcodeFieldName="zip_code"
+                      onStateChange={(state) =>
+                        console.log("State changed:", state)
+                      }
+                      onCityChange={(city) =>
+                        console.log("City changed:", city)
+                      }
+                      onZipcodeChange={(zipcode) =>
+                        console.log("Zipcode changed:", zipcode)
+                      }
+                      setValue={setValue}
+                    />
                     <div className="lg:col-span-1 col-span-1">
                       <FormInput
                         name="street"
@@ -302,7 +300,7 @@ export default function EmpAccView({
                       </div>
                     </div>
                     {/* Email (view-only) */}
-                    <div>
+                    <div className="lg::col-span-2">
                       <p className="text-sm text-slate-500">Email</p>
                       <p className="text-base text-slate-700">{email}</p>
                     </div>
@@ -311,6 +309,7 @@ export default function EmpAccView({
                       label="Position"
                       inputType="default"
                       register={register}
+                      className="lg:col-span-2"
                       errorMessage={errors.position?.message}
                     />
                   </div>
@@ -339,7 +338,7 @@ export default function EmpAccView({
                       <p className="text-base text-slate-700">{phoneNumber}</p>
                     </div>
 
-                    <div className="lg:col-span-4 col-span-1">
+                    <div className="lg:col-span-4 md:col-span-2 col-span-1">
                       <Separator className="my-4" />
                       <div className="flex items-center mb-4">
                         <MapPin className="h-5 w-5 text-slate-900 mr-2" />
@@ -348,7 +347,7 @@ export default function EmpAccView({
                         </h2>
                       </div>
                     </div>
-                    <div>
+                    <div className="">
                       <p className="text-sm text-slate-500">State</p>
                       <p className="text-base text-slate-700">
                         {profileDetails?.employee?.state || "Not Set"}
@@ -373,7 +372,7 @@ export default function EmpAccView({
                       </p>
                     </div>
 
-                    <div className="lg:col-span-4 col-span-1">
+                    <div className="lg:col-span-4 md:col-span-2 col-span-1">
                       <Separator className="my-4" />
                       <div className="flex items-center mb-4">
                         <FileText className="h-5 w-5 text-slate-900 mr-2" />
@@ -382,11 +381,11 @@ export default function EmpAccView({
                         </h2>
                       </div>
                     </div>
-                    <div>
+                    <div className="lg:col-span-2">
                       <p className="text-sm text-slate-500">Email</p>
                       <p className="text-base text-slate-700">{email}</p>
                     </div>
-                    <div>
+                    <div className="lg:col-span-2">
                       <p className="text-sm text-slate-500">Position</p>
                       <p className="text-base text-slate-700">{position}</p>
                     </div>
@@ -411,17 +410,17 @@ export default function EmpAccView({
                   </h2>
                 </div>
                 {ongoingProjects && ongoingProjects.length > 0 ? (
-                  <div className="w-full grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+                  <div className="w-full grid  md:grid-cols-2 grid-cols-1 gap-4">
                     {ongoingProjects.map((p) => (
                       <ViewEditCard
                         key={`${p.id}.${p.project_title}`}
                         name={p.project_title}
                         address={p.location}
                         endDate={String(p.end_date)}
-                        id={id}
                         edit={isEdit}
                         canDelete
                         image={p.image_url}
+                        role={p.user_role}
                       />
                     ))}
                   </div>
@@ -456,10 +455,10 @@ export default function EmpAccView({
                         name={p.project_title}
                         address={p.location}
                         endDate={String(p.end_date)}
-                        id={id}
                         edit={isEdit}
                         canDelete
                         image={p.image_url}
+                        role={p.user_role}
                       />
                     ))}
                   </div>

@@ -43,7 +43,7 @@ export function Notifications({
 
   const openNotifs = () => {
     createQueryString("notifications", "open");
-    createQueryString("filter", "all");
+    createQueryString("filter", "today");
     createQueryString("page", "1");
   };
 
@@ -96,7 +96,7 @@ export function Notifications({
             />
           }
           paramKey={"notifications"}
-          paramsKeyToDelete={["notifications"]}
+          paramsKeyToDelete={["notifications", "filter", "page"]}
           toCompare={"open"}
           tabs={null}
         />

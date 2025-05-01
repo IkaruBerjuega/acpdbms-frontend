@@ -236,8 +236,6 @@ export const getPhaseBadgeColor = (phases: string[]) => {
       dark: `text-${color}-600`,
     };
 
-    console.log(acc);
-
     return acc;
   }, {} as Record<string, { light: string; dark: string }>);
 };
@@ -356,4 +354,25 @@ export function getRelativeTime(dateTimeString: string): string {
 
   const diffInDays = Math.floor(diffInHours / 24);
   return `${diffInDays}d`;
+}
+
+export function base64ToFile(base64: string, filename: string): File {
+  const arr = base64.split(",");
+  const mime = arr[0].match(/:(.*?);/)?.[1] || "";
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+
+  while (n--) {
+    u8arr[n] = bstr.charCodeAt(n);
+  }
+
+  return new File([u8arr], filename, { type: mime });
+}
+
+export async function urlToFile(url: string, filename: string): Promise<File> {
+  const response = await fetch(url);
+  const blob = await response.blob();
+  const mimeType = blob.type || "image/jpeg"; // fallback if type is missing
+  return new File([blob], filename, { type: mimeType });
 }

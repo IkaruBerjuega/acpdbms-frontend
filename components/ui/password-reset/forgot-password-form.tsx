@@ -24,7 +24,9 @@ export default function ForgotPasswordForm() {
     formState: { errors },
   } = sendLinkMethods;
 
-  const { sendReset } = useAccountActions<AccountSendLinkSchemaType>();
+  const { sendReset } = useAccountActions({
+    userId: "",
+  });
 
   const [isNoticePage, setToNoticePage] = useState<boolean>(false);
 

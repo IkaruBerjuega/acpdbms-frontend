@@ -11,6 +11,7 @@ import { BtnDialog, ButtonLink } from "../button";
 import { ChangePassByUserFormProps } from "@/lib/user-definitions";
 import { IoCheckmarkCircle } from "react-icons/io5";
 import Link from "next/link";
+import { useRole, useToken } from "@/hooks/general/use-token";
 
 export default function PasswordResetForm({
   token,
@@ -31,9 +32,17 @@ export default function PasswordResetForm({
     formState: { errors },
   } = methods;
 
-  const { resetPassword } = useAccountActions();
+  const { resetPassword } = useAccountActions({ userId: "" });
 
   const [isNoticePage, setToNoticePage] = useState<boolean>(false);
+
+  const { deleteToken } = useToken();
+  const { deleteRole } = useRole();
+
+  const deleteAllCookies = async () => {
+    await deleteToken();
+    await deleteRole();
+  };
 
   if (!token && !email) return;
 
@@ -46,7 +55,8 @@ export default function PasswordResetForm({
         password_confirmation: data.confirm_new_pass,
       },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
+          await deleteAllCookies();
           setToNoticePage(true);
         },
         onError: ({ message }: { message: string }) => {
@@ -77,7 +87,7 @@ export default function PasswordResetForm({
               required
               dataType="password"
               validationRules={{
-                required: requireError("field"),
+                required: requireError("Field"),
                 pattern: {
                   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[\W_]).{8,}$/,
                   message:
@@ -95,7 +105,7 @@ export default function PasswordResetForm({
               required
               dataType="password"
               validationRules={{
-                required: requireError("field"),
+                required: requireError("Field"),
                 validate: (value: string) =>
                   value === watch("new_pass") || "Password does not match",
               }}
@@ -113,7 +123,10 @@ export default function PasswordResetForm({
               variant={"default"}
             />
 
-            <Link href={"/login"} className="text-xs text-slate-500 mt-10">
+            <Link
+              href={"/login"}
+              className="text-xs text-slate-500 mt-10 w-full flex-col-center"
+            >
               Go To Login
             </Link>
           </form>

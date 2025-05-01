@@ -11,6 +11,7 @@ interface FileListProps<T> extends FilesPageProps {
   taskFiles: T[] | undefined;
   versionFiles: T[] | undefined;
   isLoading: boolean;
+  role: "admin" | "employee" | "client";
 }
 
 export default function FileList<T extends File>(props: FileListProps<T>) {
@@ -50,7 +51,6 @@ export default function FileList<T extends File>(props: FileListProps<T>) {
 
   //get card
   const isCardView = props.tab === "card";
-  const projectId = props.projectId?.split("_")[0];
 
   const [firstIndex, setFirstIndex] = useState<number>(-1);
   const [secondIndex, setSecondIndex] = useState<number>(-1);
@@ -65,7 +65,7 @@ export default function FileList<T extends File>(props: FileListProps<T>) {
     >
       {!props.isLoading ? (
         <>
-          {projectId ? (
+          {!!props.projectId ? (
             <>
               {filteredFiles.length > 0 ? (
                 <>
@@ -74,23 +74,25 @@ export default function FileList<T extends File>(props: FileListProps<T>) {
                       <Fragment key={index}>
                         {isCardView ? (
                           <FileCard
-                            projectId={projectId!}
+                            projectId={props.projectId!}
                             file={file}
                             filteredFiles={filteredFiles}
                             firstIndex={firstIndex}
                             secondIndex={secondIndex}
                             setFirstIndex={setFirstIndex}
                             setSecondIndex={setSecondIndex}
+                            role={props.role}
                           />
                         ) : (
                           <FileRow
-                            projectId={projectId!}
+                            projectId={props.projectId!}
                             file={file}
                             filteredFiles={filteredFiles}
                             firstIndex={firstIndex}
                             secondIndex={secondIndex}
                             setFirstIndex={setFirstIndex}
                             setSecondIndex={setSecondIndex}
+                            role={props.role}
                           />
                         )}
                       </Fragment>

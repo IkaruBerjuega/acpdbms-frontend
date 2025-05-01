@@ -103,7 +103,7 @@ export function Combobox({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            `w-full flex justify-between items-center text-xs sm:text-sm ${className} overflow-hidden`,
+            `w-full flex justify-between items-center text-xs sm:text-sm ${className} overflow-hidden focus:border-[1px]`,
             selectedValue ? "text-darkgray-800" : "text-darkgray-400",
             disabled ? "cursor-not-allowed opacity-50" : "" // Add disabled styles
           )}
@@ -142,7 +142,7 @@ export function Combobox({
       >
         <Command className="w-full relative">
           <CommandInput
-            className="w-full pr-10" // Add padding to the right for the button
+            className="w-full pr-10 text-[16px] lg:text-xs " // Add padding to the right for the button
             placeholder="Search or add new..."
             value={inputValue} // Bind the state to the input
             onValueChange={setInputValue} // Update input value

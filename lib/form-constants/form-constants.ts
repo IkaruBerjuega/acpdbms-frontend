@@ -14,7 +14,8 @@ export interface AccountSendLinkSchemaType {
 
 export type AccountActionsRequest =
   | AccountActionSchemaType
-  | AccountSendLinkSchemaType;
+  | AccountSendLinkSchemaType
+  | undefined;
 
 export interface ProjectActionSchema {
   project_ids: string[];

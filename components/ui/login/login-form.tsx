@@ -26,6 +26,7 @@ import {
   InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { Checkbox } from "../checkbox";
+import { useDeviceTokenStore } from "@/hooks/states/create-store";
 
 const default2faTimer = 180; //default2faTimer seconds
 
@@ -68,6 +69,7 @@ export default function LoginForm() {
   const { storeToken } = useToken();
   const { storeRole } = useRole();
   const { storeDeviceToken, getDeviceToken } = useDeviceToken();
+  const { setData } = useDeviceTokenStore();
 
   //this function will be triggered when the login is successful, will set cookies here
   const onRedirect = async (role: "admin" | "employee" | "client") => {
@@ -91,7 +93,7 @@ export default function LoginForm() {
       interval = setInterval(() => {
         setTimeLeft((prevTime) => prevTime - 1);
       }, 1000);
-    } else if (timeLeft === 0) {
+    } else if (timeLeft <= 0) {
       setCanResend(true);
     }
 
@@ -129,6 +131,7 @@ export default function LoginForm() {
         : true;
 
     if (canRedirect) {
+      setData([device_token]);
       await onRedirect(role);
     }
   };
@@ -146,14 +149,13 @@ export default function LoginForm() {
 
     login.mutate(body, {
       onSuccess: async (responseData: LoginResponseInterface) => {
-        if (responseData.message === "2FA code sent to your email") {
+        if (
+          responseData.message === "2FA code sent to your email" ||
+          responseData.remaining_seconds
+        ) {
           verify2faSetValue("email", data.email);
           setShouldVerify(true);
-          setTimeLeft(default2faTimer);
-        } else if (responseData.remaining_seconds) {
-          verify2faSetValue("email", data.email);
-          setShouldVerify(true);
-          setTimeLeft(responseData.remaining_seconds);
+          setTimeLeft(responseData.remaining_seconds || default2faTimer);
         } else {
           storeCookies({
             token: responseData.token,

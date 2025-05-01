@@ -25,7 +25,7 @@ export default function NotificationsComponent({
   setPageIndex,
 }: NotificationComponentProps) {
   const { data: notificationsResponse, isPending } = useGetNotifications({
-    filter: filter,
+    filter: filter || "today",
     page: page,
     role,
   });

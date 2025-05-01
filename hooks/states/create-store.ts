@@ -3,7 +3,8 @@ import {
   ProjectSelector,
   SupportedTableTypes,
 } from "@/lib/definitions";
-import { TaskStatuses } from "@/lib/tasks-definitions";
+import { File, TaskFile } from "@/lib/files-definitions";
+import { TaskItem, TaskStatuses } from "@/lib/tasks-definitions";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 
@@ -11,7 +12,7 @@ import { combine } from "zustand/middleware";
 type ReactStyleStateSetter<T> = T | ((prev: T) => T);
 // Define a generic state structure
 type CreateStore<T> = {
-  data: T[] | never[];
+  data: T[];
 };
 
 // Define a generic setter function
@@ -51,7 +52,10 @@ export const createStore = <T>(initialData?: T[]) =>
 
 // Create Zustand store
 export const useCheckboxStore = createStore<SupportedTableTypes>([]);
-export const useSelectFiles = createStore<string>([]);
+export const useSelectFiles = createStore<File | undefined>([]);
+export const useTaskSelectFile = createStore<string | undefined>([]);
 export const useProjectSelectStore = createStore<ProjectSelector>();
 export const usePhaseTransfer = createStore<AddPhaseShortcut>([]);
 export const useSelectedTaskStatus = createStore<TaskStatuses | undefined>();
+export const useDeviceTokenStore = createStore<string | undefined>([]);
+export const useTaskToUpdateDetails = createStore<TaskItem | undefined>([]);

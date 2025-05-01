@@ -14,12 +14,7 @@ export default async function Page({
   const queries = await searchParams;
   const breadcrumbs: Breadcrumbs[] = [
     {
-      href: "/employee",
-      pageName: "Admin",
-      active: false,
-    },
-    {
-      href: "/employee/files",
+      href: "/client/files",
       pageName: "Files",
       active: true,
     },
@@ -32,7 +27,7 @@ export default async function Page({
         <ProjectSelector role="client" projId={queries.projectId} />
       </div>
       <Suspense fallback={<></>}>
-        <Files {...queries} isAdmin={false} />
+        <Files {...queries} role={"client"} />
       </Suspense>
     </>
   );

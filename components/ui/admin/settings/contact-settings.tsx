@@ -7,6 +7,7 @@ import { SocMedSettings } from "../contact-settings/socmed-settings";
 import { ContactNoSettings } from "../contact-settings/contactno-settings";
 import { EmailSettings } from "../contact-settings/email-settings";
 import { Skeleton } from "../../skeleton";
+import { Address } from "../contact-settings/address-settings";
 
 export function ContactSettings() {
   const { contactDetailsQuery } = useAdminSettings();
@@ -39,6 +40,11 @@ export function ContactSettings() {
     [contactDetails]
   );
 
+  const address = useMemo(
+    () => contactDetails.filter((contact) => contact.type === "address"),
+    [contactDetails]
+  );
+
   if (isLoading) {
     return (
       <div className="grid gap-6">
@@ -59,6 +65,7 @@ export function ContactSettings() {
 
   return (
     <div className="grid gap-6">
+      <Address address={address} />
       <ContactNoSettings contactNumbers={contactNumbers} />
       <EmailSettings email={email} />
       <SocMedSettings

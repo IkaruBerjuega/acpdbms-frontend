@@ -5,11 +5,6 @@ export default function Page() {
   const breadCrumbs = [
     {
       href: "",
-      pageName: "Admin",
-      active: false,
-    },
-    {
-      href: "",
       pageName: "Dashboard",
       active: true,
     },

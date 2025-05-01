@@ -151,3 +151,9 @@ export interface TaskRequest {
 export interface StoreTaskRequest {
   tasks: TaskRequest[]; // Required array of TaskRequest objects
 }
+
+export interface UpdateTaskRequest {
+  task_name: string | null;
+  task_description: string | null;
+  duration: string | null;
+}

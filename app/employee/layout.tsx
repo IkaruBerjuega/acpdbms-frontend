@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/ui/general/sidebar/app-sidebar";
+import AutomaticallyLoggedOutNotice from "@/components/ui/general/logged-out-notice";
 
 export default async function Layout({
   children,
@@ -14,6 +15,9 @@ export default async function Layout({
         <main className="flex-1 flex-col-start m-4 gap-2 min-w-0">
           <Suspense>{children}</Suspense>
         </main>
+        <Suspense>
+          <AutomaticallyLoggedOutNotice />
+        </Suspense>
       </div>
     </SidebarProvider>
   );

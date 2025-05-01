@@ -38,11 +38,6 @@ export default async function SettingsPage({
 
   const breadcrumbs: Breadcrumbs[] = [
     {
-      href: "/employee",
-      pageName: "Employee",
-      active: false,
-    },
-    {
       href: currentRoute.href,
       pageName: currentRoute.pageName,
       active: true,

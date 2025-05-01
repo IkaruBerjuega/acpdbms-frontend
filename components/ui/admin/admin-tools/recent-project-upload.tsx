@@ -16,6 +16,7 @@ import { UploadDialog } from "./upload-dialog";
 import { useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useSettingsActions } from "@/hooks/general/use-admin-settings";
+import { LoadingCircle } from "../../general/loading-circle";
 
 type BrowserFile = File;
 
@@ -153,6 +154,7 @@ export function RecentProjectsUpload() {
 
   return (
     <UploadDialog
+      showCloseButton={false}
       title="Upload Recent Projects"
       description="Add images and titles for your recent projects. Recommended image size: 800x600px. Maximum file size: 2MB."
       open={isOpen}
@@ -184,6 +186,7 @@ export function RecentProjectsUpload() {
                     "image/svg+xml": [],
                   }}
                   showImages={true}
+                  showList={false}
                   formInput={{ name: "project_titles", register }}
                   maxSize={2 * 1024 * 1024}
                 />
@@ -213,7 +216,14 @@ export function RecentProjectsUpload() {
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Uploading..." : "Upload Projects"}
+              {isSubmitting ? (
+                <>
+                  <span>Uploading</span>
+                  <LoadingCircle size={16} />
+                </>
+              ) : (
+                "Upload Projects"
+              )}
             </Button>
           </DialogFooter>
         </form>

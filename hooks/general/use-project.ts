@@ -139,7 +139,10 @@ export const useGetArchivedPhases = (
   });
 };
 
-export const useProjectActions = <T>(projectId?: string) => {
+export const useProjectActions = <T>(
+  projectId?: string,
+  teamMemberId?: string
+) => {
   //employee add
   const addTeamToProjects = useApiMutation<T>({
     url: `/projects/${projectId}/add-team-members`,
@@ -218,6 +221,13 @@ export const useProjectActions = <T>(projectId?: string) => {
     auth: true, // Assuming auth is required
   });
 
+  const deactivateUsersFromTeam = useApiMutation<null>({
+    url: `/team/deactivate/${teamMemberId}`,
+    method: "PATCH",
+    contentType: "application/json",
+    auth: true, // Assuming auth is required
+  });
+
   return {
     addTeamToProjects,
     cancelProject,
@@ -230,5 +240,6 @@ export const useProjectActions = <T>(projectId?: string) => {
     addPhases,
     finishProject,
     duplicateProject,
+    deactivateUsersFromTeam,
   };
 };

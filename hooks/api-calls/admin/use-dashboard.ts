@@ -29,7 +29,7 @@ export const useDashboard = () => {
   }, [queryClient]);
 
   // fetch online users
-  const onlineUsers = useApiQuery<OnlineUser>({
+  const onlineUsers = useApiQuery<OnlineUser[]>({
     key: "online-users",
     url: "/dashboard/online-users",
     auth: true,

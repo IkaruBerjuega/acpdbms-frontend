@@ -2,8 +2,12 @@
 
 import { BtnDialog } from "@/components/ui/button";
 import FormInput from "@/components/ui/general/form-components/form-input";
-import { useAccountActions } from "@/hooks/api-calls/admin/use-account";
+import {
+  useAccountActions,
+  useUniquePositions,
+} from "@/hooks/api-calls/admin/use-account";
 import { toast } from "@/hooks/use-toast";
+import { ItemInterface } from "@/lib/filter-types";
 import { addEmpAccountRequest } from "@/lib/form-constants/form-constants";
 import { requireError } from "@/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
@@ -29,7 +33,7 @@ export default function AddEmployee() {
   });
 
   //api
-  const { addEmployee } = useAccountActions();
+  const { addEmployee } = useAccountActions({ userId: "" });
 
   const { mutate, isLoading } = addEmployee;
 
@@ -41,13 +45,18 @@ export default function AddEmployee() {
     mutate(
       data, // Actual request body
       {
-        onSuccess: (response: { message?: string }) => {
+        onSuccess: async (response: { message?: string }) => {
           toast({
             variant: "default",
             title: "Add Employee",
             description: response.message || "Added Employee Successfully",
           });
-          queryClient.invalidateQueries({ queryKey: ["employees"] });
+
+          await Promise.all([
+            queryClient.invalidateQueries({ queryKey: ["employees"] }),
+            queryClient.invalidateQueries({ queryKey: ["unique-positions"] }),
+          ]);
+
           reset(); // Reset form fields
         },
         onError: (error: { message?: string }) => {
@@ -68,6 +77,14 @@ export default function AddEmployee() {
   )}`;
   const email = watch("email");
   const position = watch("position");
+
+  const { data: positions } = useUniquePositions();
+
+  const uniquePositionItems: ItemInterface[] =
+    positions?.map((position) => ({
+      value: position,
+      label: position,
+    })) || [];
 
   return (
     <form
@@ -119,7 +136,7 @@ export default function AddEmployee() {
         control={control}
         required
         inputType={"search"}
-        items={[]}
+        items={uniquePositionItems}
         allowedNewValue={true}
         errorMessage={errors.last_name?.message}
         validationRules={{ required: requireError("Position") }}

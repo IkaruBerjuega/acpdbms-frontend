@@ -16,6 +16,9 @@ import { useQueryParams } from "@/hooks/use-query-params";
 import { useIsDesktop } from "@/hooks/use-is-desktop";
 import { CustomTabsProps } from "@/lib/definitions";
 import Tabs from "./tabs";
+import { usePathname } from "next/navigation";
+import { useMemo } from "react";
+import { useRouter } from "next/navigation";
 
 interface ReusableSheetProps {
   title: string;
@@ -39,15 +42,27 @@ export default function ReusableSheet({
   closeDrawerAdditionalFn,
 }: ReusableSheetProps) {
   const { paramsKey, params } = useQueryParams();
-  const canOpen = paramsKey[paramKey] === toCompare;
+  const pathname = usePathname();
+  const { replace } = useRouter();
 
   const closeDrawer = () => {
-    paramsKeyToDelete.map((key) => params.delete(key));
-    window.history.replaceState(null, "", `?${params.toString()}`);
+    const _params = new URLSearchParams(params.toString());
+    paramsKeyToDelete.forEach((key) => {
+      _params.delete(key);
+    });
+
     if (closeDrawerAdditionalFn) {
       closeDrawerAdditionalFn();
-    } // additional function when closing, will use for refetching main display
+    }
+
+    // Now replace the URL with updated params
+
+    replace(`${pathname}?${_params.toString()}`);
   };
+
+  const canOpen = useMemo(() => {
+    return paramsKey[paramKey] === toCompare;
+  }, [paramsKey, paramKey, toCompare]);
 
   const isDesktop = useIsDesktop();
   const btnCollapseSrc = "/button-svgs/sidepanel-close.svg";
