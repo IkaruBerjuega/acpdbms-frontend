@@ -135,11 +135,14 @@ export function useApiQuery<T>({
   enableDeviceToken?: boolean;
 }) {
   const { getToken } = useToken();
+
   const { data: device_token } = useDeviceTokenStore();
+
   const deviceToken = device_token[0];
 
   const fetchApiData = async (): Promise<T> => {
     const userData = await getToken();
+
     const response = await fetch(`${API_URL}${url}`, {
       method: "GET",
       headers: {
@@ -156,34 +159,19 @@ export function useApiQuery<T>({
       throw new Error(`API request failed with status ${response.status}`);
     }
 
-    const data = await response.json();
-    console.log("Client Fetched Data:", data); // Debug
-    return data;
+    return response.json();
   };
 
   const queryKey = typeof key === "string" ? [key] : key;
 
-  const { data, isLoading, isPending, error, isError, isFetching } = useQuery({
+  const { data, isLoading, isPending, error, isError } = useQuery({
     queryKey: queryKey,
     queryFn: () => fetchApiData(),
     initialData: initialData,
     enabled: enabled,
-    staleTime: Infinity,
+    staleTime: Infinity, // optional: how long data is "fresh"
     retry: 2,
-    refetchOnMount: false, // Prevent refetch on mount
-    refetchOnWindowFocus: false, // Prevent refetch on focus
-    refetchOnReconnect: false, // Prevent refetch on reconnect
   });
-
-  // Debug
-  console.log(
-    "Query Data:",
-    data,
-    "Is Loading:",
-    isLoading,
-    "Is Fetching:",
-    isFetching
-  );
 
   return {
     data,
@@ -191,6 +179,5 @@ export function useApiQuery<T>({
     isPending,
     error,
     isError,
-    isFetching,
   };
 }

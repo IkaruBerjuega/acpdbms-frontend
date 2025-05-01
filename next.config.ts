@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
       "via.placeholder.com",
     ],
   },
+  logging: {
+    fetches: {
+      fullUrl: true,
+    },
+  },
 };
 
 export default nextConfig;

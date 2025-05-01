@@ -27,7 +27,7 @@ export default async function serverRequestAPI({
   try {
     res = await fetch(`${API_URL}${url}`, {
       method: "GET",
-      cache: "no-store",
+      cache: "force-cache",
       headers: {
         "Content-Type": "application/json",
         ...(auth && !!token ? { Authorization: `Bearer ${token}` } : {}),
