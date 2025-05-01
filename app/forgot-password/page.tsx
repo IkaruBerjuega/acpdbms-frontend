@@ -1,20 +1,31 @@
 import Image from "next/image";
 import ForgotPasswordForm from "@/components/ui/password-reset/forgot-password-form";
+import { publicRequestAPI } from "@/hooks/server-request";
+import { LogoResponse } from "@/lib/definitions";
 
 export default async function Page() {
+  const logoResponse: LogoResponse | undefined = await publicRequestAPI({
+    url: "/settings/logo",
+  });
+
   return (
     <div className='flex items-center justify-center h-screen bg-[url("/bg.png")] bg-cover'>
       <div className="flex w-[90%] h-[80%]  md:w-[70%] md:h-[80%]  lg:max-w-4xl  ">
         <div className="flex-col-center lg:flex-row-start w-full h-full rounded-lg bg-white-primary overflow-hidden">
           <div className="flex-column w-full p-4 lg:w-1/2 lg:p-6">
             <div className="flex justify-center mx-0">
-              <Image
-                src="/red-logo-name.svg"
-                width={150}
-                height={0}
-                draggable={false}
-                alt="Logo"
-              />
+              {!!logoResponse && (
+                <Image
+                  src={
+                    logoResponse?.logo_url ||
+                    "/system-component-images/logo-placeholder.webp"
+                  }
+                  width={150}
+                  height={0}
+                  draggable={false}
+                  alt="Logo"
+                />
+              )}
             </div>
             <div className="flex justify-center mx-auto mt-8">
               <h1 className="block text-xl lg:text-2xl text-maroon-800">

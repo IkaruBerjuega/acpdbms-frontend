@@ -39,16 +39,9 @@ export default function Footer({
   return (
     <footer className="bg-black-primary h-fit flex-col-center-start  homepage-padding py-20 ">
       <div className="flex-row-start-center gap-6">
-        {!!logoUrl && (
-          <div className="p-1 bg-white-primary/40 rounded-md">
-            <Image
-              src={logoUrl}
-              alt={"footer-logo-svg"}
-              width={30}
-              height={30}
-            />
-          </div>
-        )}
+        <div className="p-1 bg-white-primary/40 rounded-md">
+          <Image src={logoUrl} alt={"footer-logo-svg"} width={30} height={30} />
+        </div>
 
         <h1 className="text-2xl italic font-bold text-white-secondary">
           LARRY&apos;S HOME DESIGNS
