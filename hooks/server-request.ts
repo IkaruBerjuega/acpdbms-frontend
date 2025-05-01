@@ -2,53 +2,46 @@ import { cookies } from "next/headers";
 
 interface ServerRequestAPI {
   url: string;
-  auth: boolean;
+  auth?: boolean;
+  cache?: RequestCache; // e.g., "no-store", "force-cache"
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
 if (!API_URL) {
   throw new Error(
     "NEXT_PUBLIC_API_URL is not defined in environment variables"
   );
 }
 
-export default async function serverRequestAPI({
+export default async function serverRequestAPI<T = any>({
   url,
-  auth,
-}: ServerRequestAPI) {
-  const tokenResponse = (await cookies()).get("token")?.value;
+  auth = true,
+  cache = "no-store", // default to dynamic fetch
+}: ServerRequestAPI): Promise<T | null> {
+  const cookieStore = cookies();
+  const tokenCookie = (await cookieStore).get("token")?.value;
+  const token = tokenCookie ? JSON.parse(tokenCookie).token : null;
 
-  let token;
-  if (tokenResponse) {
-    token = JSON.parse(tokenResponse).token;
-  }
-
-  let res;
   try {
-    res = await fetch(`${API_URL}${url}`, {
+    const res = await fetch(`${API_URL}${url}`, {
       method: "GET",
+      cache,
       headers: {
         "Content-Type": "application/json",
-        ...(auth && !!token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(auth && token ? { Authorization: `Bearer ${token}` } : {}),
       },
     });
-  } catch (error) {
-    // console.error(`Fetch failed for ${url}:`, error);
+
+    if (!res.ok) {
+      // Optionally log error here
+      return null;
+    }
+
+    const data = await res.json();
+    return data ?? null;
+  } catch (err) {
+    // Optionally log fetch error here
     return null;
   }
-
-  if (!res.ok) {
-    // console.log(`HTTP error ${res.status} for ${url}:`, await res.text());
-    return null;
-  }
-
-  let responseData;
-  try {
-    responseData = await res.json();
-  } catch (error) {
-    // console.error(`Failed to parse JSON response for ${url}:`, error);
-    return null;
-  }
-
-  return responseData || [];
 }
