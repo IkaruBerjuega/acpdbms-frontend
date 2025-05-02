@@ -169,7 +169,6 @@ export function useApiQuery<T>({
     queryFn: () => fetchApiData(),
     initialData: initialData,
     enabled: enabled,
-    staleTime: Infinity, // optional: how long data is "fresh"
     retry: 2,
   });
 
