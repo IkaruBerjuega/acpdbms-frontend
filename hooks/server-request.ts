@@ -16,7 +16,7 @@ export async function publicRequestAPI<T>({
   try {
     const res = await fetch(`${API_URL}${url}`, {
       method: "GET",
-      cache: "force-cache", // or: next: { revalidate: 60 }
+      cache: "no-cache", // or: next: { revalidate: 60 }
       headers: {
         "Content-Type": "application/json",
       },
