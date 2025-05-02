@@ -34,19 +34,13 @@ export default function Process() {
       image: "/homepage/process-chat-bubble.svg",
       title: "Consult",
       description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet laoreet magna. Cras feugiat ante et erat accumsan, at congue orci consectetur. ",
+        "We begin with a personalized consultation to understand your vision, needs, and lifestyle. Whether we meet in person or connect remotely, we make sure your ideas are fully understood because this is your home and it should reflect your personality and preferences.",
     },
     {
       image: "/homepage/process-pencil.svg",
       title: "Design",
       description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet laoreet magna. Cras feugiat ante et erat accumsan, at congue orci consectetur. ",
-    },
-    {
-      image: "/homepage/process-hammer.svg",
-      title: "Build",
-      description:
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet laoreet magna. Cras feugiat ante et erat accumsan, at congue orci consectetur. ",
+        "In the design phase, we create detailed preliminary plans that include floor layouts and exterior views. You will review the designs, give feedback, and we will make the necessary revisions to ensure everything aligns with your space and goals. ",
     },
   ];
 

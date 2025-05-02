@@ -24,13 +24,15 @@ const AboutSection = () => {
                 About Us
               </h1>
               <p className="lg:max-w-lg text-wrap mt-6 md:text-lg font-light text-justify lg:text-justify text-white-100 text-white-secondary">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-                enim ad minim veniam, quis nostrud exercitation ullamco laboris
-                nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor
-                in reprehenderit in voluptate velit esse cillum dolore eu fugiat
-                nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-                sunt in culpa qui officia deserunt mollit anim id est laborum.
+                Larry&apos;s Home Designs began unexpectedly from a passion for
+                home design and a family background in construction. Over the
+                past 20 years, we have grown from drawing plans for relatives to
+                creating custom residential and light commercial designs across
+                Pennsylvania. We specialize in code compliant plans for various
+                building styles such as timber frame, log homes, and green
+                construction, all tailored to each client&apos;s vision. Our
+                mission is to help bring your dream home to life with accuracy,
+                care, and efficiency.
               </p>
             </div>
           </div>
