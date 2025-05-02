@@ -133,11 +133,6 @@ export function LogoUpload({ logoUrl }: { logoUrl: string | undefined }) {
               onDrop={(acceptedFiles) => {
                 onImageDropdown(acceptedFiles[0]);
               }}
-              accept={{
-                "image/jpeg": [],
-                "image/png": [],
-                "image/webp": [],
-              }}
               showImages={false}
               showList={false}
             />

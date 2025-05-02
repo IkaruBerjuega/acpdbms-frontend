@@ -29,7 +29,7 @@ const Dropzone = ({
     "image/jpeg": [],
     "image/png": [],
     "image/webp": [],
-    "image/svg+xml": [], // Added SVG support
+    "image/svg": [], // Added SVG support
   },
   showImages = false,
   formInput,
