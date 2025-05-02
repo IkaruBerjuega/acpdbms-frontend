@@ -10,7 +10,7 @@ export default function Hero({ logoUrl }: { logoUrl: string }) {
       className="w-full flex h-screen bg-image-hero homepage-padding "
     >
       <div className=" w-full h-full xl:w-1/2 lg:mt-10 flex-col-center lg:flex-row-start-center">
-        <div className="h-[40%] md:h-[50%]  xl:h-[60%] flex-col-start  gap-4 ">
+        <div className="h-[40%] md:h-[50%]  xl:h-[60%] flex-col-start  gap-4">
           <Image
             src={logoUrl || "/system-component-images/logo-placeholder.webp"}
             alt={""}
@@ -24,8 +24,7 @@ export default function Hero({ logoUrl }: { logoUrl: string }) {
           <div className="w-full">
             <ButtonLink
               href={"#contact-form"}
-              size={"lg"}
-              className="font-semibold md:text-xl"
+              className="font-semibold md:text-base"
             >
               Contact Us
             </ButtonLink>
