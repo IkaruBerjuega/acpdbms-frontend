@@ -43,7 +43,7 @@ export function Notifications({
 
   const openNotifs = () => {
     createQueryString("notifications", "open");
-    createQueryString("filter", "today");
+    createQueryString("filter", "all");
     createQueryString("page", "1");
   };
 
