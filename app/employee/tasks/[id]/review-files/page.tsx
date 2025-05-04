@@ -27,12 +27,17 @@ export default async function Page({
 
   const breadcrumbs: Breadcrumbs[] = [
     {
-      href: "employee/tasks",
+      href: "/employee/tasks",
       pageName: "Tasks",
       active: false,
     },
     {
-      href: `/employee/tasks/${taskId}/review-files?view_files=true&version=${version}&projectId=${projectId}}`,
+      href: `/employee/tasks/${taskId}/details?projectId=${projectId}`,
+      pageName: "Task Details",
+      active: false,
+    },
+    {
+      href: `/employee/tasks/${taskId}/review-files?view_files=true&version=${version}&projectId=${projectId}`,
       pageName: "Files Review",
       active: true,
     },

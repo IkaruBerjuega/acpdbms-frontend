@@ -21,7 +21,7 @@ export default function TasksHeaderActions({
 
   const queryClient = useQueryClient();
 
-  const tabValue = paramsKey["view"];
+  const tabValue = paramsKey["view"] || "general";
   const activeTab =
     tabValue === "assigned"
       ? "My Tasks"

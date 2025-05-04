@@ -13,12 +13,19 @@ import { IoTimer } from "react-icons/io5";
 import { IoIosTimer } from "react-icons/io";
 import { SlPaperClip } from "react-icons/sl";
 import { GrNext } from "react-icons/gr";
-import { useSelectedTaskStatus } from "@/hooks/states/create-store";
+import {
+  useProjectSelectStore,
+  useSelectedTaskStatus,
+} from "@/hooks/states/create-store";
+import { toast } from "@/hooks/use-toast";
 
 export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
   // setup for adding params when the button for viewing  the phases is the one used
-  const { params } = useQueryParams();
-  const { replace } = useRouter();
+  const { params, paramsKey } = useQueryParams();
+  const { replace, push: goTo } = useRouter();
+
+  //check if there is projectId url parameter
+  const projectId = paramsKey["projectId"];
 
   const pathname = usePathname();
 
@@ -45,17 +52,36 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
     replace(`${pathname}?${params.toString()}`);
   };
 
-  const openFiles = ({ version }: { version: string }) => {
-    params.set("sheet", "files");
-    params.set("version", version);
-    setData([taskDetails?.status]);
-    replace(`${pathname}?${params.toString()}`);
-  };
-
   const openMessages = () => {
     params.set("sheet", "comments");
     replace(`${pathname}?${params.toString()}`);
   };
+
+  const { data: projectSelected } = useProjectSelectStore();
+  const isUserMember = projectSelected[0]?.userRole === "Member";
+  const { setData: setTaskStatus } = useSelectedTaskStatus();
+
+  function goToFiles(version: string) {
+    if (taskDetails?.status === "needs review") {
+      if (isUserMember) {
+        toast({
+          title: "Warning",
+          description: "Only user with manager role can review a task",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      goTo(
+        `/employee/tasks/${taskId}/review-files?view_files=true&version=${version}&projectId=${projectId}`
+      );
+      return;
+    }
+    goTo(
+      `/employee/tasks/${taskId}/view-files?view_files=true&version=${version}&projectId=${projectId}`
+    );
+    setTaskStatus([taskDetails?.status]);
+  }
 
   if (isLoading) {
     return (
@@ -154,8 +180,14 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
                 <div className="w-full flex-row-start gap-1 text-slate-500  leading-tight">
                   {startDate && (
                     <>
-                      <span>Started in</span>
-                      <span className="font-semibold">{startDate}</span>
+                      {taskDetails?.status === "to do" ? (
+                        <span className="font-semibold">Not Started Yet</span>
+                      ) : (
+                        <>
+                          <span>Started in</span>
+                          <span className="font-semibold">{startDate}</span>
+                        </>
+                      )}
                     </>
                   )}
                   {finishDate && (
@@ -193,7 +225,7 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
                     <GrNext
                       className="cursor-pointer hover:text-black-primary text-lg"
                       onClick={() => {
-                        openFiles({ version: String(version.version) });
+                        goToFiles(String(version.version));
                       }}
                     />
                   </div>

@@ -84,11 +84,11 @@ export default function AddNewProject() {
     formData.append("project_description", data.project_description || "");
     formData.append(
       "start_date",
-      new Date(data.start_date || "").toISOString()
+      new Date(data.start_date || "").toLocaleDateString()
     );
     formData.append(
       "end_date",
-      data.end_date ? new Date(data.end_date || "").toISOString() : ""
+      data.end_date ? new Date(data.end_date || "").toLocaleDateString() : ""
     );
     formData.append("street", data.street);
     formData.append("city_town", data.city_town);
