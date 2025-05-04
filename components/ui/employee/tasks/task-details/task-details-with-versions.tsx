@@ -36,8 +36,6 @@ export default function TaskDetailsVersions({ taskId }: { taskId: string }) {
 
   const displayRemaining = taskDetails?.status === "to do";
 
-  const { setData } = useSelectedTaskStatus();
-
   const versions = taskVersions?.versions.sort((a, b) => b.version - a.version);
   const lastVersionNumber =
     versions && versions.length > 0
