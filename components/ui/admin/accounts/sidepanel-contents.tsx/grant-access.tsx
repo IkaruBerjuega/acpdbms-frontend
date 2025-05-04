@@ -220,8 +220,15 @@ export default function GrantProjectAccess() {
     }
   };
 
+  const pendingAndOngoingProjectList =
+    projectList?.filter((project) => {
+      if (project.status === "pending" || project.status === "ongoing") {
+        return project;
+      }
+    }) || [];
+
   const projects: ItemInterface[] =
-    projectList?.map((project) => ({
+    pendingAndOngoingProjectList?.map((project) => ({
       value: project.id,
       label: project.project_title,
     })) || [];
